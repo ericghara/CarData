@@ -1,14 +1,13 @@
 from typing import *
 from abc import ABC, abstractmethod
-from repository import Brand, RawData
+from repository.Entities import Brand, RawData
 from datetime import date
-from . import Session
+from repository.SessionFactory import sessionFactory
 
 class ModelInfoScraper(ABC):
 
     def __init__(self, brand: 'Brand'):
         self.brand = brand
-        self.session = Session()
 
     def _validateModelYear(self, date: 'date') -> None:
         if (date.month != 1 or date.day != 1 ):

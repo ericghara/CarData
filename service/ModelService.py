@@ -14,7 +14,7 @@ class ModelService:
         self.table = Model.__table__
 
     def _getBrand(self, manufacturerCommon: str, brandName: str, session: 'Session') -> 'Brand':
-        brand = brandService.getBrand(manufacturerCommon, brandName, session)
+        brand = brandService.getBrandByNameAndManufacturer(manufacturerCommon, brandName, session)
         if not brand:
             raise ValueError(f'Could not find brand matching manufacturer common name: {manufacturerCommon}, brand name {brandName}')
         return brand

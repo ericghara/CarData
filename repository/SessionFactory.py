@@ -31,6 +31,6 @@ class SessionFactory:
     def newSession(self) -> 'Session':
         if not self._sessionGenerator:
             self._sessionGenerator = sessionmaker(bind=self.getEngine() )
-        return self._sessionGenerator.begin()
+        return self._sessionGenerator()
 
 sessionFactory = SessionFactory()

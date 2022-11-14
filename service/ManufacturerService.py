@@ -1,8 +1,7 @@
 from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 
-from repository.Entities import entities
-
+from repository.Entities import Manufacturer
 
 class ManufacturerService:
 
@@ -10,8 +9,8 @@ class ManufacturerService:
         pass
 
     def getManufacturerByCommonName(self, commonName: str, session: 'Session') -> 'Manufacturer':
-        stmt = select(entities.Manufacturer).where(entities.Manufacturer.common_name == commonName)
-        return session.execute(stmt).fetchOne()
+        query = session.query(Manufacturer).where(Manufacturer.common_name == commonName)
+        return query.one()
 
     def insertManufacturer(self, manufacturer: 'Manufacturer', session: 'Session') -> None:
         session.add(manufacturer)
@@ -20,7 +19,7 @@ class ManufacturerService:
     # Not a cascading delete
     # Will raise error if there are child brands due to fk_constraint
     def deleteManufacturer(self, commonName: str, session: 'Session') -> None:
-        stmt = delete(entities.Manufacturer).where(entities.Manufacturer.common_name == commonName)
+        stmt = delete(Manufacturer).where(Manufacturer.common_name == commonName)
         session.execute(stmt)
 
 manufacturerService = ManufacturerService()
