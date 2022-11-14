@@ -1,0 +1,2 @@
+import glbls
+glbls = glbls
