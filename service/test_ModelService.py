@@ -1,13 +1,6 @@
 from unittest import TestCase
 
-from testcontainers.postgres import PostgresContainer
-
-from glbls import variables
-from repository.SessionFactory import sessionFactory
-from repository.Entities import Manufacturer, Brand
-import repository.Entities
-from service.ManufacturerService import manufacturerService
-from service.test_common.RepositorySetup import RepositorySetup
+from repository.test_common.RepositorySetup import RepositorySetup
 
 
 class TestModelService(TestCase):
@@ -19,7 +12,7 @@ class TestModelService(TestCase):
         cls.res = RepositorySetup()
         cls.res.start()
         cls.res.initTables()
-        cls.res.insetTestData()
+        cls.res.insetTestRecords()
 
     @classmethod
     def tearDownClass(cls) -> None:

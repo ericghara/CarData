@@ -1,3 +1,4 @@
+from typing import *
 from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 
@@ -10,17 +11,20 @@ class ManufacturerService:
 
     def getManufacturerByCommonName(self, commonName: str, session: 'Session') -> 'Manufacturer':
         query = session.query(Manufacturer).where(Manufacturer.common_name == commonName)
-        return query.one()
+        return query.first()
 
-    def insertManufacturer(self, manufacturer: 'Manufacturer', session: 'Session') -> None:
-        session.add(manufacturer)
-        return
+    def getAllManufacturers(self, session: 'Session') -> Iterator['Manufacturer']:
+        query = session.query(Manufacturer)
+        return query
 
-    # Not a cascading delete
-    # Will raise error if there are child brands due to fk_constraint
-    def deleteManufacturer(self, commonName: str, session: 'Session') -> None:
-        stmt = delete(Manufacturer).where(Manufacturer.common_name == commonName)
-        session.execute(stmt)
+    def deleteManufacturerByCommonName(self, commonName: str, session: 'Session') -> None:
+        toDel = self.getManufacturerByCommonName(commonName, session)
+        session.delete(toDel)
+
+    def deleteAllManufacturers(self, session: 'Session') -> None:
+        for manufacturer in self.getAllManufacturers(session):
+            session.delete(manufacturer)
+
 
 manufacturerService = ManufacturerService()
 
