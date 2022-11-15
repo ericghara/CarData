@@ -1,5 +1,6 @@
 from typing import *
 from abc import ABC, abstractmethod
+from abc import ABCMeta
 from repository.Entities import Brand, RawData
 from datetime import date
 from repository.SessionFactory import sessionFactory
@@ -13,8 +14,9 @@ class ModelInfoScraper(ABC):
 
     def __init__(self, brand: 'Brand', **kwargs):
         super().__init__()
-        self.brand = self.queryBrandInfo(brand)
         self.noPersist = kwargs.get('noPersist', False)
+        self.brand = self.queryBrandInfo(brand)
+
 
     # When noPersist=False, only required info in brand obj is Name, if brand_id is not null
     # the provided brand_id will be validated against the fetched brand
@@ -22,10 +24,10 @@ class ModelInfoScraper(ABC):
     def queryBrandInfo(self, brand: 'Brand') -> 'Brand':
         if self.noPersist:
             return brand
-        fetchedBrand = brandService.getBrandByName(self.brand.name, sessionFactory.newSession() )
+        fetchedBrand = brandService.getBrandByName(brand.name, sessionFactory.newSession() )
         if not fetchedBrand:
-            raise ValueError(f'No record found for Brand: {self.brand.name}')
-        if (self.brand.brand_id and self.brand.brand_id != fetchedBrand.brand_id):
+            raise ValueError(f'No record found for Brand: {brand.name}')
+        if (brand.brand_id and brand.brand_id != fetchedBrand.brand_id):
             raise ValueError(f'Provided brand_id and fetched brand_id do not match')
         return fetchedBrand
 

@@ -2,7 +2,7 @@ from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 from repository.Entities import Brand,Manufacturer
 
-from ManufacturerService import manufacturerService
+from service.ManufacturerService import manufacturerService
 
 
 class BrandService:
