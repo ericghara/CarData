@@ -18,11 +18,11 @@ class BrandService:
     def getBrandByNameAndManufacturer(self, manufacturerCommon: str, brandName: str, session: 'Session') -> 'Brand':
         query = session.query(Brand).outerjoin(Manufacturer).where(
             Manufacturer.common_name == manufacturerCommon, Brand.name == brandName)
-        return query.one()
+        return query.first()
 
     def getBrandByName(self, brandName: str, session: 'Session') -> 'Brand':
         query = session.query(Brand).where(Brand.name == brandName)
-        return query.one()
+        return query.first()
 
     # raises on duplicate manufacturer or brand
     def insertBrand(self, manufacturerCommon: str, brand: 'Brand', session: 'Session') -> None:
@@ -30,9 +30,11 @@ class BrandService:
         manufacturer.brands.append(brand)
         return
 
-    def deleteBrand(self, name: str, session: 'Session') -> None:
-        stmt = delete(Brand).where(Brand.name == name)
-        session.execute(stmt)
+    def deleteBrandByName(self, name: str, session: 'Session') -> None:
+        toDel = self.getBrandByName(name, session)
+        if not toDel:
+            raise ValueError(f'No records found for Brand name: {name}.')
+        session.delete(toDel)
         return
 
 brandService = BrandService()
