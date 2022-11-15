@@ -1,27 +1,27 @@
 from unittest import TestCase
-from repository.test_common.RepositorySetup import RepositorySetup
+from repository.test_common.DbContainer import DbContainer
 from ManufacturerService import manufacturerService
 from repository.SessionFactory import sessionFactory
 
 
 class TestManufacturerService(TestCase):
-    res = None
+    container = None
 
     @classmethod
     def setUpClass(cls):
-        cls.res = RepositorySetup()
-        cls.res.start()
-        cls.res.initTables()
+        cls.container = DbContainer()
+        cls.container.start()
+        cls.container.initTables()
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.res.stop()
+        cls.container.stop()
 
     def setUp(self) -> None:
-        self.res.insetTestRecords()
+        self.container.insetTestRecords()
 
     def tearDown(self) -> None:
-        self.res.deleteAll()
+        self.container.deleteAll()
 
     def test_get_manufacturer_by_common_name(self):
         with sessionFactory.newSession() as session:

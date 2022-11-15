@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE public.manufacturer (
+CREATE TABLE IF NOT EXISTS public.manufacturer (
 	manufacturer_id uuid NOT NULL DEFAULT uuid_generate_v4(),
 	official_name varchar(255) NOT NULL,
 	common_name varchar(255) NOT NULL,

@@ -29,8 +29,11 @@ class RawDataService:
 
     def deleteAllButMostRecent(self, brandName: str, modelName: str, modelYear: str, session: 'Session') -> None:
         mostRecent = self.getMostRecentlyCreatedDataBy(brandName=brandName, modelName=modelName, modelYear=modelYear, session=session)
+        if not mostRecent:
+            raise ValueError(f'No raw data found for brand name: {brandName}, model name: {modelName}, model year: {str(modelYear)}')
         toDel = session.query(RawData).where(RawData.model_id == mostRecent.model_id, RawData.data_id != mostRecent.data_id)
-        session.delete(toDel)
+        for record in toDel:
+            session.delete(record)
 
 rawDataService = RawDataService()
 

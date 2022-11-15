@@ -66,4 +66,3 @@ def createAll() -> None:
         # for more complex schemas or where there are errors, might be a good
         # idea to execute statement by statement.
         sessionFactory.getEngine().execute(schema)
-    # Base.prepare()

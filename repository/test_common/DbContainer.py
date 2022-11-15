@@ -9,7 +9,7 @@ from repository.SessionFactory import sessionFactory
 from service.ManufacturerService import  manufacturerService
 
 
-class RepositorySetup:
+class DbContainer:
 
     def __init__(self):
         self.postgresContainer = PostgresContainer("postgres:14.4")
@@ -19,6 +19,8 @@ class RepositorySetup:
         variables.POSTGRES_URI = self.postgresContainer.get_connection_url()
         variables.POSTGRES_USERNAME = self.postgresContainer.POSTGRES_PASSWORD
         variables.POSTGRES_PASSWORD = self.postgresContainer.POSTGRES_PASSWORD
+        # removes stale past engine (ie bound to shutdown container from another test class)
+        sessionFactory.purgeEngine()
 
     def stop(self) -> None:
         self.postgresContainer.stop()

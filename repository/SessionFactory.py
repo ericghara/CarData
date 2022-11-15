@@ -33,4 +33,8 @@ class SessionFactory:
             self._sessionGenerator = sessionmaker(bind=self.getEngine() )
         return self._sessionGenerator()
 
+    def purgeEngine(self) -> None:
+        self._engine = None
+        self._sessionGenerator = None
+
 sessionFactory = SessionFactory()

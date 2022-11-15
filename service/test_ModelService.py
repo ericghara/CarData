@@ -2,7 +2,7 @@ import datetime
 from unittest import TestCase
 
 from repository.SessionFactory import sessionFactory
-from repository.test_common.RepositorySetup import RepositorySetup
+from repository.test_common.DbContainer import DbContainer
 from service.BrandService import brandService
 from service.ModelService import modelService
 from repository.dto import Model as ModelDto
@@ -10,23 +10,23 @@ from repository.dto import Model as ModelDto
 
 class TestModelService(TestCase):
 
-    res = None
+    container = None
 
     @classmethod
     def setUpClass(cls):
-        cls.res = RepositorySetup()
-        cls.res.start()
-        cls.res.initTables()
+        cls.container = DbContainer()
+        cls.container.start()
+        cls.container.initTables()
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.res.stop()
+        cls.container.stop()
 
     def setUp(self) -> None:
-        self.res.insetTestRecords()
+        self.container.insetTestRecords()
 
     def tearDown(self) -> None:
-        self.res.deleteAll()
+        self.container.deleteAll()
 
     def test__getBrand(self):
         with sessionFactory.newSession() as session:
