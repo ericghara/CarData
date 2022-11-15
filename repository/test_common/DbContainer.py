@@ -19,7 +19,7 @@ class DbContainer:
         variables.POSTGRES_URI = self.postgresContainer.get_connection_url()
         variables.POSTGRES_USERNAME = self.postgresContainer.POSTGRES_PASSWORD
         variables.POSTGRES_PASSWORD = self.postgresContainer.POSTGRES_PASSWORD
-        # removes stale past engine (ie bound to shutdown container from another test class)
+        # removes stale past engine (ie bound to a shutdown container from another test class)
         sessionFactory.purgeEngine()
 
     def stop(self) -> None:

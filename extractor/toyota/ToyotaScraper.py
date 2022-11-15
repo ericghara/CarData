@@ -1,23 +1,36 @@
-import requests
+import datetime
 import logging
-
 from typing import *
-from requests import Response
+
 from sqlalchemy.exc import NoResultFound
 
-from .. import ModelInfoScraper
+from extractor import ModelInfoScraper
+from extractor.common.HttpClient import httpClient
 from repository import SessionFactory
-from repository import RawData, Model, Brand
-from service import modelService
+from repository.Entities import RawData, Model, Brand
+from repository.SessionFactory import sessionFactory
+from repository.dto import Model as ModelDto
+from service.ModelService import modelService
+from service.RawDataService import rawDataService
 
 
 class ToyotaScraper(ModelInfoScraper):
+    # Constructor
+    #   - _getModelCodeToName
+    # persistModelYear
+    #  - _fetchModelList
+    #       > _getModelName
+    #       > modelService.upsert
+    #       > _createModelDataUrl
+    # _insertModeldata
 
     class ModelInfo:
 
         # Model codes that had to be manually matched
-        MODEL_CODES = {'86':'GR 86','chr':'C-HR', 'supra':'GR Supra', "yaris" : "Yaris", "yarishatchback": "Yaris Hatchback", "priusc" : "Prius c",
-                               'corollaim':'Corolla iM', 'yarisia' : 'Yaris iA', 'yarisliftback' : 'Yaris Liftback', 'priusv': 'Prius v', 'priusplugin' : 'Prius Plug-in' }
+        MODEL_CODES = {'86': 'GR 86', 'chr': 'C-HR', 'supra': 'GR Supra', "yaris": "Yaris",
+                       "yarishatchback": "Yaris Hatchback", "priusc": "Prius c",
+                       'corollaim': 'Corolla iM', 'yarisia': 'Yaris iA', 'yarisliftback': 'Yaris Liftback',
+                       'priusv': 'Prius v', 'priusplugin': 'Prius Plug-in'}
 
         URL_PREFIX = 'https://www.toyota.com/config/pub'
 
@@ -25,19 +38,23 @@ class ToyotaScraper(ModelInfoScraper):
             self.modelName = modelName
             self.modelCode = modelCode
             self.path = path
+            # not currently used for anything
             self.isArchived = isArchived
 
         def __repr__(self) -> str:
-            return f'{self.modelName}, path: {self.path}, isArchived: {self.isArchived}'
+            return f'ModelInfo({self.modelName}, {self.modelCode}, {self.path}, {self.isArchived})'
 
-    def __init__(self, brand: 'Brand'):
-        super.__init__(brand)
+    # kwargs:
+    #   - noPersist: True/False
+    #       for testing, don't check that provided brand is a valid db record
+    def __init__(self, brand: 'Brand', **kwargs):
+        super().__init__(brand, **kwargs)
         self.modelCodeToName = self._getModelCodeToName()
 
     # creates an (incomplete) mapping of model codes to names
     def _getModelCodeToName(self) -> dict:
         URL = 'https://www.toyota.com/service/tcom/series/en'
-        rawCodeToName = self._getRequest(URL).json()
+        rawCodeToName = httpClient.getRequest(URL).json()
         modelCodeToName = dict()
         for model in rawCodeToName:
             name = model['modelName']
@@ -58,34 +75,32 @@ class ToyotaScraper(ModelInfoScraper):
                 logging.info(f"Couldn't match model code: {modelCode} using {modelName}.")
         return modelName
 
-
-    # returns raw response text or throws if 4/5xx response
-    def _getRequset(self, fullPath: str, **kwargs) -> Response:
-        res = requests.get(fullPath, params=kwargs)
-        if res.status_code >= 400:
-            raise RuntimeError(f"received a {res.status_code} status code for: {fullPath}.")
-        if not res.encoding:
-            res.encoding = 'utf-8'
-        return res
-
-    def _fetchModelList(self, year: int) -> List[ModelInfo]:
-        if self.modelYear < 2014:
+    def _fetchModelList(self, modelYear: 'datetime.date') -> Dict:
+        super()._validateModelYear(modelYear)
+        if (year := modelYear.year) < 2014:
             raise ValueError('year must be > 2014')
-        targetURL = f'{self.URL_PREFIX}/nocache/uifm/TOY/NATIONAL/EN/{self.modelYear}/bootstrap.json'
+        targetURL = f'{self.URL_PREFIX}/nocache/uifm/TOY/NATIONAL/EN/{year}/bootstrap.json'
         # returns a list of models
         # example:
         # [{"featureModel":"corolla","path":"/static/uifm/TOY/NATIONAL/EN/*LONG*PATH*","archived":"false"}, ... ]
-        modelListRaw = self._getRequest(targetURL).json()
-        modelRecords = list()
-        for model in modelListRaw:
-            modelCode = model.get('featureModel',"")
+        return httpClient.getRequest(targetURL).json()
+
+    def _parseModelList(self, modelListJson: 'Dict') -> Dict[str, 'ModelInfo']:
+        modelRecords = dict()
+        for model in modelListJson:
+            modelCode = model.get('featureModel', "")
             isArchived = model.get('archived', None)
             if not modelCode or isArchived is None:
-                raise KeyError(f"Model code and/or isArchived flag could not be parsed.  Likely Toyota's response format has changed")
+                raise KeyError(
+                    f"Model code and/or isArchived flag could not be parsed.  Likely Toyota's response format has changed")
             modelName = self._getModelName(modelCode)
             subPath = model.get("path", "")
             fullPath = self._createModelDataURL(subPath)
-            modelRecords.append( self.ModelInfo(modelCode=modelCode, modelName=modelName, modelPath=fullPath, isArchived=isArchived  ) )
+            if modelName in modelRecords:
+                logging.warning(f'Duplicate model: {modelName}, in model year!')
+            modelRecords[modelName](
+                self.ModelInfo(modelCode=modelCode, modelName=modelName, path=fullPath, isArchived=isArchived))
+            return modelRecords
 
     # url to fetch data for a specific model
     # ex: https://www.toyota.com/config/pub/static/uifm/TOY/NATIONAL/EN
@@ -95,22 +110,26 @@ class ToyotaScraper(ModelInfoScraper):
             raise ValueError('Received an empty or null subPath')
         return f'{self.URL_PREFIX}{subPath}/content.json'
 
-    # create a dto
-    def _insertModelData(self, model: Model, RawData: 'RawData') -> None:
-        with SessionFactory.generate() as session:
-            try:
-                fetchedModel = modelService.getModelByBrandNameModelNameModelYear(
-                    self.brand.name, model.name, model.model_year, session)
-            except NoResultFound:
+    # Fetches raw data for a model year without persisting
+    # For testing and to perform a general "dry run"
+    # A map of the model name to raw data json is returned
+    def _fetchModelYear(self, modelYear: 'datetime.date') -> dict[str, dict]:
+        modelListJson = self._fetchModelList(modelYear)
+        nameToModelInfo = self._parseModelList(modelListJson)
+        return {modelName: httpClient.getRequset(modelInfo.path).json() for modelName, modelInfo in
+                nameToModelInfo.items()}
 
-
-
-
-
-    # look into closing connection
-    # revisit purpose of this is to NOT write to DB for prototyping
-    def _fetchModelYear(self, date: 'date') -> List['RawData']:
-        self.session.rollback()  # make sure this actually keeps data in RawData objects
-
-    def persistModelYear(self, date: 'date') -> None:
-        pass
+    def persistModelYear(self, modelYear: 'datetime.date') -> None:
+        modelListJson = self._fetchModelList(modelYear)
+        nameToModelInfo = self._parseModelList(modelListJson)
+        modelRecordDtos = list()
+        for modelInfo in nameToModelInfo.values():
+            modelRecordDtos.append(
+                ModelDto(name=modelInfo.modelName, model_year=modelYear, brand_id=super().brand.brand_id))
+        with sessionFactory.newSession() as session:
+            for syncedModelRecordDto in modelService.upsert(modelRecordDtos, session):
+                modelInfo = nameToModelInfo.get(syncedModelRecordDto.name)
+                rawData = httpClient.getRequset(modelInfo.path).json()
+                rawDataService.insertData(
+                    rawData=rawData, brandName=self.brand.name, modelName=syncedModelRecordDto.name,
+                    modelYear=syncedModelRecordDto.model_year, session=session)
