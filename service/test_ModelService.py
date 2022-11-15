@@ -1,6 +1,5 @@
 import datetime
 from unittest import TestCase
-import uuid
 
 from repository.SessionFactory import sessionFactory
 from repository.test_common.RepositorySetup import RepositorySetup
