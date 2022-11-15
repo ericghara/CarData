@@ -47,6 +47,12 @@ class TestManufacturerService(TestCase):
             session.commit()
         self.assertIs(None, shouldBeNull)
 
+    def test_deleteManufacturerByCommonNameRaisesWhenNoRecord(self):
+        with sessionFactory.newSession() as session:
+            self.assertRaises(ValueError,
+                              lambda: manufacturerService.deleteManufacturerByCommonName('NotToyota', session) )
+
+
 
 
 

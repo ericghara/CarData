@@ -19,6 +19,8 @@ class ManufacturerService:
 
     def deleteManufacturerByCommonName(self, commonName: str, session: 'Session') -> None:
         toDel = self.getManufacturerByCommonName(commonName, session)
+        if not toDel:
+            raise ValueError(f'No record found with Manufactuerer Common Name: {commonName}')
         session.delete(toDel)
 
     def deleteAllManufacturers(self, session: 'Session') -> None:
