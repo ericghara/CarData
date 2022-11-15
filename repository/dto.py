@@ -5,7 +5,7 @@ from datetime import date
 
 class Model:
 
-    def __init__(self, model_id: str, name: str, model_year: 'date', brand_id: str):
+    def __init__(self, name: str, model_year: 'date', brand_id: str, model_id: str = None):
         self.model_id = model_id
         self.name = name
         self.model_year = model_year
