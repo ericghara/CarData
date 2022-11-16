@@ -6,7 +6,7 @@ from repository.dto import Model as ModelDto
 from typing import *
 from datetime import date
 from repository.Entities import Model, Brand, Manufacturer
-from BrandService import brandService
+from service.BrandService import brandService
 from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import insert
 

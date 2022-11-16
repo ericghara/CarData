@@ -9,7 +9,7 @@ class HttpClient:
         self.defaultEncoding = 'utf-8'
 
     # returns raw response text or throws if 4/5xx response
-    def getRequset(self, fullPath: str, **kwargs) -> 'Response':
+    def getRequest(self, fullPath: str, **kwargs) -> 'Response':
         res = requests.get(fullPath, params=kwargs)
         if res.status_code >= 400:
             raise RuntimeError(f"received a {res.status_code} status code for: {fullPath}.")

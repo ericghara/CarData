@@ -37,7 +37,7 @@ class TestModelInfoScraper(TestCase):
             testScraper = TestScraper(brand)
             self.assertEquals(testScraper.brand, fetchedBrand)
 
-    def test_queryBrandInfoNromalBrandIdMisMatch(self):
+    def test_queryBrandInfoNormalBrandIdMisMatch(self):
         brand = Brand(name='Test Brand', brand_id=uuid4() )
         fetchedBrand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name=self.testBrand.name)
         with mock.patch('extractor.ModelInfoScraper.brandService.getBrandByName', return_value=fetchedBrand):
