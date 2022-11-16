@@ -1,6 +1,6 @@
 from unittest import TestCase
 from repository.test_common.DbContainer import DbContainer
-from ManufacturerService import manufacturerService
+from service.ManufacturerService import manufacturerService
 from repository.SessionFactory import sessionFactory
 
 

@@ -29,7 +29,7 @@ class ToyotaScraper(ModelInfoScraper):
     MODEL_CODES = {'86': 'GR 86', 'chr': 'C-HR', 'supra': 'GR Supra', "yaris": "Yaris",
                    "yarishatchback": "Yaris Hatchback", "priusc": "Prius c",
                    'corollaim': 'Corolla iM', 'yarisia': 'Yaris iA', 'yarisliftback': 'Yaris Liftback',
-                   'priusv': 'Prius v', 'priusplugin': 'Prius Plug-in'}
+                   'priusv': 'Prius v', 'priusplugin': 'Prius Plug-in', 'sequoiahybrid' : 'Sequoia Hybrid'}
 
     URL_PREFIX = 'https://www.toyota.com/config/pub'
 
@@ -113,18 +113,21 @@ class ToyotaScraper(ModelInfoScraper):
         modelRecordDtos = list()
         for modelInfo in nameToModelInfo.values():
             modelRecordDtos.append(
-                ModelDto(name=modelInfo.modelName, model_year=modelYear, brand_id=super().brand.brand_id))
+                ModelDto(name=modelInfo.modelName, model_year=modelYear, brand_id=self.brand.brand_id))
         with sessionFactory.newSession() as session:
+            session.begin()
             for syncedModelRecordDto in modelService.upsert(modelRecordDtos, session):
                 modelInfo = nameToModelInfo.get(syncedModelRecordDto.name)
-                rawData = httpClient.getRequest(modelInfo.path).json()
+                jsonData = httpClient.getRequest(modelInfo.path).json()
+                rawDataObj = RawData(raw_data=jsonData)
                 rawDataService.insertData(
-                    rawData=rawData, brandName=self.brand.name, modelName=syncedModelRecordDto.name,
+                    rawData=rawDataObj, brandName=self.brand.name, modelName=syncedModelRecordDto.name,
                     modelYear=syncedModelRecordDto.model_year, session=session)
+            session.commit()
 
     class ModelInfo:
 
-        def __init__(self, modelName: str, modelCode: str, path: str, isArchived: bool):
+        def __init__(self, modelName: str, modelCode: str, path: str, isArchived: bool|str):
             self.modelName = modelName
             self.modelCode = modelCode
             self.path = path

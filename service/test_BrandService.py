@@ -59,8 +59,9 @@ class TestBrandService(TestCase):
     def test_deleteBrandByName(self):
         with sessionFactory.newSession() as session:
             brandService.deleteBrandByName('Toyota', session)
-            self.assertIs(None, brandService.getBrandByName('Toyota', session))
             session.commit()
+            self.assertIs(None, brandService.getBrandByName('Toyota', session))
+
 
     def test_deleteBrandByNameRaisesWhenNoRecord(self):
         with sessionFactory.newSession() as session:

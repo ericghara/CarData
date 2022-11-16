@@ -21,7 +21,7 @@ class SessionFactory:
         if not variables.POSTGRES_URI.startswith(self._URI_SCHEME):
             raise ValueError(f'Connection uri must be prefixed with {self._URI_SCHEME}')
         # postgresql: // [user[:password] @][netloc]
-        return f'{self._URI_SCHEME}{variables.POSTGRES_USERNAME}:{variables.POSTGRES_PASSWORD}@{variables.POSTGRES_URI[len(self._URI_SCHEME) - 1:]}'
+        return f'{self._URI_SCHEME}{variables.POSTGRES_USERNAME}:{variables.POSTGRES_PASSWORD}@{variables.POSTGRES_URI[len(self._URI_SCHEME):]}'
 
     def getEngine(self) -> 'Engine':
         if not self._engine:
