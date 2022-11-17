@@ -5,7 +5,7 @@ from typing import *
 from sqlalchemy.exc import NoResultFound
 
 from extractor.ModelInfoScraper import ModelInfoScraper
-from extractor.common.HttpClient import httpClient
+from extractor.common.FetchAndPersist import httpClient
 from repository import SessionFactory
 from repository.Entities import RawData, Model, Brand
 from repository.SessionFactory import sessionFactory
@@ -74,21 +74,20 @@ class ToyotaScraper(ModelInfoScraper):
         # [{"featureModel":"corolla","path":"/static/uifm/TOY/NATIONAL/EN/*LONG*PATH*","archived":"false"}, ... ]
         return httpClient.getRequest(targetURL).json()
 
-    def _parseModelList(self, modelListJson: List['Dict']) -> Dict[str, 'ModelInfo']:
-        modelRecords = dict()
+    def _parseModelList(self, modelListJson: List['Dict']) -> Dict[str, 'ModelFetchDto']:
+        fetchDtoByName = dict()
         for model in modelListJson:
             modelCode = model.get('featureModel', "")
-            isArchived = model.get('archived', None)
-            if not modelCode or isArchived is None:
+            if not modelCode:
                 raise KeyError(
-                    f"Model code and/or isArchived flag could not be parsed.  Likely Toyota's response format has changed")
+                    f"Model code could not be parsed.  Likely Toyota's response format has changed")
             modelName = self._getModelName(modelCode)
             subPath = model.get("path", "")
             fullPath = self._createModelDataURL(subPath)
-            if modelName in modelRecords:
+            if modelName in fetchDtoByName:
                 logging.warning(f'Duplicate model: {modelName}, in model year!')
-            modelRecords[modelName] = self.ModelInfo(modelCode=modelCode, modelName=modelName, path=fullPath, isArchived=isArchived)
-        return modelRecords
+            fetchDtoByName[modelName] = self.ModelFetchDto(modelCode=modelCode, modelName=modelName, path=fullPath)
+        return fetchDtoByName
 
     # url to fetch data for a specific model
     # ex: https://www.toyota.com/config/pub/static/uifm/TOY/NATIONAL/EN
@@ -110,34 +109,27 @@ class ToyotaScraper(ModelInfoScraper):
     def persistModelYear(self, modelYear: 'datetime.date') -> None:
         modelListJson = self._fetchModelList(modelYear)
         nameToModelInfo = self._parseModelList(modelListJson)
-        modelRecordDtos = list()
+        modelDtos = list()
         for modelInfo in nameToModelInfo.values():
-            modelRecordDtos.append(
+            modelDtos.append(
                 ModelDto(name=modelInfo.modelName, model_year=modelYear, brand_id=self.brand.brand_id))
         with sessionFactory.newSession() as session:
             session.begin()
-            for syncedModelRecordDto in modelService.upsert(modelRecordDtos, session):
-                modelInfo = nameToModelInfo.get(syncedModelRecordDto.name)
+            for syncedModelDto in modelService.upsert(modelDtos, session):
+                modelInfo = nameToModelInfo.get(syncedModelDto.name)
                 jsonData = httpClient.getRequest(modelInfo.path).json()
-                rawDataObj = RawData(raw_data=jsonData)
-                rawDataService.insertData(
-                    rawData=rawDataObj, brandName=self.brand.name, modelName=syncedModelRecordDto.name,
-                    modelYear=syncedModelRecordDto.model_year, session=session)
+                rawDataService.insert(RawData(raw_data=jsonData, model_id=syncedModelDto.model_id) )
             session.commit()
 
-    class ModelInfo:
+    class ModelFetchDto:
 
-        def __init__(self, modelName: str, modelCode: str, path: str, isArchived: bool|str):
+        def __init__(self, modelName: str, modelCode: str, path: str):
             self.modelName = modelName
             self.modelCode = modelCode
             self.path = path
-            # not currently used for anything
-            if type(isArchived) is str:
-                isArchived = isArchived.capitalize() == 'True'
-            self.isArchived = isArchived
 
         def __repr__(self) -> str:
-            return f'ModelInfo({self.modelName}, {self.modelCode}, {self.path}, {self.isArchived})'
+            return f'ModelInfo({self.modelName}, {self.modelCode}, {self.path})'
 
         def __eq__(self, other) -> bool:
             if type(self) is not type(other):

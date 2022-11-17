@@ -36,7 +36,7 @@ class ModelService:
     def getMostRecentModel(self, brandName: str, modelName: str, session: 'Session') -> 'Model':
         stmt = select(Model).outerjoin(Brand).where(
             brandName == Brand.name, modelName == Model.name).order_by(desc(Model.model_year) ).limit(1)
-        return session.scalars(stmt).one()
+        return session.scalars(stmt).first()
 
     def getModelsByBrandNameAndModelName(self, brandName: str, modelName: str, session: 'Session') -> List['Model']:
         query = session.query(Model).outerjoin(Brand).where(
