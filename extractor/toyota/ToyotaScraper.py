@@ -1,11 +1,12 @@
 import datetime
 import logging
 from typing import *
+from extractor.common.fetchAndPersist import fetchAndPersist, ModelFetchDto
 
 from sqlalchemy.exc import NoResultFound
 
 from extractor.ModelInfoScraper import ModelInfoScraper
-from extractor.common.FetchAndPersist import httpClient
+from extractor.common.HttpClient import httpClient
 from repository import SessionFactory
 from repository.Entities import RawData, Model, Brand
 from repository.SessionFactory import sessionFactory
@@ -86,7 +87,7 @@ class ToyotaScraper(ModelInfoScraper):
             fullPath = self._createModelDataURL(subPath)
             if modelName in fetchDtoByName:
                 logging.warning(f'Duplicate model: {modelName}, in model year!')
-            fetchDtoByName[modelName] = self.ModelFetchDto(modelCode=modelCode, modelName=modelName, path=fullPath)
+            fetchDtoByName[modelName] = ModelFetchDto(modelCode=modelCode, modelName=modelName, path=fullPath)
         return fetchDtoByName
 
     # url to fetch data for a specific model
@@ -108,33 +109,9 @@ class ToyotaScraper(ModelInfoScraper):
 
     def persistModelYear(self, modelYear: 'datetime.date') -> None:
         modelListJson = self._fetchModelList(modelYear)
-        nameToModelInfo = self._parseModelList(modelListJson)
-        modelDtos = list()
-        for modelInfo in nameToModelInfo.values():
-            modelDtos.append(
-                ModelDto(name=modelInfo.modelName, model_year=modelYear, brand_id=self.brand.brand_id))
-        with sessionFactory.newSession() as session:
-            session.begin()
-            for syncedModelDto in modelService.upsert(modelDtos, session):
-                modelInfo = nameToModelInfo.get(syncedModelDto.name)
-                jsonData = httpClient.getRequest(modelInfo.path).json()
-                rawDataService.insert(RawData(raw_data=jsonData, model_id=syncedModelDto.model_id) )
-            session.commit()
+        modelFetchDtosByName = self._parseModelList(modelListJson)
+        fetchAndPersist(modelFetchDtosByName=modelFetchDtosByName, brandId=self.brand.brand_id, modelYear=modelYear)
 
-    class ModelFetchDto:
-
-        def __init__(self, modelName: str, modelCode: str, path: str):
-            self.modelName = modelName
-            self.modelCode = modelCode
-            self.path = path
-
-        def __repr__(self) -> str:
-            return f'ModelInfo({self.modelName}, {self.modelCode}, {self.path})'
-
-        def __eq__(self, other) -> bool:
-            if type(self) is not type(other):
-                return False
-            return vars(self) == vars(other)
 
 
 
