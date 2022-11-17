@@ -37,7 +37,7 @@ class ModelInfoScraper(ABC):
             raise ValueError(f'Month and day must be January 1st.')
 
     @abstractmethod
-    def _fetchModelYear(self, date: 'date' ) -> List['RawData']:
+    def _fetchModelYear(self, date: 'date' ) -> dict[str, dict]:
         pass
 
     @abstractmethod

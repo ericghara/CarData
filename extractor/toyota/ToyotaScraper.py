@@ -1,18 +1,11 @@
 import datetime
 import logging
 from typing import *
-from extractor.common.fetchAndPersist import fetchAndPersist, ModelFetchDto
-
-from sqlalchemy.exc import NoResultFound
 
 from extractor.ModelInfoScraper import ModelInfoScraper
 from extractor.common.HttpClient import httpClient
-from repository import SessionFactory
-from repository.Entities import RawData, Model, Brand
-from repository.SessionFactory import sessionFactory
-from repository.dto import Model as ModelDto
-from service.ModelService import modelService
-from service.RawDataService import rawDataService
+from extractor.common.fetchAndPersist import fetchAndPersist, ModelFetchDto
+from repository.Entities import Brand
 
 
 class ToyotaScraper(ModelInfoScraper):

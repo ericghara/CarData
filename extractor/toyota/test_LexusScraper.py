@@ -1,12 +1,13 @@
-import datetime
+from datetime import datetime, date
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
 from uuid import uuid4
 
+from parameterized import parameterized
 from requests import Response
 
 from extractor.common.fetchAndPersist import ModelFetchDto
-from extractor.toyota.ToyotaScraper import ToyotaScraper
+from extractor.toyota.LexusScraper import LexusScraper
 from repository.Entities import Brand, Manufacturer
 from repository.SessionFactory import sessionFactory
 from repository.test_common.DbContainer import DbContainer
@@ -15,19 +16,19 @@ from service.ModelService import modelService
 from service.RawDataService import rawDataService
 
 
-class TestToyotaScraper(TestCase):
+class TestLexusScraper(TestCase):
 
     def setUp(self) -> None:
-        self.brand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name='Toyota')
+        self.brand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name='Lexus')
         self.sessionFactoryMock = MockSessionFactory()
         self.patcherSuperBrandService = mock.patch('extractor.ModelInfoScraper.brandService.getBrandByName', return_value=self.brand)
         self.superBrandServiceMock = self.patcherSuperBrandService.start()
         self.httpClientResponseMock = Response()
         self.httpClientResponseMock.json = MagicMock(return_value={})
-        self.patcherHttpClient = mock.patch('extractor.toyota.ToyotaScraper.httpClient.getRequest',
+        self.patcherHttpClient = mock.patch('extractor.toyota.LexusScraper.httpClient.getRequest',
                              return_value=self.httpClientResponseMock)
         self.httpClientMock = self.patcherHttpClient.start()
-        self.scraper = ToyotaScraper()
+        self.scraper = LexusScraper()
 
     def tearDown(self) -> None:
         for mockObj in self.patcherSuperBrandService, self.patcherHttpClient:
@@ -35,52 +36,46 @@ class TestToyotaScraper(TestCase):
                 mockObj.stop()
         self.scraper = None
 
-    def test__getModelCodeToName(self):
-        rawJson = [{'modelName': 'GR Supra', 'modelCode': 'supra', 'Unneeded Key': 'Unneeded Value'}]
-        expectedResponse = {'supra': 'GR Supra'}
-        self.httpClientResponseMock.json = MagicMock(return_value=rawJson)
-        self.assertEqual(expectedResponse, self.scraper._getModelCodeToName())
+    @parameterized.expand([
+        ('IS', 'IS'),
+        ('NXh', 'NX Hybrid'),
+        ('RCF', 'RC F'),
+        ('ISC', 'IS C'),
+        ('NXPHEV', 'NX PHEV'),
+        ('LCCV', 'LC Convertable')
+    ])
+    def test__getModelName(self, modelCode, expectedModelName):
+        self.assertEqual(expectedModelName, self.scraper._getModelName(modelCode) )
 
-    def test__getModelNameFoundInModelCodeToName(self):
-        self.scraper.modelCodeToName = {'supra': 'GR Supra'}
-        self.assertEqual('GR Supra', self.scraper._getModelName('supra'))
-
-    def test__getModelNameFoundInMODEL_CODES(self):
-        self.scraper.MODEL_CODES = {'86': 'GR 86'}
-        self.assertEqual('GR 86', self.scraper._getModelName('86'))
-
-    def test__getModelNameNotFound(self):
-        self.scraper.MODEL_CODES = dict()
-        # capitalizes each word
-        self.assertEqual('Camry', self.scraper._getModelName('camry'))
+    def test_getModelNameRaisesUnrecognizedFormat(self):
+        raises = lambda : self.scraper._getModelName('LCS')
+        self.assertRaises(ValueError, raises)
 
     def test__parseModelList(self):
-        modelListJson = [{'featureModel': '86', 'path': 'fakePath'}]
-        self.scraper.MODEL_CODES = {'86': 'GR 86'}
+        modelListJson = [{'featureModel': 'LCCV', 'path': 'fakePath'}]
         expectedPath = "http://fake.com/content.json"
         expectedModelList = {
-            'GR 86': ModelFetchDto(modelName='GR 86', modelCode='86', path=expectedPath)}
-        with mock.patch('extractor.toyota.test_toyotaScraper.ToyotaScraper._createModelDataURL',
+            'LC Convertable': ModelFetchDto(modelName='LC Convertable', modelCode='LCCV', path=expectedPath)}
+        with mock.patch('extractor.toyota.test_LexusScraper.LexusScraper._createModelDataURL',
                         return_value=expectedPath):
             self.assertEqual(expectedModelList, self.scraper._parseModelList(modelListJson))
 
     def test__createModelData_url(self):
-        self.scraper.URL_PREFIX = 'https://www.toyota.com/config/pub'
-        subPath = '/static/uifm/TOY/NATIONAL/EN/2a6c7dd95b5b81c1dda97a6b985eec703140fd4d/2022/priusprime/1813aacf15413225b2ee3129fe1c9770cbab8bdd'
-        expected = 'https://www.toyota.com/config/pub/static/uifm/TOY/NATIONAL/EN/2a6c7dd95b5b81c1dda97a6b985eec703140fd4d/2022/priusprime/1813aacf15413225b2ee3129fe1c9770cbab8bdd/content.json'
+        self.scraper.URL_PREFIX = 'https://www.lexus.com/config/pub'
+        subPath = '/static/uifm/LEX/NATIONAL/EN/ebd9b27e2cb2f5e2bce935c82b4d4f23c8b83eb1/2023/IS/8579e8c9a2d17551ffd83b9016595bab206bd9fd'
+        expected = 'https://www.lexus.com/config/pub/static/uifm/LEX/NATIONAL/EN/ebd9b27e2cb2f5e2bce935c82b4d4f23c8b83eb1/2023/IS/8579e8c9a2d17551ffd83b9016595bab206bd9fd/content.json'
         self.assertEqual(expected, self.scraper._createModelDataURL(subPath))
 
-    def test__fetch_model_year(self):
-        nameToModelInfo = {'GR 86': ModelFetchDto('GR 86', '86', 'http://toyota.com/content.json'),
-                           'GR Supra': ModelFetchDto('GR Supra', 'supra', 'http://toyota.com/content.json')}
+    def test__fetchModelYear(self):
+        nameToModelInfo = {'LC Convertable': ModelFetchDto('LC Convertable', 'LCCV', 'http://lexus.com/content.json'),
+                           'ES Hybrid': ModelFetchDto('ES Hybrid', 'ESh', 'http://lexus.com/content.json')}
         rawJson = {'Dummy_JSON': True}
-        expected = {'GR 86': rawJson, 'GR Supra': rawJson}
-        with mock.patch('extractor.toyota.test_toyotaScraper.ToyotaScraper._parseModelList',
+        expected = {'LC Convertable': rawJson, 'ES Hybrid': rawJson}
+        with mock.patch('extractor.toyota.test_LexusScraper.LexusScraper._parseModelList',
                         return_value=nameToModelInfo):
             self.httpClientResponseMock.json = MagicMock(return_value=rawJson)
-            found = self.scraper._fetchModelYear(datetime.date(2023, 1, 1))
+            found = self.scraper._fetchModelYear(date(2023, 1, 1))
             self.assertEqual(expected, found)
-
 
 class IntegrationTestToyotaScraper(TestCase):
     container = None
@@ -100,31 +95,31 @@ class IntegrationTestToyotaScraper(TestCase):
             # manufacturer
             toyotaManufacturer = Manufacturer(official_name='Toyota Motor Company', common_name='Toyota')
             session.add(toyotaManufacturer)
-            toyotaBrand = Brand(name='Toyota', manufacturer=toyotaManufacturer)
-            session.add(toyotaBrand)
+            lexusBrand = Brand(name='Lexus', manufacturer=toyotaManufacturer)
+            session.add(lexusBrand)
             session.commit()
         self.httpClientResponseMock = Response()
         self.httpClientResponseMock.json = MagicMock(return_value={})
         patcher = mock.patch('extractor.common.fetchAndPersist.httpClient.getRequest',
                              return_value=self.httpClientResponseMock)
         self.httpClientMock = patcher.start()
-        self.scraper = ToyotaScraper()
+        self.scraper = LexusScraper()
 
     def tearDown(self) -> None:
         self.container.deleteAll()
         self.httpClientMock.stop()
 
     def test_persist_model_year(self):
-        modelYear = datetime.date(2023, 1, 1)
-        nameToModelInfo = {'GR 86': ModelFetchDto('GR 86', '86', 'http://toyota.com/content.json' ),
-                           'GR Supra': ModelFetchDto('GR Supra', 'supra', 'http://toyota.com/content.json')}
+        modelYear = date(2023, 1, 1)
+        nameToModelInfo = {'LC Convertable': ModelFetchDto('LC Convertable', 'LCCV', 'http://lexus.com/content.json'),
+                           'ES Hybrid': ModelFetchDto('ES Hybrid', 'ESh', 'http://lexus.com/content.json')}
         rawJson = {'Dummy_JSON': True}
         self.httpClientResponseMock.json = MagicMock(return_value=rawJson)
-        with mock.patch('extractor.toyota.test_toyotaScraper.ToyotaScraper._parseModelList',
+        with mock.patch('extractor.toyota.test_LexusScraper.LexusScraper._parseModelList',
                         return_value=nameToModelInfo):
             self.scraper.persistModelYear(modelYear)
         with sessionFactory.newSession() as session:
-            models = modelService.getModelYear(modelYear=modelYear, manufacturerCommon='Toyota', session=session,
+            models = modelService.getModelYear(modelYear=modelYear, manufacturerCommon='Lexus', session=session,
                                                brandName=self.scraper.brand.name)
             for model in models:
                 self.assertIn(model.name, nameToModelInfo.keys())
