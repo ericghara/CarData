@@ -60,7 +60,7 @@ class TestToyotaScraper(TestCase):
         expectedPath = "http://fake.com/content.json"
         expectedModelList = {
             'GR 86': ModelFetchDto(modelName='GR 86', modelCode='86', path=expectedPath)}
-        with mock.patch('extractor.toyota.test_toyotaScraper.ToyotaScraper._createModelDataURL',
+        with mock.patch('extractor.toyota.test_ToyotaScraper.ToyotaScraper._createModelDataURL',
                         return_value=expectedPath):
             self.assertEqual(expectedModelList, self.scraper._parseModelList(modelListJson))
 
@@ -75,7 +75,7 @@ class TestToyotaScraper(TestCase):
                            'GR Supra': ModelFetchDto('GR Supra', 'supra', 'http://toyota.com/content.json')}
         rawJson = {'Dummy_JSON': True}
         expected = {'GR 86': rawJson, 'GR Supra': rawJson}
-        with mock.patch('extractor.toyota.test_toyotaScraper.ToyotaScraper._parseModelList',
+        with mock.patch('extractor.toyota.test_ToyotaScraper.ToyotaScraper._parseModelList',
                         return_value=nameToModelInfo):
             self.httpClientResponseMock.json = MagicMock(return_value=rawJson)
             found = self.scraper._fetchModelYear(datetime.date(2023, 1, 1))
@@ -120,7 +120,7 @@ class IntegrationTestToyotaScraper(TestCase):
                            'GR Supra': ModelFetchDto('GR Supra', 'supra', 'http://toyota.com/content.json')}
         rawJson = {'Dummy_JSON': True}
         self.httpClientResponseMock.json = MagicMock(return_value=rawJson)
-        with mock.patch('extractor.toyota.test_toyotaScraper.ToyotaScraper._parseModelList',
+        with mock.patch('extractor.toyota.test_ToyotaScraper.ToyotaScraper._parseModelList',
                         return_value=nameToModelInfo):
             self.scraper.persistModelYear(modelYear)
         with sessionFactory.newSession() as session:
