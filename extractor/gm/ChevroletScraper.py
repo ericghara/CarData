@@ -12,13 +12,13 @@ class ChevroletScraper(GmScraper):
     def __init__(self, **kwargs):
         super().__init__(brandName=self.BRAND_NAME, domain=self.DOMAIN, kwarges=kwargs)
 
-    def _getModelName(self, modelCode: str) -> str:
-        if (foundModel := self.modelCodeToName.get(modelCode.lower() ) ):
+    def _getModelName(self, bodyStyle: str) -> str:
+        if (foundModel := self.bodyStyleToName.get(bodyStyle.lower())):
             return foundModel
         else:
-            modelName = modelCode.replace('-', " ").capitalize()
+            modelName = bodyStyle.replace('-', " ").capitalize()
             # commercial vehicles most likely to fall through (i.e. Express van)
             if modelName.endswith('hd'): # for trucks and vans
                 modelName = modelName[:-2] + modelName[-2:].upper()
-            logging.info(f"Could not locate {modelCode}. Using model name {modelName}")
+            logging.info(f"Could not locate {bodyStyle}. Using model name {modelName}")
             return modelName

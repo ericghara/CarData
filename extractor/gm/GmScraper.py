@@ -23,7 +23,7 @@ class GmScraper(ModelInfoScraper):
         self.brandName = brandName.lower()
         self.domain = domain
         if not kwargs.get('noInit', False ):
-            self.modelCodeToName = self._getBodyStyleToName()
+            self.bodyStyleToName = self._getBodyStyleToName()
             self.bodyStyleToCarLine = self._getBodyStyleToCarLine()
 
     def _generateModelListUrl(self) -> str:
