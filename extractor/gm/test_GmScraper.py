@@ -1,11 +1,11 @@
 from datetime import date
 from unittest import TestCase, mock
-from unittest.mock import MagicMock, ANY
+from unittest.mock import MagicMock, ANY, Mock
 from uuid import uuid4
 
 from requests import Response
 
-from extractor.gm.GmScraper import GmScraper
+from extractor.gm.GmScraper import GmScraper, CarLineAndBodyStyle, BodyStyleAndName
 from repository.Entities import Brand
 from repository.test_common.mockSessionFactory import MockSessionFactory
 
@@ -56,7 +56,7 @@ class TestGmScraper(TestCase):
         mockToday = date(2022, 1, 1)
         with mock.patch('extractor.gm.GmScraper.date') as mockDate:
             mockDate.today.return_value = mockToday
-            self.scraper._getModelCodeToName()
+            self.scraper._getBodyStyleToName()
         for year in (2022,2023,2021):
             self.httpClientMock.assert_any_call(f'https://www.chevrolet.com/bypass/pcf/vehicle-selector-service/v1/getVehicleInfo/chevrolet/us/b2c/en?requestType=models&year={year}', headers=ANY)
 
@@ -68,5 +68,24 @@ class TestGmScraper(TestCase):
                              'title': 'Bolt EUV'}]}
         self.httpClientResponseMock.json = MagicMock(return_value=json)
         expected = {'blazer': 'Blazer', 'bolt-euv': 'Bolt EUV'}
-        found = self.scraper._getModelCodeToName()
+        found = self.scraper._getBodyStyleToName()
         self.assertEqual(expected, found)
+
+    def test__fetchBodyStylesRaisesWhenNoData(self):
+        ERROR_MSG = "DummyError"
+        with mock.patch('extractor.gm.GmScraper.httpClient.getRequest') as errorClient:
+            errorClient.side_effect = ValueError(ERROR_MSG)
+            # Unfortunately need to distinguish between httpClient throwing a ValueError and _fetchBodyStyles.  So we're
+            # making sure our mock's error is being handled by the _fetchBodyStyles method by testing that ERROR_MSG isn't there
+            self.assertRaisesRegex(ValueError, f"^((?!{ERROR_MSG}).)*$", lambda: self.scraper._fetchBodyStyles(date(2022,1,1) ) )
+
+    def test__fetchBodyStylesReturnsExpected(self):
+        self.scraper._fetchCarLinesAndBodyStyles = Mock(return_value=[CarLineAndBodyStyle("corvette", "corvette z06")])
+        self.scraper._fetchBodyStylesAndNames = Mock(return_value=[BodyStyleAndName("blazar", "Blazar")])
+        # ensure both sources are used to create bodyStyle list (using a hacky monkey patch...)
+        self.assertEqual({"blazar", "corvette z06"}, set(self.scraper._fetchBodyStyles(date(2022,1,1) ) ) )
+
+
+
+
+

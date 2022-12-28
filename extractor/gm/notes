@@ -23,6 +23,7 @@ https://www.chevrolet.com/byo-vc/services/features-specs/comparison/en/US/chevro
 /byo-vc/api/v2/standard-features/en/US/chevrolet/silverado/2022/silverado-3500hd/421102
 
 https://www.chevrolet.com/byo-vc/api/v2/trim-matrix/en/US/chevrolet/spark/2020/spark?postalCode=94102
+# https://www.chevrolet.com/byo-vc/api/v2/trim-matrix/en/US/chevrolet/{carLine}/2020/{bodyStyle}?postalCode={postalCode} note: postal code optional, but prices significantly higher w/o
 https://www.chevrolet.com/byo-vc/services/fullyConfigured/US/en/chevrolet/2022/silverado/silverado-3500hd?postalCode=94102&region=na # seems to provide more info than trim matrix
 
 

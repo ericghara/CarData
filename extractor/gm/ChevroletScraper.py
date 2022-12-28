@@ -1,15 +1,16 @@
 import logging
 
 from extractor.ModelInfoScraper import ModelInfoScraper
+from extractor.gm.GmScraper import GmScraper
 
 
-class ChevroletScraper(ModelInfoScraper):
+class ChevroletScraper(GmScraper):
 
     BRAND_NAME = 'chevrolet'
     DOMAIN = 'https://www.chevrolet.com'
 
-    def __init__(self):
-        pass
+    def __init__(self, **kwargs):
+        super().__init__(brandName=self.BRAND_NAME, domain=self.DOMAIN, kwarges=kwargs)
 
     def _getModelName(self, modelCode: str) -> str:
         if (foundModel := self.modelCodeToName.get(modelCode.lower() ) ):

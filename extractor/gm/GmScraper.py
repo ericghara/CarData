@@ -12,7 +12,7 @@ BodyStyleAndName = namedtuple('BodyStyleAndName', ['bodyStyle', 'name'] )
 
 
 class GmScraper(ModelInfoScraper):
-    BRAND_TO_DOMAIN = {'cadillac': 'https://www.cadillac.com',
+    BRAND_TO_DOMAIN = {'cadillac': 'https://www.cadillac.com',  # this isn't used
                        'buick': 'https://www.buick.com',
                        'chevrolet': 'https://www.chevrolet.com',
                        'gmc': 'https://www.gmc.com'}
@@ -23,7 +23,7 @@ class GmScraper(ModelInfoScraper):
         self.brandName = brandName.lower()
         self.domain = domain
         if not kwargs.get('noInit', False ):
-            self.modelCodeToName = self._getModelCodeToName()
+            self.modelCodeToName = self._getBodyStyleToName()
             self.bodyStyleToCarLine = self._getBodyStyleToCarLine()
 
     def _generateModelListUrl(self) -> str:
@@ -55,8 +55,8 @@ class GmScraper(ModelInfoScraper):
         except RuntimeError:
             raise ValueError(f'Unable to fetch model year {year}.')
         modelYear = res.json().get('options', {})
-        # in gm terminology bodystyle is a specific model in a carline (ie carline: corvette, bodystyle: Corvette
-        # Z06)
+        # in gm terminology bodystyle is a specific model in a carline (ie carline: corvette, bodystyle:
+        # corvette z06)
         stylesAndNames = list()
         for bodyStyle in modelYear:
             code = bodyStyle['code']
@@ -64,7 +64,7 @@ class GmScraper(ModelInfoScraper):
             stylesAndNames.append(BodyStyleAndName(bodyStyle=code, name = name ) )
         return stylesAndNames
 
-    def _getModelCodeToName(self) -> dict:
+    def _getBodyStyleToName(self) -> dict:
         bodyStyleToName = dict()
         # notice iterating future to past
         # The getVehicleInfo api only returns current and previous model year, we look at last, current and next year
@@ -125,4 +125,7 @@ class GmScraper(ModelInfoScraper):
 
 
     def persistModelYear(self, date: 'date') -> None:
+        pass
+
+    def _fetchModelYear(self, date: 'date' ) -> dict[str, dict]:
         pass
