@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 
 from extractor.common.HttpClient import httpClient
@@ -10,21 +11,14 @@ from service.ModelService import modelService
 from service.RawDataService import rawDataService
 
 
+@dataclass
 class ModelFetchDto:
 
-    def __init__(self, modelName: str, modelCode: str, path: str, metadata: Dict[str, str] = None):
+    def __init__(self, modelName: str, modelCode: str, path: str, metadata: Dict = None):
         self.modelName = modelName
         self.modelCode = modelCode
         self.metadata = metadata
         self.path = path
-
-    def __repr__(self) -> str:
-        return f'ModelInfo({self.modelName}, {self.modelCode}, {self.path})'
-
-    def __eq__(self, other) -> bool:
-        if type(self) is not type(other):
-            return False
-        return vars(self) == vars(other)
 
 def _createUnsyncedModelDtos(modelFetchDtosByName: Dict[str, ModelFetchDto], modelYear: datetime.date, brandId: str) -> List[ModelDto]:
     modelDtos = list()

@@ -8,6 +8,7 @@ from requests import Response
 from extractor.gm.GmScraper import GmScraper, CarLineAndBodyStyle, BodyStyleAndName
 from repository.Entities import Brand
 from repository.test_common.mockSessionFactory import MockSessionFactory
+from extractor.common.fetchAndPersist import ModelFetchDto
 
 
 class TestGmScraper(TestCase):
@@ -57,8 +58,10 @@ class TestGmScraper(TestCase):
         with mock.patch('extractor.gm.GmScraper.date') as mockDate:
             mockDate.today.return_value = mockToday
             self.scraper._getBodyStyleToName()
-        for year in (2022,2023,2021):
-            self.httpClientMock.assert_any_call(f'https://www.chevrolet.com/bypass/pcf/vehicle-selector-service/v1/getVehicleInfo/chevrolet/us/b2c/en?requestType=models&year={year}', headers=ANY)
+        for year in (2022, 2023, 2021):
+            self.httpClientMock.assert_any_call(
+                f'https://www.chevrolet.com/bypass/pcf/vehicle-selector-service/v1/getVehicleInfo/chevrolet/us/b2c/en?requestType=models&year={year}',
+                headers=ANY)
 
     def test__getModelCodeToNameCorrectlyParses(self):
         json = {'status': 200,
@@ -77,15 +80,36 @@ class TestGmScraper(TestCase):
             errorClient.side_effect = ValueError(ERROR_MSG)
             # Unfortunately need to distinguish between httpClient throwing a ValueError and _fetchBodyStyles.  So we're
             # making sure our mock's error is being handled by the _fetchBodyStyles method by testing that ERROR_MSG isn't there
-            self.assertRaisesRegex(ValueError, f"^((?!{ERROR_MSG}).)*$", lambda: self.scraper._fetchBodyStyles(date(2022,1,1) ) )
+            self.assertRaisesRegex(ValueError, f"^((?!{ERROR_MSG}).)*$",
+                                   lambda: self.scraper._fetchBodyStyles(date(2022, 1, 1)))
 
     def test__fetchBodyStylesReturnsExpected(self):
-        self.scraper._fetchCarLinesAndBodyStyles = Mock(return_value=[CarLineAndBodyStyle("corvette", "corvette z06")])
+        self.scraper._fetchCarLinesAndBodyStyles = Mock(return_value=[CarLineAndBodyStyle("corvette", "corvette-z06")])
         self.scraper._fetchBodyStylesAndNames = Mock(return_value=[BodyStyleAndName("blazar", "Blazar")])
         # ensure both sources are used to create bodyStyle list (using a hacky monkey patch...)
-        self.assertEqual({"blazar", "corvette z06"}, set(self.scraper._fetchBodyStyles(date(2022,1,1) ) ) )
+        self.assertEqual({"blazar", "corvette-z06"}, set(self.scraper._fetchBodyStyles(date(2022, 1, 1))))
 
+    def test__createModelDataPath(self):
+        expected = "https://www.chevrolet.com/byo-vc/services/fullyConfigured/US/en/chevrolet/2022/silverado/silverado-3500hd?postalCode=94102&region=na"
+        found = self.scraper._createModelDataPath(carLine="silverado", bodyStyle="silverado-3500hd",
+                                                  modelYear=date(2022, 1, 1))
+        self.assertEqual(expected, found)
 
+    def test__createModelFetchDtoReturnsExpected(self):
+        self.scraper.bodyStyleToCarLine = {"corvette-z06": "corvette"}  # note: mutating scraper
+        carLine = "corvette"
+        bodyStyle = "corvette-z06"
+        modelYear = date(2022, 1, 1)
+        expectedPath = "https://www.chevrolet.com/byo-vc/services/fullyConfigured/US/en/chevrolet/2023/corvette/corvette-z06?postalCode=94102&region=na"
+        expectedMetaData = {"metadata": {"bodyStyle": bodyStyle, "carLine": carLine}}
+        found = self.scraper._createModelFetchDto(bodyStyle=bodyStyle, modelName="Corvette Z06", modelYear=modelYear)
+        expected = ModelFetchDto(modelName="Corvette Z06", modelCode="corvette", path=expectedPath,
+                                 metadata=expectedMetaData)
+        self.assertEqual(expected, found)
 
-
-
+    def test__createModelFetchDtoRaisesWhenBodyStyleMissing(self):
+        self.scraper.bodyStyleToCarLine = {"notCorvette-z06": "notCorvette"}  # note: mutating scraper
+        bodyStyle = "corvette-z06"
+        modelYear = date(2022, 1, 1)
+        raises = lambda: self.scraper._createModelFetchDto(bodyStyle=bodyStyle, modelName="Corvette Z06", modelYear=modelYear)
+        self.assertRaises(ValueError, raises)

@@ -5,6 +5,7 @@ from typing import *
 
 from extractor.ModelInfoScraper import ModelInfoScraper
 from extractor.common.HttpClient import httpClient
+from extractor.common.fetchAndPersist import ModelFetchDto
 from repository.Entities import Brand
 
 CarLineAndBodyStyle = namedtuple('CarLineAndBodyStyle', ['carLine', 'bodyStyle'] )
@@ -122,10 +123,39 @@ class GmScraper(ModelInfoScraper):
             raise ValueError(f'Unable to fetch data for model year: {modelYear}')
         return bodyStyles
 
+    def _createModelDataPath(self,  carLine: str, bodyStyle: str, modelYear: date) -> str:
+        # postal code and region query parameters are currently static
+        return f'{self.domain}/byo-vc/services/fullyConfigured/US/en/{self.brandName}/{modelYear.year}/{carLine}/{bodyStyle}?postalCode=94102&region=na'
 
+    def _createModelFetchDto(self, bodyStyle: str, modelName: str, modelYear: date) -> ModelFetchDto:
+        try:
+            carLine = self.bodyStyleToCarLine[bodyStyle]
+        except KeyError as e:
+            raise ValueError(f"Unable to match bodyStyle: {bodyStyle} with a carLine.", e)
+        path = self._createModelDataPath(carLine=carLine, bodyStyle=bodyStyle, modelYear=modelYear)
+        metadata = {"metadata" : { "bodyStyle": {bodyStyle}, "carLine" : {carLine} }}
+        return ModelFetchDto(modelCode=bodyStyle, path=path, metadata=metadata, modelName=modelName)
 
     def persistModelYear(self, date: 'date') -> None:
+        """
+        Extending classes should implement
+        :param date:
+        :return:
+        """
         pass
 
     def _fetchModelYear(self, date: 'date' ) -> dict[str, dict]:
+        """
+        Extending classes should implement
+        :param date:
+        :return:
+        """
+        pass
+
+    def _getModelName(self, bodySyle: str) -> str:
+        """
+        Extending classes should implement
+        :param bodySyle:
+        :return:
+        """
         pass
