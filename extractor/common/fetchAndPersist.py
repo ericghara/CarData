@@ -1,3 +1,5 @@
+import logging
+from collections import namedtuple
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -10,6 +12,8 @@ from typing import *
 from service.ModelService import modelService
 from service.RawDataService import rawDataService
 
+ModelFetchDtoAndModelDto = namedtuple('ModelFetchDtoAndModelDto', ['modelFetchDto', 'modelDto'])
+log = logging.getLogger()
 
 @dataclass
 class ModelFetchDto:
@@ -20,12 +24,8 @@ class ModelFetchDto:
         self.metadata = metadata
         self.path = path
 
-def _createUnsyncedModelDtos(modelFetchDtosByName: Dict[str, ModelFetchDto], modelYear: datetime.date, brandId: str) -> List[ModelDto]:
-    modelDtos = list()
-    for modelInfo in modelFetchDtosByName.values():
-        modelDtos.append(
-            ModelDto(name=modelInfo.modelName, model_year=modelYear, brand_id=brandId))
-    return modelDtos
+def _createUnsyncedModelDto(modelFetchDto: ModelFetchDto, modelYear: datetime.date, brandId: str) -> ModelDto:
+    return ModelDto(name=modelFetchDto.modelName, model_year=modelYear, brand_id=brandId)
 
 def _addMetadata(jsonData: Dict, metadata: Dict) -> None:
     """
@@ -43,7 +43,18 @@ def _addMetadata(jsonData: Dict, metadata: Dict) -> None:
             raise KeyError(f"The jsonData already contains the key {key} with a non-null value")
         jsonData[key] = value
 
-def fetchAndPersist(modelFetchDtosByName: Dict[str,ModelFetchDto], brandId: str, modelYear: datetime.date) -> None:
+def _fetch(modelFetchDtosByName: Dict[str,ModelFetchDto], brandId: str, modelYear: datetime.date) -> List[ModelFetchDtoAndModelDto]:
+    modelFetchAndModel = list()
+    for modelName, fetchDto in modelFetchDtosByName.items():
+        try:
+            rawData = httpClient.getRequest(fetchDto.path).json()
+        except RuntimeError as e:
+            log.info(f"Unable to fetch {fetchDto.modelName}", e.__cause__)
+            continue
+        unsyncedModelDto = _createUnsyncedModelDto(modelFetchDto=fetchDto, modelYear=modelYear, brandId=brandId)
+
+
+def fetchAndPersist(modelFetchDtosByName: Dict[str,ModelFetchDto], brandId: str, modelYear: datetime.date, **kwargs) -> Optional[List[ModelFetchDtoAndModelDto]]:
     """
     Fetches and persists model data.  Fetch parameterized by ``ModelFetchDto``.  ``brandId``, ``modelYear`` and ``modelName``
     (from ``ModelFetchDto``) used to populate ``Model`` entity.  Json fetched from ``path`` provided in ``ModelFetchDto``
@@ -52,6 +63,8 @@ def fetchAndPersist(modelFetchDtosByName: Dict[str,ModelFetchDto], brandId: str,
     :param modelFetchDtosByName:
     :param brandId:
     :param modelYear:
+    :param kwargs: ``noPersist`` : ``False`` persists to database, returns ``None``
+                    ``noPersist`` : ``True`` does not persist to database returns ``List[ModelFetchDtoAndModelDto]``
     :return: ValueError if a key conflict exists between jsonData and metaData (conflicts with null values ignored)
     :raises:
     """
