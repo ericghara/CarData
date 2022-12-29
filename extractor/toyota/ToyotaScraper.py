@@ -48,14 +48,14 @@ class ToyotaScraper(ModelInfoScraper):
     def _getModelName(self, modelCode: str) -> str:
         try:
             modelName = self.modelCodeToName[modelCode]
-            logging.debug(f"Found model code ({modelCode}) in modelCodeToName.")
+            self.log.debug(f"Found model code ({modelCode}) in modelCodeToName.")
         except KeyError:
             if modelCode in self.MODEL_CODES:
                 modelName = self.MODEL_CODES[modelCode]
-                logging.debug(f"Found model code ({modelCode}) in MODEL_CODES.")
+                self.log.debug(f"Found model code ({modelCode}) in MODEL_CODES.")
             else:
                 modelName = modelCode.capitalize()
-                logging.info(f"Couldn't match model code: {modelCode} using {modelName}.")
+                self.log.info(f"Couldn't match model code: {modelCode} using {modelName}.")
         return modelName
 
     def _fetchModelList(self, modelYear: 'datetime.date') -> List[Dict]:
@@ -79,7 +79,7 @@ class ToyotaScraper(ModelInfoScraper):
             subPath = model.get("path", "")
             fullPath = self._createModelDataURL(subPath)
             if modelName in fetchDtoByName:
-                logging.warning(f'Duplicate model: {modelName}, in model year!')
+                self.log.warning(f'Duplicate model: {modelName}, in model year!')
             fetchDtoByName[modelName] = ModelFetchDto(modelCode=modelCode, modelName=modelName, path=fullPath)
         return fetchDtoByName
 

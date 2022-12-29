@@ -63,7 +63,7 @@ class LexusScraper(ModelInfoScraper):
             subPath = model.get("path", "")
             fullPath = self._createModelDataURL(subPath)
             if modelName in fetchDtoByName:
-                logging.warning(f'Duplicate model: {modelName}, in model year!')
+                self.log.warning(f'Duplicate model: {modelName}, in model year!')
             fetchDtoByName[modelName] = ModelFetchDto(modelCode=modelCode, modelName=modelName, path=fullPath)
         return fetchDtoByName
 

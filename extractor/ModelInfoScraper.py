@@ -1,3 +1,4 @@
+import logging
 from typing import *
 from abc import ABC, abstractmethod
 from abc import ABCMeta
@@ -16,6 +17,7 @@ class ModelInfoScraper(ABC):
         super().__init__()
         self.noPersist = kwargs.get('noPersist', False)
         self.brand = self.queryBrandInfo(brand)
+        self.log = logging.getLogger()
 
 
     # When noPersist=False, only required info in brand obj is Name, if brand_id is not null

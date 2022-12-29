@@ -31,7 +31,7 @@ class ChevroletScraper(GmScraper):
                 nameElems[-1] = nameElems[-1][:-2]
                 suffix.append("HD")
             nameElems = [elem.capitalize() for elem in nameElems]
-            logging.info(f"Could not locate {bodyStyle}. Using model name {bodyStyle}")
+            self.log.info(f"Could not locate {bodyStyle}. Using model name {bodyStyle}")
             return " ".join(nameElems+suffix)
 
     def _createAllModelFetchDtos(self, bodyStyles: Iterable[str], modelYear: date) -> List[ModelFetchDto]:
@@ -50,6 +50,11 @@ class ChevroletScraper(GmScraper):
             try:
                 rawDataByModelName[modelFetchDto.modelName] = httpClient.getRequest(modelFetchDto.path).json()
             except RuntimeError as e:
-                logging.info(f"Unable to fetch {modelFetchDto.modelName}", e)
+                self.log.info(f"Unable to fetch {modelFetchDto.modelName}", e.__cause__)
         return rawDataByModelName
+
+    def persistModelYear(self, date: 'date') -> None:
+        ## remember metadata
+        bodyStyles = self._fetchBodyStyles(date)
+
 
