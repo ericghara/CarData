@@ -5,29 +5,24 @@ from uuid import uuid4
 
 from requests import Response
 
+from extractor.common.fetchAndPersist import ModelFetchDto
 from extractor.gm.GmScraper import GmScraper, CarLineAndBodyStyle, BodyStyleAndName
 from repository.Entities import Brand
-from repository.test_common.mockSessionFactory import MockSessionFactory
-from extractor.common.fetchAndPersist import ModelFetchDto
 
 
 class TestGmScraper(TestCase):
 
     def setUp(self) -> None:
         self.brand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name='General Motors')
-        self.sessionFactoryMock = MockSessionFactory()
-        self.patcherSuperBrandService = mock.patch('extractor.ModelInfoScraper.brandService.getBrandByName',
-                                                   return_value=self.brand)
-        self.superBrandServiceMock = self.patcherSuperBrandService.start()
         self.httpClientResponseMock = Response()
         self.httpClientResponseMock.json = MagicMock(return_value={})
         self.patcherHttpClient = mock.patch('extractor.gm.GmScraper.httpClient.getRequest',
                                             return_value=self.httpClientResponseMock)
         self.httpClientMock = self.patcherHttpClient.start()
-        self.scraper = GmScraper('chevrolet', 'https://www.chevrolet.com', noInit=True)
+        self.scraper = GmScraper('chevrolet', 'https://www.chevrolet.com', noInit=True, noPersist=True)
 
     def tearDown(self) -> None:
-        for mockObj in self.patcherSuperBrandService, self.patcherHttpClient:
+        for mockObj in self.patcherHttpClient,:
             if mockObj:
                 mockObj.stop()
         self.scraper = None
@@ -103,7 +98,7 @@ class TestGmScraper(TestCase):
         expectedPath = "https://www.chevrolet.com/byo-vc/services/fullyConfigured/US/en/chevrolet/2023/corvette/corvette-z06?postalCode=94102&region=na"
         expectedMetaData = {"metadata": {"bodyStyle": bodyStyle, "carLine": carLine}}
         found = self.scraper._createModelFetchDto(bodyStyle=bodyStyle, modelName="Corvette Z06", modelYear=modelYear)
-        expected = ModelFetchDto(modelName="Corvette Z06", modelCode="corvette", path=expectedPath,
+        expected = ModelFetchDto(modelName="Corvette Z06", modelCode=carLine, path=expectedPath,
                                  metadata=expectedMetaData)
         self.assertEqual(expected, found)
 
@@ -111,5 +106,6 @@ class TestGmScraper(TestCase):
         self.scraper.bodyStyleToCarLine = {"notCorvette-z06": "notCorvette"}  # note: mutating scraper
         bodyStyle = "corvette-z06"
         modelYear = date(2022, 1, 1)
-        raises = lambda: self.scraper._createModelFetchDto(bodyStyle=bodyStyle, modelName="Corvette Z06", modelYear=modelYear)
+        raises = lambda: self.scraper._createModelFetchDto(bodyStyle=bodyStyle, modelName="Corvette Z06",
+                                                           modelYear=modelYear)
         self.assertRaises(ValueError, raises)

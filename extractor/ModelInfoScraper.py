@@ -38,6 +38,13 @@ class ModelInfoScraper(ABC):
 
     @abstractmethod
     def _fetchModelYear(self, date: 'date' ) -> dict[str, dict]:
+        """
+        A pre-flight method that performs fetch operations for a model year.  Useful for testing
+        and as a 'pre-flight' to make sure that the manufacturer's API(s) haven't changed since
+        the scraper was developed.
+        :param date:
+        :return: Dict consisting of Model Name (as str) and the fetched json data object
+        """
         pass
 
     @abstractmethod

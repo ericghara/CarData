@@ -19,13 +19,17 @@ class GmScraper(ModelInfoScraper):
                        'gmc': 'https://www.gmc.com'}
 
     # kwargs: noInit True/False, for testing doesn't fetch anything to initialize
+    # noPersist: does not look-up database entry for brand
     def __init__(self, brandName: str, domain: str, **kwargs):
-        super().__init__(brand=Brand(name=brandName.capitalize()), kwargs=kwargs)
+        super().__init__(brand=Brand(name=brandName.capitalize()), **kwargs )
         self.brandName = brandName.lower()
         self.domain = domain
         if not kwargs.get('noInit', False ):
             self.bodyStyleToName = self._getBodyStyleToName()
             self.bodyStyleToCarLine = self._getBodyStyleToCarLine()
+        else:
+            self.bodyStyleToName = dict()
+            self.bodyStyleToCarLine = dict()
 
     def _generateModelListUrl(self) -> str:
         # ex: https://www.chevrolet.com/apps/atomic/shoppingLinks.brand=chevrolet.country=US.region=na.language=en.json
@@ -128,6 +132,8 @@ class GmScraper(ModelInfoScraper):
         return f'{self.domain}/byo-vc/services/fullyConfigured/US/en/{self.brandName}/{modelYear.year}/{carLine}/{bodyStyle}?postalCode=94102&region=na'
 
     def _createModelFetchDto(self, bodyStyle: str, modelName: str, modelYear: date) -> ModelFetchDto:
+        if None in (bodyStyle, modelName, modelYear):
+            raise ValueError("Received a null argument.")
         try:
             carLine = self.bodyStyleToCarLine[bodyStyle]
         except KeyError as e:
