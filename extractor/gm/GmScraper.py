@@ -5,7 +5,7 @@ from typing import *
 
 from extractor.ModelInfoScraper import ModelInfoScraper
 from extractor.common.HttpClient import httpClient
-from extractor.common.fetchModelData import ModelFetchDto
+from extractor.common.fetchModelData import ModelFetchDto, ModelDtosAndJsonDataByName
 from repository.Entities import Brand
 
 CarLineAndBodyStyle = namedtuple('CarLineAndBodyStyle', ['carLine', 'bodyStyle'] )
@@ -163,7 +163,7 @@ class GmScraper(ModelInfoScraper):
         """
         pass
 
-    def _fetchModelYear(self, date: 'date' ) -> dict[str, dict]:
+    def _fetchModelYear(self, date: 'date' ) -> ModelDtosAndJsonDataByName:
         """
         Extending classes should implement
         :param date:

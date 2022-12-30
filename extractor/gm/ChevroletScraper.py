@@ -46,7 +46,7 @@ class ChevroletScraper(GmScraper):
 
     def _fetchModelYear(self, modelYear: date) -> ModelDtosAndJsonDataByName:
         bodyStyles = self._fetchBodyStyles(modelYear)
-        modelFetchDtosByName = self._parseModelList(bodyStyles)
+        modelFetchDtosByName = self._createModelFetchDtosByName(bodyStyles=bodyStyles, modelYear=modelYear)
         return fetchModels(modelFetchDtosByName=modelFetchDtosByName, brandId=self.brand.brand_id,
                                                  modelYear=modelYear)
 
@@ -54,4 +54,5 @@ class ChevroletScraper(GmScraper):
         modelDtosAndJsonDataByName = self._fetchModelYear(modelYear)
         persistModels(modelDtos=modelDtosAndJsonDataByName.modelDtos,
                       jsonDataByName=modelDtosAndJsonDataByName.jsonDataByName)
+
 
