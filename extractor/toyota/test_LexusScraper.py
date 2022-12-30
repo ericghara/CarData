@@ -66,17 +66,6 @@ class TestLexusScraper(TestCase):
         expected = 'https://www.lexus.com/config/pub/static/uifm/LEX/NATIONAL/EN/ebd9b27e2cb2f5e2bce935c82b4d4f23c8b83eb1/2023/IS/8579e8c9a2d17551ffd83b9016595bab206bd9fd/content.json'
         self.assertEqual(expected, self.scraper._createModelDataURL(subPath))
 
-    def test__fetchModelYear(self):
-        nameToModelInfo = {'LC Convertable': ModelFetchDto('LC Convertable', 'LCCV', 'http://lexus.com/content.json'),
-                           'ES Hybrid': ModelFetchDto('ES Hybrid', 'ESh', 'http://lexus.com/content.json')}
-        rawJson = {'Dummy_JSON': True}
-        expected = {'LC Convertable': rawJson, 'ES Hybrid': rawJson}
-        with mock.patch('extractor.toyota.test_LexusScraper.LexusScraper._parseModelList',
-                        return_value=nameToModelInfo):
-            self.httpClientResponseMock.json = MagicMock(return_value=rawJson)
-            found = self.scraper._fetchModelYear(date(2023, 1, 1))
-            self.assertEqual(expected, found)
-
 class IntegrationTestToyotaScraper(TestCase):
     container = None
 

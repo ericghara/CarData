@@ -13,5 +13,3 @@ class Model:
         self.name = name
         self.model_year = model_year
         self.brand_id = brand_id
-
-

@@ -13,6 +13,7 @@ from repository.test_common.DbContainer import DbContainer
 from repository.test_common.mockSessionFactory import MockSessionFactory
 from service.ModelService import modelService
 from service.RawDataService import rawDataService
+from repository.dto import Model as ModelDto
 
 
 class TestToyotaScraper(TestCase):
@@ -69,18 +70,6 @@ class TestToyotaScraper(TestCase):
         subPath = '/static/uifm/TOY/NATIONAL/EN/2a6c7dd95b5b81c1dda97a6b985eec703140fd4d/2022/priusprime/1813aacf15413225b2ee3129fe1c9770cbab8bdd'
         expected = 'https://www.toyota.com/config/pub/static/uifm/TOY/NATIONAL/EN/2a6c7dd95b5b81c1dda97a6b985eec703140fd4d/2022/priusprime/1813aacf15413225b2ee3129fe1c9770cbab8bdd/content.json'
         self.assertEqual(expected, self.scraper._createModelDataURL(subPath))
-
-    def test__fetch_model_year(self):
-        nameToModelInfo = {'GR 86': ModelFetchDto('GR 86', '86', 'http://toyota.com/content.json'),
-                           'GR Supra': ModelFetchDto('GR Supra', 'supra', 'http://toyota.com/content.json')}
-        rawJson = {'Dummy_JSON': True}
-        expected = {'GR 86': rawJson, 'GR Supra': rawJson}
-        with mock.patch('extractor.toyota.test_ToyotaScraper.ToyotaScraper._parseModelList',
-                        return_value=nameToModelInfo):
-            self.httpClientResponseMock.json = MagicMock(return_value=rawJson)
-            found = self.scraper._fetchModelYear(datetime.date(2023, 1, 1))
-            self.assertEqual(expected, found)
-
 
 class IntegrationTestToyotaScraper(TestCase):
     container = None
