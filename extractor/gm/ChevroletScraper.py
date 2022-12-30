@@ -1,7 +1,8 @@
 import logging
-from typing import Iterable, List
+from typing import Iterable, List, Dict
 
-from extractor.common.fetchModelData import ModelFetchDto
+from extractor.common.fetchModelData import ModelFetchDto, fetchModels, ModelDtosAndJsonDataByName
+from extractor.common.persistModelData import persistModels
 from extractor.gm.GmScraper import GmScraper
 from datetime import date
 from extractor.common.HttpClient import httpClient
@@ -34,27 +35,23 @@ class ChevroletScraper(GmScraper):
             self.log.info(f"Could not locate {bodyStyle}. Using model name {bodyStyle}")
             return " ".join(nameElems+suffix)
 
-    def _createAllModelFetchDtos(self, bodyStyles: Iterable[str], modelYear: date) -> List[ModelFetchDto]:
+    def _createModelFetchDtosByName(self, bodyStyles: Iterable[str], modelYear: date) -> Dict[str, ModelFetchDto]:
         if not bodyStyles:
             raise ValueError("Received an empty or null bodyStyles argument")
-        dtos = list()
+        dtos = dict()
         for bodyStyle in bodyStyles:
             modelName = self._getModelName(bodyStyle)
-            dtos.append(self._createModelFetchDto(bodyStyle=bodyStyle, modelName=modelName, modelYear=modelYear) )
+            dtos[modelName] = self._createModelFetchDto(bodyStyle=bodyStyle, modelName=modelName, modelYear=modelYear)
         return dtos
 
-    def _fetchModelYear(self, modelYear: date) -> dict[str, dict]:
+    def _fetchModelYear(self, modelYear: date) -> ModelDtosAndJsonDataByName:
         bodyStyles = self._fetchBodyStyles(modelYear)
-        rawDataByModelName = dict()
-        for modelFetchDto in self._createAllModelFetchDtos(bodyStyles=bodyStyles, modelYear=modelYear):
-            try:
-                rawDataByModelName[modelFetchDto.modelName] = httpClient.getRequest(modelFetchDto.path).json()
-            except RuntimeError as e:
-                self.log.info(f"Unable to fetch {modelFetchDto.modelName}", e.__cause__)
-        return rawDataByModelName
+        modelFetchDtosByName = self._parseModelList(bodyStyles)
+        return fetchModels(modelFetchDtosByName=modelFetchDtosByName, brandId=self.brand.brand_id,
+                                                 modelYear=modelYear)
 
-    def persistModelYear(self, date: 'date') -> None:
-        ## remember metadata
-        bodyStyles = self._fetchBodyStyles(date)
-
+    def persistModelYear(self, modelYear: date) -> None:
+        modelDtosAndJsonDataByName = self._fetchModelYear(modelYear)
+        persistModels(modelDtos=modelDtosAndJsonDataByName.modelDtos,
+                      jsonDataByName=modelDtosAndJsonDataByName.jsonDataByName)
 

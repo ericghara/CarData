@@ -41,7 +41,7 @@ class TestChevroletScraper(TestCase):
         expectedMetaData = {"metadata": {"bodyStyle": bodyStyle, "carLine": carLine}}
         expected = [ModelFetchDto(modelName="Corvette Z06", modelCode=carLine, path=expectedPath,
                                   metadata=expectedMetaData)]
-        self.assertEqual(expected, self.scraper._createAllModelFetchDtos(bodyStyles=bodyStyles, modelYear=modelYear))
+        self.assertEqual(expected, self.scraper._createModelFetchDtosByName(bodyStyles=bodyStyles, modelYear=modelYear))
 
     @parameterized.expand([ ("blazer", "Blazer"),
                             ('bolt-euv', 'Bolt EUV'),

@@ -2,6 +2,8 @@ import logging
 from typing import *
 from abc import ABC, abstractmethod
 from abc import ABCMeta
+
+from extractor.common.fetchModelData import ModelDtosAndJsonDataByName
 from repository.Entities import Brand, RawData
 from datetime import date
 from repository.SessionFactory import sessionFactory
@@ -44,13 +46,16 @@ class ModelInfoScraper(ABC):
             raise ValueError(f'Month and day must be January 1st.')
 
     @abstractmethod
-    def _fetchModelYear(self, date: 'date' ) -> dict[str, dict]:
+    def _fetchModelYear(self, date: 'date' ) -> ModelDtosAndJsonDataByName:
         """
-        A pre-flight method that performs fetch operations for a model year.  Useful for testing
-        and as a 'pre-flight' to make sure that the manufacturer's API(s) haven't changed since
-        the scraper was developed.
+        Intended to be used by persist model year.  This should create all ``ModelDto``s and
+        fetch their corresponding JSON model data.  Separation of this method from ``persistModelYear``
+        is intended to allow a *dry-run* before actually running persist model year.
         :param date:
-        :return: Dict consisting of Model Name (as str) and the fetched json data object
+        :return: ``ModelDtosAndJsonDataByName`` tuple.  ``ModelDtos`` are simply a list of ModelDtos.
+        ``JsonDataByName`` is a dictionary that allows the data for a ModelName to be quickly retrieved.
+        This allows a way to associate JsonData with a ModelDto which is more flexible than keeping
+        them as a tuple.
         """
         pass
 

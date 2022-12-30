@@ -6,6 +6,7 @@ from repository.dto import Model as ModelDto
 from service.ModelService import modelService
 from service.RawDataService import rawDataService
 
+
 def persistModels(modelDtos: List[ModelDto], jsonDataByName: Dict[str, Dict]) -> None:
     if not modelDtos or not jsonDataByName:
         raise ValueError("Received a null or empty input")
