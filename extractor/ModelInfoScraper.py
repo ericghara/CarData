@@ -43,19 +43,6 @@ class ModelInfoScraper(ABC):
             # override for manufacturers with multiple releases, ex. semi-annual
             raise ValueError(f'Month and day must be January 1st.')
 
-    def _persist(unsyncedModelDtos: List[Model], jsonDataByName: Dict[str, Dict]) -> None:
-        if not unsyncedModelDtos or not jsonDataByName:
-            raise ValueError("Received a null or empty input")
-        diff = {model.name for model in unsyncedModelDtos}.symmetric_difference(jsonDataByName.keys())
-        if diff:
-            raise ValueError(f"Missing model <-> jsonData relationship for modelName(s): {diff}")
-        with sessionFactory.newSession() as session:
-            session.begin()
-            for syncedModelDto in modelService.upsert(unsyncedModelDtos, session):
-                jsonData = jsonDataByName[syncedModelDto.name]
-                rawDataService.insert(RawData(raw_data=jsonData, model_id=syncedModelDto.model_id), session=session)
-            session.commit()
-
     @abstractmethod
     def _fetchModelYear(self, date: 'date' ) -> dict[str, dict]:
         """

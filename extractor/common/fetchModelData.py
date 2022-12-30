@@ -5,7 +5,6 @@ from datetime import datetime
 from typing import *
 
 from extractor.common.HttpClient import httpClient
-from repository.Entities import RawData
 from repository.dto import Model as ModelDto
 
 log = logging.getLogger()
@@ -44,7 +43,7 @@ def _addMetadata(jsonData: Dict, metadata: Dict) -> None:
         jsonData[key] = value
 
 
-def _fetchJsonData(modelFetchDto: ModelFetchDto) -> Optional[RawData]:
+def _fetchJsonData(modelFetchDto: ModelFetchDto) -> Optional[Dict]:
     try:
         return httpClient.getRequest(modelFetchDto.path).json()
     except RuntimeError as e:

@@ -7,7 +7,9 @@ from repository.SessionFactory import sessionFactory
 from repository.Entities import Manufacturer, Brand
 from requests import Response
 from unittest.mock import MagicMock
-from extractor.common.fetchModelData import ModelFetchDto, fetchAndPersist, _addMetadata, _createUnsyncedModelDtos
+from extractor.common.persistModelData import persistModels
+from repository.dto import Model as ModelDto
+
 import unittest.mock as mock
 
 from service.ModelService import modelService
@@ -35,25 +37,21 @@ class Test(TestCase):
             toyotaBrand = Brand(name='Toyota', brand_id=self.toyotaBrandId, manufacturer=toyotaManufacturer)
             session.add(toyotaBrand)
             session.commit()
-        self.httpClientResponseMock = Response()
-        self.httpClientResponseMock.json = MagicMock(return_value={})
-        patcher = mock.patch('extractor.common.fetchAndPersist.httpClient.getRequest',
-                             return_value=self.httpClientResponseMock)
-        self.httpClientMock = patcher.start()
 
     def tearDown(self) -> None:
         self.container.deleteAll()
-        self.httpClientMock.stop()
 
-    def test_fetch_and_persist(self):
+    def test_persistModels(self):
         modelYear = datetime.date(2023, 1, 1)
-        modelFetchDtosByName = {"Camry": ModelFetchDto(modelName='Camry', modelCode="", path='Camry'),
-                                "Supra": ModelFetchDto(modelName='Supra', modelCode="", path='Supra')}
-        fetchAndPersist(modelFetchDtosByName=modelFetchDtosByName, brandId=self.toyotaBrandId, modelYear=modelYear)
+        modelDtos = [ModelDto(name='Camry', model_year=modelYear, brand_id=self.toyotaBrandId),
+                     ModelDto(name='Supra', model_year=modelYear, brand_id=self.toyotaBrandId)]
+        jsonDataByName = {"Camry" : {"name" : "Camry"}, "Supra" : {"name" : "Supra"} }
+        persistModels(modelDtos=modelDtos, jsonDataByName=jsonDataByName)
         with sessionFactory.newSession() as session:
             models = modelService.getModelYear(brandName='Toyota', manufacturerCommon='Toyota', modelYear=modelYear, session=session)
             self.assertEqual({'Camry','Supra'}, {model.name for model in models}, "Unexpected models found" )
             for model in models:
-                self.assertEqual(1, len(model.raw_data), "Unexpected number of raw_data records per model" )
+                self.assertEqual(1, len(model.raw_data), "Unexpected number of raw_data records per model" ) # assert 1 record per model
+                self.assertEqual(model.name, model.raw_data[0].raw_data["name"]) # assert expected json data
 
 

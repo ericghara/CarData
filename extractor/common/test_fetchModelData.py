@@ -58,14 +58,16 @@ class Test(TestCase):
 
     def test_fetchModelsSuccessfulFetch(self):
         json = {"success": True}
+        metadata = {"metadata": True}
         self.httpClientResponseMock.json.return_value = json
         modelFetchDtosByName = {
-            "ModelName": ModelFetchDto(modelName="CarModel", modelCode="car-model", path="http://www.ericgha.com")}
+            "ModelName": ModelFetchDto(modelName="CarModel", modelCode="car-model", path="http://www.ericgha.com",
+                                       metadata=metadata)}
         modelYear = datetime.date(2022, 1, 1)
         brandId = str(uuid.uuid4())
         expected = ModelDtosAndJsonDataByName(
             modelDtos=[ModelDto(name="ModelName", model_year=modelYear, brand_id=brandId)],
-            jsonDataByName={"ModelName": json})
+            jsonDataByName={"ModelName": {k: v for k, v in [*json.items()] + [*metadata.items()]}})
         found = fetchModels(modelFetchDtosByName=modelFetchDtosByName, brandId=brandId, modelYear=modelYear)
         self.assertEqual(expected, found)
 
@@ -75,6 +77,6 @@ class Test(TestCase):
             "ModelName": ModelFetchDto(modelName="CarModel", modelCode="car-model", path="http://www.ericgha.com")}
         modelYear = datetime.date(2022, 1, 1)
         brandId = str(uuid.uuid4())
-        expected = ModelDtosAndJsonDataByName(modelDtos=list(), jsonDataByName=dict() )
+        expected = ModelDtosAndJsonDataByName(modelDtos=list(), jsonDataByName=dict())
         found = fetchModels(modelFetchDtosByName=modelFetchDtosByName, brandId=brandId, modelYear=modelYear)
         self.assertEqual(expected, found)
