@@ -4,7 +4,8 @@ from typing import *
 
 from extractor.ModelInfoScraper import ModelInfoScraper
 from extractor.common.HttpClient import httpClient
-from extractor.common.fetchModelData import fetchAndPersist, ModelFetchDto
+from extractor.common.fetchModelData import ModelFetchDto, fetchModels
+from extractor.common.persistModelData import persistModels
 from repository.Entities import Brand
 
 
@@ -18,12 +19,11 @@ class ToyotaScraper(ModelInfoScraper):
     #       > _createModelDataUrl
     # _insertModeldata
 
-
     # Model codes that had to be manually matched
     MODEL_CODES = {'86': 'GR 86', 'chr': 'C-HR', 'supra': 'GR Supra', "yaris": "Yaris",
                    "yarishatchback": "Yaris Hatchback", "priusc": "Prius c",
                    'corollaim': 'Corolla iM', 'yarisia': 'Yaris iA', 'yarisliftback': 'Yaris Liftback',
-                   'priusv': 'Prius v', 'priusplugin': 'Prius Plug-in', 'sequoiahybrid' : 'Sequoia Hybrid'}
+                   'priusv': 'Prius v', 'priusplugin': 'Prius Plug-in', 'sequoiahybrid': 'Sequoia Hybrid'}
 
     URL_PREFIX = 'https://www.toyota.com/config/pub'
 
@@ -103,8 +103,7 @@ class ToyotaScraper(ModelInfoScraper):
     def persistModelYear(self, modelYear: 'datetime.date') -> None:
         modelListJson = self._fetchModelList(modelYear)
         modelFetchDtosByName = self._parseModelList(modelListJson)
-        fetchAndPersist(modelFetchDtosByName=modelFetchDtosByName, brandId=self.brand.brand_id, modelYear=modelYear)
-
-
-
-
+        modelDtosAndJsonDataByName = fetchModels(modelFetchDtosByName=modelFetchDtosByName, brandId=self.brand.brand_id,
+                                                 modelYear=modelYear)
+        persistModels(modelDtos=modelDtosAndJsonDataByName.modelDtos,
+                      jsonDataByName=modelDtosAndJsonDataByName.jsonDataByName)

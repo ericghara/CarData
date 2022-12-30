@@ -1,7 +1,8 @@
 import logging
 
 from extractor.ModelInfoScraper import ModelInfoScraper
-from extractor.common.fetchModelData import ModelFetchDto, fetchAndPersist
+from extractor.common.fetchModelData import ModelFetchDto, fetchModels
+from extractor.common.persistModelData import persistModels
 from repository.Entities import Brand, RawData
 from extractor.common.HttpClient import httpClient
 from datetime import date
@@ -9,7 +10,6 @@ from typing import *
 
 
 class LexusScraper(ModelInfoScraper):
-
     URL_PREFIX = 'https://www.lexus.com/config/pub'
 
     # Note this is essentially the same as ToyotaScraper aside from _getModelName function
@@ -26,6 +26,7 @@ class LexusScraper(ModelInfoScraper):
             if modelCode.endswith(matchSuffix):
                 return modelCode[:-1 * len(matchSuffix)] + replaceSuffix
             return None
+
         if len(modelCode) == 2:
             return modelCode
         matchToReplace = {'PHEV': ' PHEV', 'CV': ' Convertable', 'h': ' Hybrid', 'F': ' F', 'C': ' C'}
@@ -76,4 +77,7 @@ class LexusScraper(ModelInfoScraper):
     def persistModelYear(self, modelYear: 'date') -> None:
         modelListJson = self._fetchModelList(modelYear)
         modelFetchDtosByName = self._parseModelList(modelListJson)
-        fetchAndPersist(modelFetchDtosByName=modelFetchDtosByName, brandId=self.brand.brand_id, modelYear=modelYear)
+        modelDtosAndJsonDataByName = fetchModels(modelFetchDtosByName=modelFetchDtosByName, brandId=self.brand.brand_id,
+                                                 modelYear=modelYear)
+        persistModels(modelDtos=modelDtosAndJsonDataByName.modelDtos,
+                      jsonDataByName=modelDtosAndJsonDataByName.jsonDataByName)

@@ -100,7 +100,7 @@ class IntegrationTestToyotaScraper(TestCase):
             session.commit()
         self.httpClientResponseMock = Response()
         self.httpClientResponseMock.json = MagicMock(return_value={})
-        patcher = mock.patch('extractor.common.fetchAndPersist.httpClient.getRequest',
+        patcher = mock.patch('extractor.common.fetchModelData.httpClient.getRequest',
                              return_value=self.httpClientResponseMock)
         self.httpClientMock = patcher.start()
         self.scraper = LexusScraper()
