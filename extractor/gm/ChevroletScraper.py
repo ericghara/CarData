@@ -1,7 +1,7 @@
 import logging
 from typing import Iterable, List
 
-from extractor.common.fetchAndPersist import ModelFetchDto
+from extractor.common.fetchModelData import ModelFetchDto
 from extractor.gm.GmScraper import GmScraper
 from datetime import date
 from extractor.common.HttpClient import httpClient

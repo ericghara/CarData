@@ -7,7 +7,7 @@ from repository.SessionFactory import sessionFactory
 from repository.Entities import Manufacturer, Brand
 from requests import Response
 from unittest.mock import MagicMock
-from extractor.common.fetchAndPersist import ModelFetchDto, fetchAndPersist, _addMetadata, _createUnsyncedModelDtos
+from extractor.common.fetchModelData import ModelFetchDto, fetchAndPersist, _addMetadata, _createUnsyncedModelDtos
 import unittest.mock as mock
 
 from service.ModelService import modelService

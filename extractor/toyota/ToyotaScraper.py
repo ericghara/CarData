@@ -4,7 +4,7 @@ from typing import *
 
 from extractor.ModelInfoScraper import ModelInfoScraper
 from extractor.common.HttpClient import httpClient
-from extractor.common.fetchAndPersist import fetchAndPersist, ModelFetchDto
+from extractor.common.fetchModelData import fetchAndPersist, ModelFetchDto
 from repository.Entities import Brand
 
 

@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, ANY, Mock
 
 from parameterized import parameterized
 
-from extractor.common.fetchAndPersist import ModelFetchDto
+from extractor.common.fetchModelData import ModelFetchDto
 from extractor.gm.ChevroletScraper import ChevroletScraper
 from repository.Entities import Brand
 from repository.test_common.mockSessionFactory import MockSessionFactory

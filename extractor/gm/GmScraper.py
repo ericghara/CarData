@@ -5,7 +5,7 @@ from typing import *
 
 from extractor.ModelInfoScraper import ModelInfoScraper
 from extractor.common.HttpClient import httpClient
-from extractor.common.fetchAndPersist import ModelFetchDto
+from extractor.common.fetchModelData import ModelFetchDto
 from repository.Entities import Brand
 
 CarLineAndBodyStyle = namedtuple('CarLineAndBodyStyle', ['carLine', 'bodyStyle'] )

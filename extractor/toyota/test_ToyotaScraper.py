@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from requests import Response
 
-from extractor.common.fetchAndPersist import ModelFetchDto
+from extractor.common.fetchModelData import ModelFetchDto
 from extractor.toyota.ToyotaScraper import ToyotaScraper
 from repository.Entities import Brand, Manufacturer
 from repository.SessionFactory import sessionFactory

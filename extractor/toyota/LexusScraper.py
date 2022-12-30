@@ -1,7 +1,7 @@
 import logging
 
 from extractor.ModelInfoScraper import ModelInfoScraper
-from extractor.common.fetchAndPersist import ModelFetchDto, fetchAndPersist
+from extractor.common.fetchModelData import ModelFetchDto, fetchAndPersist
 from repository.Entities import Brand, RawData
 from extractor.common.HttpClient import httpClient
 from datetime import date
