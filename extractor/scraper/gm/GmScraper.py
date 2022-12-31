@@ -1,11 +1,10 @@
-import logging
 from collections import namedtuple
 from datetime import date
 from typing import *
 
-from extractor.ModelInfoScraper import ModelInfoScraper
-from extractor.common.HttpClient import httpClient
-from extractor.common.fetchModelData import ModelFetchDto, ModelDtosAndJsonDataByName
+from extractor.scraper.ModelInfoScraper import ModelInfoScraper
+from extractor.scraper.common.HttpClient import httpClient
+from extractor.scraper.common.fetchModelData import ModelFetchDto, ModelDtosAndJsonDataByName
 from repository.Entities import Brand
 
 CarLineAndBodyStyle = namedtuple('CarLineAndBodyStyle', ['carLine', 'bodyStyle'] )

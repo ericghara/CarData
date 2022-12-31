@@ -1,2 +1,1 @@
-import glbls
-glbls = glbls
+

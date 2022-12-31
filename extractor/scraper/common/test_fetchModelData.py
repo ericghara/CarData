@@ -5,9 +5,9 @@ from unittest.mock import MagicMock
 
 from requests import Response
 
-from extractor.common.fetchModelData import _addMetadata, _createUnsyncedModelDto, ModelFetchDto, _fetchJsonData, \
+from extractor.scraper.common.fetchModelData import _addMetadata, _createUnsyncedModelDto, ModelFetchDto, _fetchJsonData, \
     ModelDtosAndJsonDataByName, fetchModels
-from repository.dto import Model as ModelDto, Model
+from repository.dto import Model as ModelDto
 
 
 class Test(TestCase):
@@ -15,7 +15,7 @@ class Test(TestCase):
     def setUp(self) -> None:
         self.httpClientResponseMock = Response()
         self.httpClientResponseMock.json = MagicMock(return_value={})
-        self.patcherHttpClient = mock.patch('extractor.common.fetchModelData.httpClient.getRequest',
+        self.patcherHttpClient = mock.patch('extractor.scraper.common.fetchModelData.httpClient.getRequest',
                                             return_value=self.httpClientResponseMock)
         self.httpClientMock = self.patcherHttpClient.start()
 

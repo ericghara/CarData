@@ -1,12 +1,11 @@
-import json
 from unittest import TestCase, mock
 from datetime import date
-from unittest.mock import MagicMock, ANY, Mock
+from unittest.mock import MagicMock
 
 from parameterized import parameterized
 
-from extractor.common.fetchModelData import ModelFetchDto
-from extractor.gm.ChevroletScraper import ChevroletScraper
+from extractor.scraper.common.fetchModelData import ModelFetchDto
+from extractor.scraper.gm.ChevroletScraper import ChevroletScraper
 from repository.Entities import Brand, Manufacturer
 from repository.SessionFactory import sessionFactory
 from repository.test_common.DbContainer import DbContainer
@@ -25,7 +24,7 @@ class TestChevroletScraper(TestCase):
         self.sessionFactoryMock = MockSessionFactory()
         self.httpClientResponseMock = Response()
         self.httpClientResponseMock.json = MagicMock(return_value={})
-        self.patcherHttpClient = mock.patch('extractor.gm.GmScraper.httpClient.getRequest',
+        self.patcherHttpClient = mock.patch('extractor.scraper.gm.GmScraper.httpClient.getRequest',
                                             return_value=self.httpClientResponseMock)
         self.httpClientMock = self.patcherHttpClient.start()
         self.scraper = ChevroletScraper(noInit=True, noPersist=True)
@@ -97,7 +96,7 @@ class IntegrationTestChevroletScraper(TestCase):
             session.commit()
         self.httpClientResponseMock = Response()
         self.httpClientResponseMock.json = MagicMock(return_value={})
-        patcher = mock.patch('extractor.common.fetchModelData.httpClient.getRequest',
+        patcher = mock.patch('extractor.scraper.common.fetchModelData.httpClient.getRequest',
                              return_value=self.httpClientResponseMock)
         self.httpClientMock = patcher.start()
         self.scraper = ChevroletScraper(noInit=True)

@@ -1,10 +1,8 @@
-import logging
-
-from extractor.ModelInfoScraper import ModelInfoScraper
-from extractor.common.fetchModelData import ModelFetchDto, fetchModels
-from extractor.common.persistModelData import persistModels
-from repository.Entities import Brand, RawData
-from extractor.common.HttpClient import httpClient
+from extractor.scraper.ModelInfoScraper import ModelInfoScraper
+from extractor.scraper.common.fetchModelData import ModelFetchDto, fetchModels
+from persister.persistModelData import persistModels
+from repository.Entities import Brand
+from extractor.scraper.common.HttpClient import httpClient
 from datetime import date
 from typing import *
 

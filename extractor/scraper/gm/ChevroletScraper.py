@@ -1,11 +1,10 @@
-import logging
-from typing import Iterable, List, Dict
+from typing import Iterable, Dict
 
-from extractor.common.fetchModelData import ModelFetchDto, fetchModels, ModelDtosAndJsonDataByName
-from extractor.common.persistModelData import persistModels
-from extractor.gm.GmScraper import GmScraper
+from extractor.scraper.common.fetchModelData import ModelFetchDto, fetchModels, ModelDtosAndJsonDataByName
+from persister.persistModelData import persistModels
+from extractor.scraper.gm.GmScraper import GmScraper
 from datetime import date
-from extractor.common.HttpClient import httpClient
+
 
 class ChevroletScraper(GmScraper):
 

@@ -1,5 +1,5 @@
 import glbls
-glbls = glbls
+
 
 
 

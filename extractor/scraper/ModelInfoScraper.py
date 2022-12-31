@@ -1,21 +1,16 @@
 import logging
-from typing import *
 from abc import ABC, abstractmethod
-from abc import ABCMeta
 
-from extractor.common.fetchModelData import ModelDtosAndJsonDataByName
-from repository.Entities import Brand, RawData
+from extractor.scraper.common.fetchModelData import ModelDtosAndJsonDataByName
+from repository.Entities import Brand
 from datetime import date
 from repository.SessionFactory import sessionFactory
-from repository.dto import Model
 from service.BrandService import brandService
 
 
 # kwargs:
 #   - noPersist: True/False
 #       for testing, don't check that provided brand is a valid db record
-from service.ModelService import modelService
-from service.RawDataService import rawDataService
 
 
 class ModelInfoScraper(ABC):

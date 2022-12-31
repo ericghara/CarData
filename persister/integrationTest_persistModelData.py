@@ -5,12 +5,8 @@ from uuid import uuid4
 from repository.test_common.DbContainer import DbContainer
 from repository.SessionFactory import sessionFactory
 from repository.Entities import Manufacturer, Brand
-from requests import Response
-from unittest.mock import MagicMock
-from extractor.common.persistModelData import persistModels
+from persister.persistModelData import persistModels
 from repository.dto import Model as ModelDto
-
-import unittest.mock as mock
 
 from service.ModelService import modelService
 

@@ -1,20 +1,18 @@
 import datetime
-import json
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
 from uuid import uuid4
 
 from requests import Response
 
-from extractor.common.fetchModelData import ModelFetchDto
-from extractor.toyota.ToyotaScraper import ToyotaScraper
+from extractor.scraper.common.fetchModelData import ModelFetchDto
+from extractor.scraper.toyota.ToyotaScraper import ToyotaScraper
 from repository.Entities import Brand, Manufacturer
 from repository.SessionFactory import sessionFactory
 from repository.test_common.DbContainer import DbContainer
 from repository.test_common.mockSessionFactory import MockSessionFactory
 from service.ModelService import modelService
 from service.RawDataService import rawDataService
-from repository.dto import Model as ModelDto
 
 
 class TestToyotaScraper(TestCase):
@@ -22,11 +20,11 @@ class TestToyotaScraper(TestCase):
     def setUp(self) -> None:
         self.brand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name='Toyota')
         self.sessionFactoryMock = MockSessionFactory()
-        self.patcherSuperBrandService = mock.patch('extractor.ModelInfoScraper.brandService.getBrandByName', return_value=self.brand)
+        self.patcherSuperBrandService = mock.patch('extractor.scraper.ModelInfoScraper.brandService.getBrandByName', return_value=self.brand)
         self.superBrandServiceMock = self.patcherSuperBrandService.start()
         self.httpClientResponseMock = Response()
         self.httpClientResponseMock.json = MagicMock(return_value={})
-        self.patcherHttpClient = mock.patch('extractor.toyota.ToyotaScraper.httpClient.getRequest',
+        self.patcherHttpClient = mock.patch('extractor.scraper.toyota.ToyotaScraper.httpClient.getRequest',
                              return_value=self.httpClientResponseMock)
         self.httpClientMock = self.patcherHttpClient.start()
         self.scraper = ToyotaScraper()
@@ -62,7 +60,7 @@ class TestToyotaScraper(TestCase):
         expectedPath = "http://fake.com/content.json"
         expectedModelList = {
             'GR 86': ModelFetchDto(modelName='GR 86', modelCode='86', path=expectedPath)}
-        with mock.patch('extractor.toyota.test_ToyotaScraper.ToyotaScraper._createModelDataURL',
+        with mock.patch('extractor.scraper.toyota.test_ToyotaScraper.ToyotaScraper._createModelDataURL',
                         return_value=expectedPath):
             self.assertEqual(expectedModelList, self.scraper._parseModelList(modelListJson))
 
@@ -95,7 +93,7 @@ class IntegrationTestToyotaScraper(TestCase):
             session.commit()
         self.httpClientResponseMock = Response()
         self.httpClientResponseMock.json = MagicMock(return_value={})
-        patcher = mock.patch('extractor.common.fetchModelData.httpClient.getRequest',
+        patcher = mock.patch('extractor.scraper.common.fetchModelData.httpClient.getRequest',
                              return_value=self.httpClientResponseMock)
         self.httpClientMock = patcher.start()
         self.scraper = ToyotaScraper()
@@ -110,7 +108,7 @@ class IntegrationTestToyotaScraper(TestCase):
                            'GR Supra': ModelFetchDto('GR Supra', 'supra', 'http://toyota.com/content.json')}
         rawJson = {'Dummy_JSON': True}
         self.httpClientResponseMock.json = MagicMock(return_value=rawJson)
-        with mock.patch('extractor.toyota.test_ToyotaScraper.ToyotaScraper._parseModelList',
+        with mock.patch('extractor.scraper.toyota.test_ToyotaScraper.ToyotaScraper._parseModelList',
                         return_value=nameToModelInfo):
             self.scraper.persistModelYear(modelYear)
         with sessionFactory.newSession() as session:

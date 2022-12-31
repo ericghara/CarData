@@ -1,11 +1,10 @@
 import datetime
-import logging
 from typing import *
 
-from extractor.ModelInfoScraper import ModelInfoScraper
-from extractor.common.HttpClient import httpClient
-from extractor.common.fetchModelData import ModelFetchDto, fetchModels, ModelDtosAndJsonDataByName
-from extractor.common.persistModelData import persistModels
+from extractor.scraper.ModelInfoScraper import ModelInfoScraper
+from extractor.scraper.common.HttpClient import httpClient
+from extractor.scraper.common.fetchModelData import ModelFetchDto, fetchModels, ModelDtosAndJsonDataByName
+from persister.persistModelData import persistModels
 from repository.Entities import Brand
 
 

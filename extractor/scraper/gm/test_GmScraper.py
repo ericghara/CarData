@@ -5,8 +5,8 @@ from uuid import uuid4
 
 from requests import Response
 
-from extractor.common.fetchModelData import ModelFetchDto
-from extractor.gm.GmScraper import GmScraper, CarLineAndBodyStyle, BodyStyleAndName
+from extractor.scraper.common.fetchModelData import ModelFetchDto
+from extractor.scraper.gm.GmScraper import GmScraper, CarLineAndBodyStyle, BodyStyleAndName
 from repository.Entities import Brand
 
 
@@ -16,7 +16,7 @@ class TestGmScraper(TestCase):
         self.brand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name='General Motors')
         self.httpClientResponseMock = Response()
         self.httpClientResponseMock.json = MagicMock(return_value={})
-        self.patcherHttpClient = mock.patch('extractor.gm.GmScraper.httpClient.getRequest',
+        self.patcherHttpClient = mock.patch('extractor.scraper.gm.GmScraper.httpClient.getRequest',
                                             return_value=self.httpClientResponseMock)
         self.httpClientMock = self.patcherHttpClient.start()
         self.scraper = GmScraper('chevrolet', 'https://www.chevrolet.com', noInit=True, noPersist=True)
@@ -50,7 +50,7 @@ class TestGmScraper(TestCase):
 
     def test__getModelCodeToNameCorrectURL(self):
         mockToday = date(2022, 1, 1)
-        with mock.patch('extractor.gm.GmScraper.date') as mockDate:
+        with mock.patch('extractor.scraper.gm.GmScraper.date') as mockDate:
             mockDate.today.return_value = mockToday
             self.scraper._getBodyStyleToName()
         for year in (2022, 2023, 2021):
@@ -71,7 +71,7 @@ class TestGmScraper(TestCase):
 
     def test__fetchBodyStylesRaisesWhenNoData(self):
         ERROR_MSG = "DummyError"
-        with mock.patch('extractor.gm.GmScraper.httpClient.getRequest') as errorClient:
+        with mock.patch('extractor.scraper.gm.GmScraper.httpClient.getRequest') as errorClient:
             errorClient.side_effect = ValueError(ERROR_MSG)
             # Unfortunately need to distinguish between httpClient throwing a ValueError and _fetchBodyStyles.  So we're
             # making sure our mock's error is being handled by the _fetchBodyStyles method by testing that ERROR_MSG isn't there

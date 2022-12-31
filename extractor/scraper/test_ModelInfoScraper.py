@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from extractor.ModelInfoScraper import ModelInfoScraper
+from extractor.scraper.ModelInfoScraper import ModelInfoScraper
 from repository.Entities import Brand, RawData
 from unittest import mock
 from typing import *
@@ -26,21 +26,21 @@ class TestModelInfoScraper(TestCase):
 
     def test_queryBrandInfoNormalNoBrandId(self):
         fetchedBrand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name=self.testBrand.name)
-        with mock.patch('extractor.ModelInfoScraper.brandService.getBrandByName', return_value=fetchedBrand ):
+        with mock.patch('extractor.scraper.ModelInfoScraper.brandService.getBrandByName', return_value=fetchedBrand ):
             testScraper = TestScraper(self.testBrand)
             self.assertEqual(testScraper.brand, fetchedBrand)
 
     def test_queryBrandInfoNormalBrandIdMatches(self):
         brand = Brand(name='Test Brand', brand_id=uuid4() )
         fetchedBrand = Brand(brand_id=brand.brand_id, manufacturer_id=uuid4(), name=self.testBrand.name)
-        with mock.patch('extractor.ModelInfoScraper.brandService.getBrandByName', return_value=fetchedBrand):
+        with mock.patch('extractor.scraper.ModelInfoScraper.brandService.getBrandByName', return_value=fetchedBrand):
             testScraper = TestScraper(brand)
             self.assertEqual(testScraper.brand, fetchedBrand)
 
     def test_queryBrandInfoNormalBrandIdMisMatch(self):
         brand = Brand(name='Test Brand', brand_id=uuid4() )
         fetchedBrand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name=self.testBrand.name)
-        with mock.patch('extractor.ModelInfoScraper.brandService.getBrandByName', return_value=fetchedBrand):
+        with mock.patch('extractor.scraper.ModelInfoScraper.brandService.getBrandByName', return_value=fetchedBrand):
             self.assertRaises(ValueError, lambda: TestScraper(brand) )
 
     def test__validateModelYearDoesNotRaise(self):
