@@ -23,6 +23,7 @@ class DbContainer:
         sessionFactory.purgeEngine()
 
     def stop(self) -> None:
+        sessionFactory.purgeEngine()
         self.postgresContainer.stop()
 
     def initTables(self) -> None:

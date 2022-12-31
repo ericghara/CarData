@@ -1,4 +1,5 @@
 import datetime
+import json
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
 from uuid import uuid4
@@ -82,7 +83,7 @@ class IntegrationTestToyotaScraper(TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.container.stop()
+              cls.container.stop() 
 
     def setUp(self) -> None:
         with sessionFactory.newSession() as session:

@@ -18,7 +18,7 @@ class TestBrandService(TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.container.stop()
+              cls.container.stop() 
 
     def setUp(self) -> None:
         self.container.insetTestRecords()

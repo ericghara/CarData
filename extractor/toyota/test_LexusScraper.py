@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, date
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
@@ -77,7 +78,7 @@ class IntegrationTestToyotaScraper(TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.container.stop()
+              cls.container.stop() 
 
     def setUp(self) -> None:
         with sessionFactory.newSession() as session:
@@ -108,7 +109,7 @@ class IntegrationTestToyotaScraper(TestCase):
                         return_value=nameToModelInfo):
             self.scraper.persistModelYear(modelYear)
         with sessionFactory.newSession() as session:
-            models = modelService.getModelYear(modelYear=modelYear, manufacturerCommon='Lexus', session=session,
+            models = modelService.getModelYear(modelYear=modelYear, manufacturerCommon='Toyota', session=session,
                                                brandName=self.scraper.brand.name)
             for model in models:
                 self.assertIn(model.name, nameToModelInfo.keys())

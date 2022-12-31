@@ -15,12 +15,10 @@ ModelDtosAndJsonDataByName = namedtuple('ModelDtosAndJsonDataByName', ['modelDto
 @dataclass
 class ModelFetchDto:
 
-    def __init__(self, modelName: str, modelCode: str, path: str, metadata: Dict = None):
-        self.modelName = modelName
-        self.modelCode = modelCode
-        self.metadata = metadata
-        self.path = path
-
+    modelName: str
+    modelCode: str
+    path: str
+    metadata: Dict = None
 
 def _createUnsyncedModelDto(modelFetchDto: ModelFetchDto, modelYear: datetime.date, brandId: str) -> ModelDto:
     return ModelDto(name=modelFetchDto.modelName, model_year=modelYear, brand_id=brandId)
@@ -47,7 +45,8 @@ def _fetchJsonData(modelFetchDto: ModelFetchDto) -> Optional[Dict]:
     try:
         return httpClient.getRequest(modelFetchDto.path).json()
     except RuntimeError as e:
-        log.info(f"Unable to fetch {modelFetchDto.modelName}", e.__cause__)
+        log.info(f"Unable to fetch {modelFetchDto.modelName}")
+        log.debug(e.__cause__)
         return None
 
 

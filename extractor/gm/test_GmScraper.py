@@ -107,10 +107,10 @@ class TestGmScraper(TestCase):
         carLine = "corvette"
         bodyStyle = "corvette-z06"
         modelYear = date(2022, 1, 1)
-        expectedPath = "https://www.chevrolet.com/byo-vc/services/fullyConfigured/US/en/chevrolet/2023/corvette/corvette-z06?postalCode=94102&region=na"
+        expectedPath = "https://www.chevrolet.com/byo-vc/api/v2/trim-matrix/en/US/chevrolet/corvette/2022/corvette-z06?postalCode=94102"
         expectedMetaData = {"metadata": {"bodyStyle": bodyStyle, "carLine": carLine}}
         found = self.scraper._createModelFetchDto(bodyStyle=bodyStyle, modelName="Corvette Z06", modelYear=modelYear)
-        expected = ModelFetchDto(modelName="Corvette Z06", modelCode=carLine, path=expectedPath,
+        expected = ModelFetchDto(modelName="Corvette Z06", modelCode=bodyStyle, path=expectedPath,
                                  metadata=expectedMetaData)
         self.assertEqual(expected, found)
 

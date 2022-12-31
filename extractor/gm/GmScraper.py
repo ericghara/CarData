@@ -152,7 +152,7 @@ class GmScraper(ModelInfoScraper):
         except KeyError as e:
             raise ValueError(f"Unable to match bodyStyle: {bodyStyle} with a carLine.", e)
         path = self._createModelDataPath(carLine=carLine, bodyStyle=bodyStyle, modelYear=modelYear)
-        metadata = {"metadata" : { "bodyStyle": {bodyStyle}, "carLine" : {carLine} }}
+        metadata = {"metadata" : { "bodyStyle": bodyStyle, "carLine" : carLine }}
         return ModelFetchDto(modelCode=bodyStyle, path=path, metadata=metadata, modelName=modelName)
 
     def persistModelYear(self, date: 'date') -> None:

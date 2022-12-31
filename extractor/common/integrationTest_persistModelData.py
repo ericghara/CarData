@@ -45,13 +45,13 @@ class Test(TestCase):
         modelYear = datetime.date(2023, 1, 1)
         modelDtos = [ModelDto(name='Camry', model_year=modelYear, brand_id=self.toyotaBrandId),
                      ModelDto(name='Supra', model_year=modelYear, brand_id=self.toyotaBrandId)]
-        jsonDataByName = {"Camry" : {"name" : "Camry"}, "Supra" : {"name" : "Supra"} }
+        jsonDataByName = {"Camry": {"name": "Camry"}, "Supra": {"name": "Supra"}}
         persistModels(modelDtos=modelDtos, jsonDataByName=jsonDataByName)
         with sessionFactory.newSession() as session:
-            models = modelService.getModelYear(brandName='Toyota', manufacturerCommon='Toyota', modelYear=modelYear, session=session)
-            self.assertEqual({'Camry','Supra'}, {model.name for model in models}, "Unexpected models found" )
+            models = modelService.getModelYear(brandName='Toyota', manufacturerCommon='Toyota', modelYear=modelYear,
+                                               session=session)
+            self.assertEqual({'Camry', 'Supra'}, {model.name for model in models}, "Unexpected models found")
             for model in models:
-                self.assertEqual(1, len(model.raw_data), "Unexpected number of raw_data records per model" ) # assert 1 record per model
-                self.assertEqual(model.name, model.raw_data[0].raw_data["name"]) # assert expected json data
-
-
+                self.assertEqual(1, len(model.raw_data),
+                                 "Unexpected number of raw_data records per model")  # assert 1 record per model
+                self.assertEqual(model.name, model.raw_data[0].raw_data["name"])  # assert expected json data

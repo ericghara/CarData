@@ -61,7 +61,7 @@ class Test(TestCase):
         metadata = {"metadata": True}
         self.httpClientResponseMock.json.return_value = json
         modelFetchDtosByName = {
-            "ModelName": ModelFetchDto(modelName="CarModel", modelCode="car-model", path="http://www.ericgha.com",
+            "ModelName": ModelFetchDto(modelName="ModelName", modelCode="car-model", path="http://www.ericgha.com",
                                        metadata=metadata)}
         modelYear = datetime.date(2022, 1, 1)
         brandId = str(uuid.uuid4())

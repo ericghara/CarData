@@ -28,14 +28,14 @@ class TestModelInfoScraper(TestCase):
         fetchedBrand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name=self.testBrand.name)
         with mock.patch('extractor.ModelInfoScraper.brandService.getBrandByName', return_value=fetchedBrand ):
             testScraper = TestScraper(self.testBrand)
-            self.assertEquals(testScraper.brand, fetchedBrand)
+            self.assertEqual(testScraper.brand, fetchedBrand)
 
     def test_queryBrandInfoNormalBrandIdMatches(self):
         brand = Brand(name='Test Brand', brand_id=uuid4() )
         fetchedBrand = Brand(brand_id=brand.brand_id, manufacturer_id=uuid4(), name=self.testBrand.name)
         with mock.patch('extractor.ModelInfoScraper.brandService.getBrandByName', return_value=fetchedBrand):
             testScraper = TestScraper(brand)
-            self.assertEquals(testScraper.brand, fetchedBrand)
+            self.assertEqual(testScraper.brand, fetchedBrand)
 
     def test_queryBrandInfoNormalBrandIdMisMatch(self):
         brand = Brand(name='Test Brand', brand_id=uuid4() )

@@ -1,3 +1,4 @@
+import json
 from unittest import TestCase, mock
 from datetime import date
 from unittest.mock import MagicMock, ANY, Mock
@@ -43,9 +44,9 @@ class TestChevroletScraper(TestCase):
         bodyStyle = "corvette-z06"
         modelName = "Corvette Z06"
         modelYear = date(2022, 1, 1)
-        expectedPath = "https://www.chevrolet.com/byo-vc/services/fullyConfigured/US/en/chevrolet/2023/corvette/corvette-z06?postalCode=94102&region=na"
+        expectedPath = "https://www.chevrolet.com/byo-vc/api/v2/trim-matrix/en/US/chevrolet/corvette/2022/corvette-z06?postalCode=94102"
         expectedMetaData = {"metadata": {"bodyStyle": bodyStyle, "carLine": carLine}}
-        expected = {modelName : ModelFetchDto(modelName=modelName, modelCode=carLine, path=expectedPath,
+        expected = {modelName : ModelFetchDto(modelName=modelName, modelCode=bodyStyle, path=expectedPath,
                                   metadata=expectedMetaData)}
         self.assertEqual(expected, self.scraper._createModelFetchDtosByName(bodyStyles=bodyStyles, modelYear=modelYear))
 
@@ -84,12 +85,12 @@ class IntegrationTestChevroletScraper(TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.container.stop()
+              cls.container.stop() 
 
     def setUp(self) -> None:
         with sessionFactory.newSession() as session:
             # manufacturer
-            GmManufacturer = Manufacturer(official_name='General Motors Company', common_name='General Motors')
+            GmManufacturer = Manufacturer(official_name='General Motors Company', common_name='GM')
             session.add(GmManufacturer)
             chevroletBrand = Brand(name='Chevrolet', manufacturer=GmManufacturer)
             session.add(chevroletBrand)
@@ -118,7 +119,7 @@ class IntegrationTestChevroletScraper(TestCase):
         self.httpClientResponseMock.json = MagicMock(return_value=rawJson)
         self.scraper.persistModelYear(modelYear)
         with sessionFactory.newSession() as session:
-            models = modelService.getModelYear(modelYear=modelYear, manufacturerCommon='Toyota', session=session,
+            models = modelService.getModelYear(modelYear=modelYear, manufacturerCommon='GM', session=session,
                                                brandName=self.scraper.brand.name)
             for model in models:
                 self.assertIn(model.name, self.scraper._fetchBodyStyles.return_value)
