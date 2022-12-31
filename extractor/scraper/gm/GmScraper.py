@@ -162,7 +162,7 @@ class GmScraper(ModelInfoScraper):
         """
         pass
 
-    def _fetchModelYear(self, date: 'date' ) -> ModelDtosAndJsonDataByName:
+    def fetchModelYear(self, date: 'date') -> ModelDtosAndJsonDataByName:
         """
         Extending classes should implement
         :param date:

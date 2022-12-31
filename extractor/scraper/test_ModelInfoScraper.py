@@ -13,7 +13,7 @@ class TestScraper(ModelInfoScraper):
     def __init__(self, brand: 'Brand', **kwargs):
         super().__init__(brand, **kwargs)
 
-    def _fetchModelYear(self, date: 'datetime.date' ) -> List['RawData']:
+    def fetchModelYear(self, date: 'datetime.date') -> List['RawData']:
         return list()
 
     def persistModelYear(self, date: 'datetime.date') -> None:

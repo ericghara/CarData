@@ -5,7 +5,7 @@ from uuid import uuid4
 from repository.test_common.DbContainer import DbContainer
 from repository.SessionFactory import sessionFactory
 from repository.Entities import Manufacturer, Brand
-from persister.persistModelData import persistModels
+from extractor.Extractor import persistModels
 from repository.dto import Model as ModelDto
 
 from service.ModelService import modelService

@@ -1,7 +1,7 @@
 from typing import Iterable, Dict
 
 from extractor.scraper.common.fetchModelData import ModelFetchDto, fetchModels, ModelDtosAndJsonDataByName
-from persister.persistModelData import persistModels
+from extractor.Extractor import persistModels
 from extractor.scraper.gm.GmScraper import GmScraper
 from datetime import date
 
@@ -43,14 +43,14 @@ class ChevroletScraper(GmScraper):
             dtos[modelName] = self._createModelFetchDto(bodyStyle=bodyStyle, modelName=modelName, modelYear=modelYear)
         return dtos
 
-    def _fetchModelYear(self, modelYear: date) -> ModelDtosAndJsonDataByName:
+    def fetchModelYear(self, modelYear: date) -> ModelDtosAndJsonDataByName:
         bodyStyles = self._fetchBodyStyles(modelYear)
         modelFetchDtosByName = self._createModelFetchDtosByName(bodyStyles=bodyStyles, modelYear=modelYear)
         return fetchModels(modelFetchDtosByName=modelFetchDtosByName, brandId=self.brand.brand_id,
                                                  modelYear=modelYear)
 
     def persistModelYear(self, modelYear: date) -> None:
-        modelDtosAndJsonDataByName = self._fetchModelYear(modelYear)
+        modelDtosAndJsonDataByName = self.fetchModelYear(modelYear)
         persistModels(modelDtos=modelDtosAndJsonDataByName.modelDtos,
                       jsonDataByName=modelDtosAndJsonDataByName.jsonDataByName)
 

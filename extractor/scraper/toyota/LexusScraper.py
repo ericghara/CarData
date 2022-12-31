@@ -1,6 +1,6 @@
 from extractor.scraper.ModelInfoScraper import ModelInfoScraper
 from extractor.scraper.common.fetchModelData import ModelFetchDto, fetchModels
-from persister.persistModelData import persistModels
+from extractor.Extractor import persistModels
 from repository.Entities import Brand
 from extractor.scraper.common.HttpClient import httpClient
 from datetime import date
@@ -66,7 +66,7 @@ class LexusScraper(ModelInfoScraper):
             fetchDtoByName[modelName] = ModelFetchDto(modelCode=modelCode, modelName=modelName, path=fullPath)
         return fetchDtoByName
 
-    def _fetchModelYear(self, modelYear: 'date') -> dict[str, dict]:
+    def fetchModelYear(self, modelYear: 'date') -> dict[str, dict]:
         modelListJson = self._fetchModelList(modelYear)
         nameToModelInfo = self._parseModelList(modelListJson)
         return {modelName: httpClient.getRequest(modelInfo.path).json() for modelName, modelInfo in

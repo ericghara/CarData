@@ -4,7 +4,7 @@ from typing import *
 from extractor.scraper.ModelInfoScraper import ModelInfoScraper
 from extractor.scraper.common.HttpClient import httpClient
 from extractor.scraper.common.fetchModelData import ModelFetchDto, fetchModels, ModelDtosAndJsonDataByName
-from persister.persistModelData import persistModels
+from extractor.Extractor import persistModels
 from repository.Entities import Brand
 
 
@@ -93,13 +93,13 @@ class ToyotaScraper(ModelInfoScraper):
     # Fetches raw data for a model year without persisting
     # For testing and to perform a general "dry run"
     # A map of the model name to raw data json is returned
-    def _fetchModelYear(self, modelYear: 'datetime.date') -> ModelDtosAndJsonDataByName:
+    def fetchModelYear(self, modelYear: 'datetime.date') -> ModelDtosAndJsonDataByName:
         modelListJson = self._fetchModelList(modelYear)
         modelFetchDtosByName = self._parseModelList(modelListJson)
         return fetchModels(modelFetchDtosByName=modelFetchDtosByName, brandId=self.brand.brand_id,
                                                  modelYear=modelYear)
 
     def persistModelYear(self, modelYear: 'datetime.date') -> None:
-        modelDtosAndJsonDataByName = self._fetchModelYear(modelYear)
+        modelDtosAndJsonDataByName = self.fetchModelYear(modelYear)
         persistModels(modelDtos=modelDtosAndJsonDataByName.modelDtos,
                       jsonDataByName=modelDtosAndJsonDataByName.jsonDataByName)

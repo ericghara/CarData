@@ -15,12 +15,12 @@ from service.BrandService import brandService
 
 class ModelInfoScraper(ABC):
 
-    def __init__(self, brand: 'Brand', **kwargs):
+    def __init__(self, brandName: str, manufacurerCommon: str, **kwargs):
         super().__init__()
         self.noPersist = kwargs.get('noPersist', False)
-        self.brand = self._queryBrandInfo(brand)
+        self.brandName = brandName
+        self.manufacturerCommon = manufacurerCommon
         self.log = logging.getLogger()
-
 
     # When noPersist=False, only required info in brand obj is Name, if brand_id is not null
     # the provided brand_id will be validated against the fetched brand
@@ -40,8 +40,14 @@ class ModelInfoScraper(ABC):
             # override for manufacturers with multiple releases, ex. semi-annual
             raise ValueError(f'Month and day must be January 1st.')
 
+    def getBrandName(self) -> str:
+        return self.brandName
+
+    def getManufacturerCommon(self) -> str:
+        return self.manufacturerCommon
+
     @abstractmethod
-    def _fetchModelYear(self, date: 'date' ) -> ModelDtosAndJsonDataByName:
+    def fetchModelYear(self, date: 'date') -> ModelDtosAndJsonDataByName:
         """
         Intended to be used by persist model year.  This should create all ``ModelDto``s and
         fetch their corresponding JSON model data.  Separation of this method from ``persistModelYear``
