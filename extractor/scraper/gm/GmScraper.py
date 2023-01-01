@@ -12,6 +12,7 @@ BodyStyleAndName = namedtuple('BodyStyleAndName', ['bodyStyle', 'name'] )
 
 
 class GmScraper(ModelInfoScraper):
+    MANUFACTURER_COMMON = "GM"
     BRAND_TO_DOMAIN = {'cadillac': 'https://www.cadillac.com',  # this isn't used
                        'buick': 'https://www.buick.com',
                        'chevrolet': 'https://www.chevrolet.com',
@@ -19,10 +20,8 @@ class GmScraper(ModelInfoScraper):
     POSTAL_CODE = "94102" # postal code used for request params/headers, could affect availability/pricing
 
     # kwargs: noInit True/False, for testing doesn't fetch anything to initialize
-    # noPersist: does not look-up database entry for brand
     def __init__(self, brandName: str, domain: str, **kwargs):
-        super().__init__(brand=Brand(name=brandName.capitalize()), **kwargs )
-        self.brandName = brandName.lower()
+        super().__init__(brandName=brandName, manufacurerCommon=self.MANUFACTURER_COMMON, **kwargs )
         self.domain = domain
         if not kwargs.get('noInit', False ):
             self.bodyStyleToName = self._getBodyStyleToName()
@@ -33,7 +32,7 @@ class GmScraper(ModelInfoScraper):
 
     def _generateModelListUrl(self) -> str:
         # ex: https://www.chevrolet.com/apps/atomic/shoppingLinks.brand=chevrolet.country=US.region=na.language=en.json
-        return f'{self.domain}/apps/atomic/shoppingLinks.brand={self.brandName}.country=US.region=na.language=en.json'
+        return f'{self.domain}/apps/atomic/shoppingLinks.brand={self.brandName.lower() }.country=US.region=na.language=en.json'
 
     # data is optional: will fetch otherwise
     def _fetchCarLinesAndBodyStyles(self, year: int, data: Dict = None) -> List[CarLineAndBodyStyle]:
@@ -54,7 +53,7 @@ class GmScraper(ModelInfoScraper):
     def _fetchBodyStylesAndNames(self, year: int) -> List[BodyStyleAndName]:
         # these are the minimum required headers, 415 or 400 responses if any less
         HEADERS = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'clientApplicationId': 'quantum'}
-        URL = self.domain + f'/bypass/pcf/vehicle-selector-service/v1/getVehicleInfo/{self.brandName}/us/b2c/en?requestType=models&year={year}'
+        URL = self.domain + f'/bypass/pcf/vehicle-selector-service/v1/getVehicleInfo/{self.brandName.lower()}/us/b2c/en?requestType=models&year={year}'
         try:
             res = httpClient.getRequest(URL, headers=HEADERS)
         except RuntimeError:
@@ -138,9 +137,9 @@ class GmScraper(ModelInfoScraper):
         :return: url to get json info
         """
         if kwargs.get('api', 'trim-matrix') == 'trim-matrix':
-            return f'{self.domain}/byo-vc/api/v2/trim-matrix/en/US/{self.brandName}/{carLine}/{modelYear.year}/{bodyStyle}?postalCode={self.POSTAL_CODE}'
+            return f'{self.domain}/byo-vc/api/v2/trim-matrix/en/US/{self.brandName.lower()}/{carLine}/{modelYear.year}/{bodyStyle}?postalCode={self.POSTAL_CODE}'
         elif kwargs['api'] == 'fullyConfigured':
-            return f'{self.domain}/byo-vc/services/fullyConfigured/US/en/{self.brandName}/{modelYear.year}/{carLine}/{bodyStyle}?postalCode=94102&region=na'
+            return f'{self.domain}/byo-vc/services/fullyConfigured/US/en/{self.brandName.lower()}/{modelYear.year}/{carLine}/{bodyStyle}?postalCode=94102&region=na'
         raise ValueError(f'Unrecognized api option {kwargs["api"]}')
 
     def _createModelFetchDto(self, bodyStyle: str, modelName: str, modelYear: date) -> ModelFetchDto:

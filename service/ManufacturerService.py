@@ -1,4 +1,6 @@
 from typing import *
+from uuid import UUID
+
 from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 
@@ -11,6 +13,10 @@ class ManufacturerService:
 
     def getManufacturerByCommonName(self, commonName: str, session: 'Session') -> 'Manufacturer':
         query = session.query(Manufacturer).where(Manufacturer.common_name == commonName)
+        return query.first()
+
+    def getManufacturerById(self, manufacurerId: UUID, session: Session):
+        query = session.query(Manufacturer).where(Manufacturer.manufacturer_id == manufacurerId)
         return query.first()
 
     def getAllManufacturers(self, session: 'Session') -> Iterator['Manufacturer']:

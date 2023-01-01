@@ -28,6 +28,12 @@ class TestManufacturerService(TestCase):
             toyotaManufacturer = manufacturerService.getManufacturerByCommonName('Toyota', session)
         self.assertTrue(toyotaManufacturer)
 
+    def test_getManufacturerByManufacturerId(self):
+        with sessionFactory.newSession() as session:
+            expected = manufacturerService.getManufacturerByCommonName(commonName='Toyota', session=session)
+            found = manufacturerService.getManufacturerById(manufacurerId=expected.manufacturer_id, session=session)
+            self.assertEqual(found, expected)
+
     def test_get_all_manufacturers(self):
         with sessionFactory.newSession() as session:
             manufacturerCommonNames = [ manufacturer.common_name for manufacturer in manufacturerService.getAllManufacturers(session) ]

@@ -17,23 +17,9 @@ class ModelInfoScraper(ABC):
 
     def __init__(self, brandName: str, manufacurerCommon: str, **kwargs):
         super().__init__()
-        self.noPersist = kwargs.get('noPersist', False)
         self.brandName = brandName
         self.manufacturerCommon = manufacurerCommon
         self.log = logging.getLogger()
-
-    # When noPersist=False, only required info in brand obj is Name, if brand_id is not null
-    # the provided brand_id will be validated against the fetched brand
-    # if noPersist=True, the provided Brand object is simply returned
-    def _queryBrandInfo(self, brand: 'Brand') -> 'Brand':
-        if self.noPersist:
-            return brand
-        fetchedBrand = brandService.getBrandByName(brand.name, sessionFactory.newSession() )
-        if not fetchedBrand:
-            raise ValueError(f'No record found for Brand: {brand.name}')
-        if (brand.brand_id and brand.brand_id != fetchedBrand.brand_id):
-            raise ValueError(f'Provided brand_id and fetched brand_id do not match')
-        return fetchedBrand
 
     def _validateModelYear(self, date: 'date') -> None:
         if (date.month != 1 or date.day != 1 ):

@@ -1,14 +1,13 @@
 from typing import Iterable, Dict
 
 from extractor.scraper.common.fetchModelData import ModelFetchDto, fetchModels, ModelDtosAndJsonDataByName
-from extractor.Extractor import persistModels
 from extractor.scraper.gm.GmScraper import GmScraper
 from datetime import date
 
 
 class ChevroletScraper(GmScraper):
 
-    BRAND_NAME = 'chevrolet'
+    BRAND_NAME = 'Chevrolet'
     DOMAIN = 'https://www.chevrolet.com'
 
     def __init__(self, **kwargs):

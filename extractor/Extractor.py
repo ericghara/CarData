@@ -17,20 +17,22 @@ from service.ManufacturerService import manufacturerService
 
 class Extractor:
 
-    def __init__(self, scraper: ModelInfoScraper):
+    def __init__(self, scraper: ModelInfoScraper, **kwargs):
         self.log = logging.getLogger(self.__class__.__name__)
         self.scraper = scraper
-        self.brandId = self._createOrFetchBrand()
+        self.brandId = self._createOrFetchBrand(noPersist=kwargs.get("noPersist", False) )
 
-    def _createOrFetchBrand(self) -> UUID:
+    def _createOrFetchBrand(self, noPersist: bool) -> UUID:
+        if noPersist: # for testing
+            return
         manufacturerCommon = self.scraper.getManufacturerCommon()
         brandName = self.scraper.getBrandName()
         with sessionFactory.newSession() as session:
-            fetchedBrand = brandService.getBrandByName(brandName, session)
+            fetchedBrand = brandService.getBrandByName(brandName=brandName, session=session)
             if not fetchedBrand:  # create brand
                 self.log.info(
                     f"Creating brand {self.scraper.getBrandName()} for manufacturer {self.scraper.getManufacturerCommon()}")
-                manufacturer = manufacturerService.getManufacturerByCommonName(brandName)
+                manufacturer = manufacturerService.getManufacturerByCommonName(commonName=manufacturerCommon, session=session)
                 if not manufacturer:
                     raise ValueError(f"Common name {manufacturerCommon} does not match any manufacturers")
                 fetchedBrand = Brand(name=brandName)
@@ -39,7 +41,7 @@ class Extractor:
             elif (foundManufacturer := fetchedBrand.manufacturer.common_name) != manufacturerCommon:
                 raise ValueError(
                     f"A record for Brand {brandName} exists, but the found manufacturer was {foundManufacturer} not {manufacturerCommon}")
-        return fetchedBrand.brand_id
+            return fetchedBrand.brand_id
 
     def _persistModels(self, modelDtos: List[ModelDto], jsonDataByName: Dict[str, Dict]) -> None:
         if not modelDtos or not jsonDataByName:
