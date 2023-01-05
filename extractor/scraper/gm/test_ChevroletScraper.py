@@ -73,59 +73,11 @@ class TestChevroletScraper(TestCase):
         self.scraper.bodyStyleToName = {"corvette" : "Corvette Stingray", "suburban-1500" : "Suburban"}
         self.assertEqual(expectedModelName, self.scraper._getModelName(bodyStyle) )
 
-class IntegrationTestChevroletScraper(TestCase):
-    container = None
-
-    @classmethod
-    def setUpClass(cls):
-        cls.container = DbContainer()
-        cls.container.start()
-        cls.container.initTables()
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-              cls.container.stop() 
-
-    def setUp(self) -> None:
-        with sessionFactory.newSession() as session:
-            # manufacturer
-            GmManufacturer = Manufacturer(official_name='General Motors Company', common_name='GM')
-            session.add(GmManufacturer)
-            chevroletBrand = Brand(name='Chevrolet', manufacturer=GmManufacturer)
-            session.add(chevroletBrand)
-            session.commit()
-        self.httpClientResponseMock = Response()
-        self.httpClientResponseMock.json = MagicMock(return_value={})
-        patcher = mock.patch('extractor.scraper.common.fetchModelData.httpClient.getRequest',
-                             return_value=self.httpClientResponseMock)
-        self.httpClientMock = patcher.start()
-        self.scraper = ChevroletScraper(noInit=True)
-
-    def tearDown(self) -> None:
-        self.container.deleteAll()
-        self.httpClientMock.stop()
-
-    def test_persist_model_year(self):
-        modelYear = date(2023, 1, 1)
-        # monkey patch for _fetchBodyStyles()
-        self.scraper._fetchBodyStyles = MagicMock(return_value=['Corvette Stingray', 'Corvette Z06'])
-        # monkey patch for _createModelFetchDtosByName()
-        modelFetchDtosByName = {'Corvette Stingray': ModelFetchDto('Corvette Stingray', 'corvette', 'http://chevrolet.com/content.json' ),
-                           'Corvette Z06': ModelFetchDto('Corvette Z06', 'corvette-z06', 'http://chevrolet.com/content.json' ) }
-        self.scraper._createModelFetchDtosByName = MagicMock(return_value=modelFetchDtosByName)
-        # Return value for fetched JSON data
-        rawJson = {'Dummy_JSON': True}
-        self.httpClientResponseMock.json = MagicMock(return_value=rawJson)
-        self.scraper.persistModelYear(modelYear)
-        with sessionFactory.newSession() as session:
-            models = modelService.getModelYear(modelYear=modelYear, manufacturerCommon='GM', session=session,
-                                               brandName=self.scraper.brand.name)
-            for model in models:
-                self.assertIn(model.name, self.scraper._fetchBodyStyles.return_value)
-                self.assertEqual(rawJson, rawDataService.getMostRecentlyCreated(brandName=self.scraper.brand.name,
-                                                                                modelName=model.name,
-                                                                                modelYear=modelYear,
-                                                                                session=session).raw_data)
-
-
-
+    def test__createModelFetchDtosByName(self):
+        bodyStyles = {"corvette-z06", "blazer"}
+        modelYear = date(2022,1,1)
+        self.scraper.bodyStyleToCarLine = {"corvette-z06": "corvette", "blazer" : "blazar"}  # note: mutating scraper
+        found = self.scraper._createModelFetchDtosByName(bodyStyles=bodyStyles, modelYear=modelYear)
+        self.assertTrue(2, len(found) )
+        self.assertEqual("Corvette Z06", found.get("Corvette Z06").modelName)
+        self.assertEqual("Blazer", found.get("Blazer").modelName)

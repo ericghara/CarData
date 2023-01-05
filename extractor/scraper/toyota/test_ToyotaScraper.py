@@ -1,4 +1,3 @@
-import datetime
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
 from uuid import uuid4
@@ -7,12 +6,8 @@ from requests import Response
 
 from extractor.scraper.common.fetchModelData import ModelFetchDto
 from extractor.scraper.toyota.ToyotaScraper import ToyotaScraper
-from repository.Entities import Brand, Manufacturer
-from repository.SessionFactory import sessionFactory
-from repository.test_common.DbContainer import DbContainer
+from repository.Entities import Brand
 from repository.test_common.mockSessionFactory import MockSessionFactory
-from service.ModelService import modelService
-from service.RawDataService import rawDataService
 
 
 class TestToyotaScraper(TestCase):
@@ -20,8 +15,6 @@ class TestToyotaScraper(TestCase):
     def setUp(self) -> None:
         self.brand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name='Toyota')
         self.sessionFactoryMock = MockSessionFactory()
-        self.patcherSuperBrandService = mock.patch('extractor.scraper.ModelInfoScraper.brandService.getBrandByName', return_value=self.brand)
-        self.superBrandServiceMock = self.patcherSuperBrandService.start()
         self.httpClientResponseMock = Response()
         self.httpClientResponseMock.json = MagicMock(return_value={})
         self.patcherHttpClient = mock.patch('extractor.scraper.toyota.ToyotaScraper.httpClient.getRequest',
@@ -30,7 +23,7 @@ class TestToyotaScraper(TestCase):
         self.scraper = ToyotaScraper()
 
     def tearDown(self) -> None:
-        for mockObj in self.patcherSuperBrandService, self.patcherHttpClient:
+        for mockObj in self.patcherHttpClient,:
             if mockObj:
                 mockObj.stop()
         self.scraper = None
@@ -69,54 +62,3 @@ class TestToyotaScraper(TestCase):
         subPath = '/static/uifm/TOY/NATIONAL/EN/2a6c7dd95b5b81c1dda97a6b985eec703140fd4d/2022/priusprime/1813aacf15413225b2ee3129fe1c9770cbab8bdd'
         expected = 'https://www.toyota.com/config/pub/static/uifm/TOY/NATIONAL/EN/2a6c7dd95b5b81c1dda97a6b985eec703140fd4d/2022/priusprime/1813aacf15413225b2ee3129fe1c9770cbab8bdd/content.json'
         self.assertEqual(expected, self.scraper._createModelDataURL(subPath))
-
-class IntegrationTestToyotaScraper(TestCase):
-    container = None
-
-    @classmethod
-    def setUpClass(cls):
-        cls.container = DbContainer()
-        cls.container.start()
-        cls.container.initTables()
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-              cls.container.stop() 
-
-    def setUp(self) -> None:
-        with sessionFactory.newSession() as session:
-            # manufacturer
-            toyotaManufacturer = Manufacturer(official_name='Toyota Motor Company', common_name='Toyota')
-            session.add(toyotaManufacturer)
-            toyotaBrand = Brand(name='Toyota', manufacturer=toyotaManufacturer)
-            session.add(toyotaBrand)
-            session.commit()
-        self.httpClientResponseMock = Response()
-        self.httpClientResponseMock.json = MagicMock(return_value={})
-        patcher = mock.patch('extractor.scraper.common.fetchModelData.httpClient.getRequest',
-                             return_value=self.httpClientResponseMock)
-        self.httpClientMock = patcher.start()
-        self.scraper = ToyotaScraper()
-
-    def tearDown(self) -> None:
-        self.container.deleteAll()
-        self.httpClientMock.stop()
-
-    def test_persist_model_year(self):
-        modelYear = datetime.date(2023, 1, 1)
-        nameToModelInfo = {'GR 86': ModelFetchDto('GR 86', '86', 'http://toyota.com/content.json' ),
-                           'GR Supra': ModelFetchDto('GR Supra', 'supra', 'http://toyota.com/content.json')}
-        rawJson = {'Dummy_JSON': True}
-        self.httpClientResponseMock.json = MagicMock(return_value=rawJson)
-        with mock.patch('extractor.scraper.toyota.test_ToyotaScraper.ToyotaScraper._parseModelList',
-                        return_value=nameToModelInfo):
-            self.scraper.persistModelYear(modelYear)
-        with sessionFactory.newSession() as session:
-            models = modelService.getModelYear(modelYear=modelYear, manufacturerCommon='Toyota', session=session,
-                                               brandName=self.scraper.brand.name)
-            for model in models:
-                self.assertIn(model.name, nameToModelInfo.keys())
-                self.assertEqual(rawJson, rawDataService.getMostRecentlyCreated(brandName=self.scraper.brand.name,
-                                                                                modelName=model.name,
-                                                                                modelYear=modelYear,
-                                                                                session=session).raw_data)

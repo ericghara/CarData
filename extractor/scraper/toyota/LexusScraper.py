@@ -1,7 +1,5 @@
 from extractor.scraper.ModelInfoScraper import ModelInfoScraper
-from extractor.scraper.common.fetchModelData import ModelFetchDto, fetchModels
-from extractor.Extractor import persistModels
-from repository.Entities import Brand
+from extractor.scraper.common.fetchModelData import ModelFetchDto, fetchModels, ModelDtosAndJsonDataByName
 from extractor.scraper.common.HttpClient import httpClient
 from datetime import date
 from typing import *
@@ -9,13 +7,15 @@ from typing import *
 
 class LexusScraper(ModelInfoScraper):
     URL_PREFIX = 'https://www.lexus.com/config/pub'
+    BRAND_NAME = "Lexus"
+    MANUFACTURER_COMMON = "Toyota"
 
     # Note this is essentially the same as ToyotaScraper aside from _getModelName function
     # A decision was made to keep the code bases separate.  Their websites and formats could
     # drift apart in the future...
 
     def __init__(self, **kwargs):
-        super().__init__(brand=Brand(name='Lexus'), kwargs=kwargs)
+        super().__init__(brandName=self.BRAND_NAME, manufacturerCommon=self.MANUFACTURER_COMMON, **kwargs)
 
     def _getModelName(self, modelCode: str) -> str:
         # returns str if match and replacement made
@@ -66,16 +66,9 @@ class LexusScraper(ModelInfoScraper):
             fetchDtoByName[modelName] = ModelFetchDto(modelCode=modelCode, modelName=modelName, path=fullPath)
         return fetchDtoByName
 
-    def fetchModelYear(self, modelYear: 'date') -> dict[str, dict]:
-        modelListJson = self._fetchModelList(modelYear)
-        nameToModelInfo = self._parseModelList(modelListJson)
-        return {modelName: httpClient.getRequest(modelInfo.path).json() for modelName, modelInfo in
-                nameToModelInfo.items()}
-
-    def persistModelYear(self, modelYear: 'date') -> None:
+    def fetchModelYear(self, modelYear: date) -> ModelDtosAndJsonDataByName:
         modelListJson = self._fetchModelList(modelYear)
         modelFetchDtosByName = self._parseModelList(modelListJson)
-        modelDtosAndJsonDataByName = fetchModels(modelFetchDtosByName=modelFetchDtosByName, brandId=self.brand.brand_id,
-                                                 modelYear=modelYear)
-        persistModels(modelDtos=modelDtosAndJsonDataByName.modelDtos,
-                      jsonDataByName=modelDtosAndJsonDataByName.jsonDataByName)
+        return fetchModels(modelFetchDtosByName=modelFetchDtosByName, modelYear=modelYear)
+
+

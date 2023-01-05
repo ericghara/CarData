@@ -21,7 +21,7 @@ class GmScraper(ModelInfoScraper):
 
     # kwargs: noInit True/False, for testing doesn't fetch anything to initialize
     def __init__(self, brandName: str, domain: str, **kwargs):
-        super().__init__(brandName=brandName, manufacurerCommon=self.MANUFACTURER_COMMON, **kwargs )
+        super().__init__(brandName=brandName, manufacturerCommon=self.MANUFACTURER_COMMON, **kwargs)
         self.domain = domain
         if not kwargs.get('noInit', False ):
             self.bodyStyleToName = self._getBodyStyleToName()
@@ -58,7 +58,9 @@ class GmScraper(ModelInfoScraper):
             res = httpClient.getRequest(URL, headers=HEADERS)
         except RuntimeError:
             raise ValueError(f'Unable to fetch model year {year}.')
-        modelYear = res.json().get('options', {})
+        modelYear = res.json().get('options')
+        if not modelYear:
+            raise ValueError(f'Unable to fetch model year {year}.')
         # in gm terminology bodystyle is a specific model in a carline (ie carline: corvette, bodystyle:
         # corvette z06)
         stylesAndNames = list()
@@ -152,14 +154,6 @@ class GmScraper(ModelInfoScraper):
         path = self._createModelDataPath(carLine=carLine, bodyStyle=bodyStyle, modelYear=modelYear)
         metadata = {"metadata" : { "bodyStyle": bodyStyle, "carLine" : carLine }}
         return ModelFetchDto(modelCode=bodyStyle, path=path, metadata=metadata, modelName=modelName)
-
-    def persistModelYear(self, date: 'date') -> None:
-        """
-        Extending classes should implement
-        :param date:
-        :return:
-        """
-        pass
 
     def fetchModelYear(self, date: 'date') -> ModelDtosAndJsonDataByName:
         """

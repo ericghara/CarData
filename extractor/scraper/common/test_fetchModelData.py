@@ -38,11 +38,10 @@ class Test(TestCase):
 
     def test__createUnsyncedModelDto(self):
         modelYear = datetime.date(2022, 1, 1)
-        brandId = str(uuid.uuid4())
         modelFetchDto = ModelFetchDto(modelName="CarModel", modelCode="car-model", path="http://www.ericgha.com")
-        expected = ModelDto(name="CarModel", model_year=modelYear, brand_id=brandId)
+        expected = ModelDto(name="CarModel", model_year=modelYear)
         self.assertEqual(expected,
-                         _createUnsyncedModelDto(modelFetchDto=modelFetchDto, modelYear=modelYear, brandId=brandId))
+                         _createUnsyncedModelDto(modelFetchDto=modelFetchDto, modelYear=modelYear))
 
     def test__fetchJsonDataSuccess(self):
         expected = {"success": True}
@@ -64,11 +63,10 @@ class Test(TestCase):
             "ModelName": ModelFetchDto(modelName="ModelName", modelCode="car-model", path="http://www.ericgha.com",
                                        metadata=metadata)}
         modelYear = datetime.date(2022, 1, 1)
-        brandId = str(uuid.uuid4())
         expected = ModelDtosAndJsonDataByName(
-            modelDtos=[ModelDto(name="ModelName", model_year=modelYear, brand_id=brandId)],
+            modelDtos=[ModelDto(name="ModelName", model_year=modelYear)],
             jsonDataByName={"ModelName": {k: v for k, v in [*json.items()] + [*metadata.items()]}})
-        found = fetchModels(modelFetchDtosByName=modelFetchDtosByName, brandId=brandId, modelYear=modelYear)
+        found = fetchModels(modelFetchDtosByName=modelFetchDtosByName, modelYear=modelYear)
         self.assertEqual(expected, found)
 
     def test_fetchModelsFetchFailure(self):
@@ -76,7 +74,6 @@ class Test(TestCase):
         modelFetchDtosByName = {
             "ModelName": ModelFetchDto(modelName="CarModel", modelCode="car-model", path="http://www.ericgha.com")}
         modelYear = datetime.date(2022, 1, 1)
-        brandId = str(uuid.uuid4())
         expected = ModelDtosAndJsonDataByName(modelDtos=list(), jsonDataByName=dict())
-        found = fetchModels(modelFetchDtosByName=modelFetchDtosByName, brandId=brandId, modelYear=modelYear)
+        found = fetchModels(modelFetchDtosByName=modelFetchDtosByName, modelYear=modelYear)
         self.assertEqual(expected, found)

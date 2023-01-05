@@ -19,7 +19,7 @@ class TestGmScraper(TestCase):
         self.patcherHttpClient = mock.patch('extractor.scraper.gm.GmScraper.httpClient.getRequest',
                                             return_value=self.httpClientResponseMock)
         self.httpClientMock = self.patcherHttpClient.start()
-        self.scraper = GmScraper('chevrolet', 'https://www.chevrolet.com', noInit=True, noPersist=True)
+        self.scraper = GmScraper('Chevrolet', 'https://www.chevrolet.com', noInit=True, noPersist=True)
 
     def tearDown(self) -> None:
         for mockObj in self.patcherHttpClient,:

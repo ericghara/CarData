@@ -46,8 +46,11 @@ class Extractor:
     def _persistModels(self, modelDtos: List[ModelDto], jsonDataByName: Dict[str, Dict]) -> None:
         if not modelDtos or not jsonDataByName:
             raise ValueError("Received a null or empty input")
-        diff = {model.name for model in modelDtos}.symmetric_difference(jsonDataByName.keys())
-        if diff:
+        modelNames = set()
+        for modelDto in modelDtos:
+            modelNames.add(modelDto.name)
+            modelDto.brand_id = self.brandId
+        if (diff := modelNames.symmetric_difference(jsonDataByName.keys()) ):
             raise ValueError(f"Missing model <-> jsonData relationship for modelName(s): {diff}")
         with sessionFactory.newSession() as session:
             session.begin()

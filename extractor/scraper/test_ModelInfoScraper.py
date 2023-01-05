@@ -10,8 +10,8 @@ from uuid import uuid4
 # Minimal implementation of ModelInfoScraper for testing
 class TestScraper(ModelInfoScraper):
 
-    def __init__(self, brand: 'Brand', **kwargs):
-        super().__init__(brand, **kwargs)
+    def __init__(self, brandName: str, manufacturerCommon: str, **kwargs):
+        super().__init__(brandName=brandName, manufacturerCommon=manufacturerCommon, **kwargs)
 
     def fetchModelYear(self, date: 'datetime.date') -> List['RawData']:
         return list()
@@ -21,35 +21,22 @@ class TestScraper(ModelInfoScraper):
 
 class TestModelInfoScraper(TestCase):
 
-    testScraper = None
-    testBrand = Brand(name='Test Brand')
+    testBrandName = 'Test Brand'
+    testManufacturerCommon = 'Test Manufacturer'
+    testScraper = TestScraper(brandName=testBrandName, manufacturerCommon=testManufacturerCommon)
 
-    def test_queryBrandInfoNormalNoBrandId(self):
-        fetchedBrand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name=self.testBrand.name)
-        with mock.patch('extractor.scraper.ModelInfoScraper.brandService.getBrandByName', return_value=fetchedBrand ):
-            testScraper = TestScraper(self.testBrand)
-            self.assertEqual(testScraper.brand, fetchedBrand)
+    def test_getBrandName(self):
+        self.assertEqual(self.testBrandName, self.testScraper.getBrandName() )
 
-    def test_queryBrandInfoNormalBrandIdMatches(self):
-        brand = Brand(name='Test Brand', brand_id=uuid4() )
-        fetchedBrand = Brand(brand_id=brand.brand_id, manufacturer_id=uuid4(), name=self.testBrand.name)
-        with mock.patch('extractor.scraper.ModelInfoScraper.brandService.getBrandByName', return_value=fetchedBrand):
-            testScraper = TestScraper(brand)
-            self.assertEqual(testScraper.brand, fetchedBrand)
+    def test_getManufacturerCommon(self):
+        self.assertEqual(self.testManufacturerCommon, self.testScraper.getManufacturerCommon() )
 
-    def test_queryBrandInfoNormalBrandIdMisMatch(self):
-        brand = Brand(name='Test Brand', brand_id=uuid4() )
-        fetchedBrand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name=self.testBrand.name)
-        with mock.patch('extractor.scraper.ModelInfoScraper.brandService.getBrandByName', return_value=fetchedBrand):
-            self.assertRaises(ValueError, lambda: TestScraper(brand) )
 
     def test__validateModelYearDoesNotRaise(self):
         date = datetime.date(2022,1,1)
-        testScraper = TestScraper(self.testBrand, noPersist=True)
-        self.assertIs(None, testScraper._validateModelYear(date) )
+        self.assertIs(None, self.testScraper._validateModelYear(date) )
 
     def test__validateModelYearRaises(self):
         date = datetime.date(2022, 2, 1)
-        testScraper = TestScraper(self.testBrand, noPersist=True)
-        self.assertRaises(ValueError, lambda: testScraper._validateModelYear(date))
+        self.assertRaises(ValueError, lambda: self.testScraper._validateModelYear(date))
 

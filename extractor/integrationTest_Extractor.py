@@ -88,8 +88,8 @@ class Test(TestCase):
     def test_extractPersist(self):
         extractor = Extractor(self.scraper)
         modelYear = datetime.date(2023, 1, 1)
-        modelDtos = [ModelDto(name='Camaro', model_year=modelYear, brand_id=extractor.brandId),
-                     ModelDto(name='Corvette Stingray', model_year=modelYear, brand_id=extractor.brandId)]
+        modelDtos = [ModelDto(name='Camaro', model_year=modelYear),
+                     ModelDto(name='Corvette Stingray', model_year=modelYear)]
         jsonDataByName = {"Camaro": {"name": "Camaro"}, "Corvette Stingray": {"name": "Corvette Stingray"}}
         modelDtosAndJsonData = ModelDtosAndJsonDataByName(modelDtos=modelDtos, jsonDataByName=jsonDataByName)
         # Monkey patch

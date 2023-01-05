@@ -1,15 +1,15 @@
 from dataclasses import dataclass
 from datetime import date
+from typing import Optional
 from uuid import UUID
 
-#These are simple objects. They are not DB proxies like entities
+
+# These are simple objects. They are not DB proxies like entities
 
 
 @dataclass
 class Model:
-
     name: str
     model_year: 'date'
-    brand_id: str
-    model_id: UUID = None
-
+    brand_id: str = None  # Optional
+    model_id: UUID = None  # Optional

@@ -1,11 +1,8 @@
 import logging
 from abc import ABC, abstractmethod
+from datetime import date
 
 from extractor.scraper.common.fetchModelData import ModelDtosAndJsonDataByName
-from repository.Entities import Brand
-from datetime import date
-from repository.SessionFactory import sessionFactory
-from service.BrandService import brandService
 
 
 # kwargs:
@@ -15,14 +12,14 @@ from service.BrandService import brandService
 
 class ModelInfoScraper(ABC):
 
-    def __init__(self, brandName: str, manufacurerCommon: str, **kwargs):
+    def __init__(self, brandName: str, manufacturerCommon: str, **kwargs):
         super().__init__()
         self.brandName = brandName
-        self.manufacturerCommon = manufacurerCommon
+        self.manufacturerCommon = manufacturerCommon
         self.log = logging.getLogger()
 
-    def _validateModelYear(self, date: 'date') -> None:
-        if (date.month != 1 or date.day != 1 ):
+    def _validateModelYear(self, modelYear: date) -> None:
+        if (modelYear.month != 1 or modelYear.day != 1):
             # override for manufacturers with multiple releases, ex. semi-annual
             raise ValueError(f'Month and day must be January 1st.')
 
@@ -45,8 +42,3 @@ class ModelInfoScraper(ABC):
         them as a tuple.
         """
         pass
-
-    @abstractmethod
-    def persistModelYear(self, date: 'date') -> None:
-        pass
-

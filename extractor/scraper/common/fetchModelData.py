@@ -20,8 +20,8 @@ class ModelFetchDto:
     path: str
     metadata: Dict = None
 
-def _createUnsyncedModelDto(modelFetchDto: ModelFetchDto, modelYear: datetime.date, brandId: str) -> ModelDto:
-    return ModelDto(name=modelFetchDto.modelName, model_year=modelYear, brand_id=brandId)
+def _createUnsyncedModelDto(modelFetchDto: ModelFetchDto, modelYear: datetime.date) -> ModelDto:
+    return ModelDto(name=modelFetchDto.modelName, model_year=modelYear)
 
 
 def _addMetadata(jsonData: Dict, metadata: Dict) -> None:
@@ -50,7 +50,7 @@ def _fetchJsonData(modelFetchDto: ModelFetchDto) -> Optional[Dict]:
         return None
 
 
-def fetchModels(modelFetchDtosByName: Dict[str, ModelFetchDto], brandId: str,
+def fetchModels(modelFetchDtosByName: Dict[str, ModelFetchDto],
                 modelYear: datetime.date) -> ModelDtosAndJsonDataByName:
     """
     This fetches all jsonData, logging any failures.  Models for which no JSON could be retrieved are filtered.
@@ -67,6 +67,6 @@ def fetchModels(modelFetchDtosByName: Dict[str, ModelFetchDto], brandId: str,
             continue
         _addMetadata(jsonData=jsonData, metadata=fetchDto.metadata)
         models.append(
-            _createUnsyncedModelDto(modelFetchDto=fetchDto, modelYear=modelYear, brandId=brandId))  # unsynced model dto
+            _createUnsyncedModelDto(modelFetchDto=fetchDto, modelYear=modelYear))  # unsynced model dto
         jsonDataByName[modelName] = jsonData
     return ModelDtosAndJsonDataByName(modelDtos=models, jsonDataByName=jsonDataByName)

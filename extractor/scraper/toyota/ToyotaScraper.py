@@ -4,9 +4,6 @@ from typing import *
 from extractor.scraper.ModelInfoScraper import ModelInfoScraper
 from extractor.scraper.common.HttpClient import httpClient
 from extractor.scraper.common.fetchModelData import ModelFetchDto, fetchModels, ModelDtosAndJsonDataByName
-from extractor.Extractor import persistModels
-from repository.Entities import Brand
-
 
 class ToyotaScraper(ModelInfoScraper):
     # Constructor
@@ -25,12 +22,13 @@ class ToyotaScraper(ModelInfoScraper):
                    'priusv': 'Prius v', 'priusplugin': 'Prius Plug-in', 'sequoiahybrid': 'Sequoia Hybrid'}
 
     URL_PREFIX = 'https://www.toyota.com/config/pub'
+    MANUFACTURER_COMMON = BRAND_NAME = 'Toyota'
 
     # kwargs:
     #   - noPersist: True/False
     #       for testing, don't check that provided brand is a valid db record
     def __init__(self, **kwargs):
-        super().__init__(Brand(name='Toyota'), **kwargs)
+        super().__init__(brandName=self.BRAND_NAME, manufacturerCommon=self.MANUFACTURER_COMMON, **kwargs)
         self.modelCodeToName = self._getModelCodeToName()
 
     # creates an (incomplete) mapping of model codes to names
@@ -90,16 +88,8 @@ class ToyotaScraper(ModelInfoScraper):
             raise ValueError('Received an empty or null subPath')
         return f'{self.URL_PREFIX}{subPath}/content.json'
 
-    # Fetches raw data for a model year without persisting
-    # For testing and to perform a general "dry run"
-    # A map of the model name to raw data json is returned
     def fetchModelYear(self, modelYear: 'datetime.date') -> ModelDtosAndJsonDataByName:
         modelListJson = self._fetchModelList(modelYear)
         modelFetchDtosByName = self._parseModelList(modelListJson)
-        return fetchModels(modelFetchDtosByName=modelFetchDtosByName, brandId=self.brand.brand_id,
-                                                 modelYear=modelYear)
-
-    def persistModelYear(self, modelYear: 'datetime.date') -> None:
-        modelDtosAndJsonDataByName = self.fetchModelYear(modelYear)
-        persistModels(modelDtos=modelDtosAndJsonDataByName.modelDtos,
-                      jsonDataByName=modelDtosAndJsonDataByName.jsonDataByName)
+        return fetchModels(modelFetchDtosByName=modelFetchDtosByName,
+                           modelYear=modelYear)
