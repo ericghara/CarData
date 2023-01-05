@@ -1,14 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from datetime import date
-
 from extractor.scraper.common.fetchModelData import ModelDtosAndJsonDataByName
-
-
-# kwargs:
-#   - noPersist: True/False
-#       for testing, don't check that provided brand is a valid db record
-
 
 class ModelInfoScraper(ABC):
 

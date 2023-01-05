@@ -12,7 +12,6 @@ class ChevroletScraper(GmScraper):
 
     def __init__(self, **kwargs):
         # kwargs: noInit True/False, for testing doesn't fetch anything to initialize
-        # noPersist: does not look-up database entry for brand
         super().__init__(brandName=self.BRAND_NAME, domain=self.DOMAIN, **kwargs )
 
     def _getModelName(self, bodyStyle: str) -> str:

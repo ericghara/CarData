@@ -62,7 +62,7 @@ class GmScraper(ModelInfoScraper):
         if not modelYear:
             raise ValueError(f'Unable to fetch model year {year}.')
         # in gm terminology bodystyle is a specific model in a carline (ie carline: corvette, bodystyle:
-        # corvette z06)
+        # corvette-z06)
         stylesAndNames = list()
         for bodyStyle in modelYear:
             code = bodyStyle['code']
