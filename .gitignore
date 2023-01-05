@@ -6,4 +6,5 @@ pyproject.toml
 /.idea
 */__pycache__
 *.pyc
-
+__pycache__
+notes
