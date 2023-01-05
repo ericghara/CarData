@@ -7,4 +7,4 @@ pyproject.toml
 */__pycache__
 *.pyc
 __pycache__
-*/notes
+extractor/scraper/gm/notes
