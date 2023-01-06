@@ -12,10 +12,6 @@ BodyStyleAndName = namedtuple('BodyStyleAndName', ['bodyStyle', 'name'] )
 
 class GmScraper(ModelInfoScraper):
     MANUFACTURER_COMMON = "GM"
-    BRAND_TO_DOMAIN = {'cadillac': 'https://www.cadillac.com',  # this isn't used
-                       'buick': 'https://www.buick.com',
-                       'chevrolet': 'https://www.chevrolet.com',
-                       'gmc': 'https://www.gmc.com'}
     POSTAL_CODE = "94102" # postal code used for request params/headers, could affect availability/pricing
 
     # kwargs: noInit True/False, for testing doesn't fetch anything to initialize
@@ -137,9 +133,10 @@ class GmScraper(ModelInfoScraper):
                         ``api``: ``trim-matrix`` - default, less information, less likely to error
         :return: url to get json info
         """
-        if kwargs.get('api', 'trim-matrix') == 'trim-matrix':
+        api = kwargs.get('api', 'fullyConfigured')
+        if api == 'trim-matrix':
             return f'{self.domain}/byo-vc/api/v2/trim-matrix/en/US/{self.brandName.lower()}/{carLine}/{modelYear.year}/{bodyStyle}?postalCode={self.POSTAL_CODE}'
-        elif kwargs['api'] == 'fullyConfigured':
+        elif api == 'fullyConfigured':
             return f'{self.domain}/byo-vc/services/fullyConfigured/US/en/{self.brandName.lower()}/{modelYear.year}/{carLine}/{bodyStyle}?postalCode=94102&region=na'
         raise ValueError(f'Unrecognized api option {kwargs["api"]}')
 
