@@ -128,9 +128,8 @@ class GmScraper(ModelInfoScraper):
         :param carLine:
         :param bodyStyle:
         :param modelYear:
-        :param kwargs: ``api``: ``fullyConfigured`` - more information (includes all info from ``trim-matrix`` with a base configuration,
-                                                    more likely to have server side error
-                        ``api``: ``trim-matrix`` - default, less information, less likely to error
+        :param kwargs: ``api``: ``fullyConfigured`` - default, more information (includes all info from ``trim-matrix`` with a base configuration,
+                        ``api``: ``trim-matrix`` - less information
         :return: url to get json info
         """
         api = kwargs.get('api', 'fullyConfigured')
