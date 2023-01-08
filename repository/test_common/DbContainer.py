@@ -4,9 +4,10 @@ from testcontainers.postgres import PostgresContainer
 
 import repository.Entities
 from glbls import variables
-from repository.Entities import Manufacturer, Brand, Model, RawData
+from repository.Entities import Manufacturer, Brand, Model, RawData, ModelAttribute
 from repository.SessionFactory import sessionFactory
-from service.ManufacturerService import  manufacturerService
+from service.ManufacturerService import manufacturerService
+from repository.DataTypes import AttributeType
 
 
 class DbContainer:
@@ -39,23 +40,36 @@ class DbContainer:
             lexusBrand = Brand(name='Lexus', manufacturer=toyotaManufacturer)
             session.add_all([toyotaBrand, lexusBrand])
             # models
-            camry2023 = Model(name='Camry', model_year=datetime.date(2023,1,1), brand=toyotaBrand )
+            camry2023 = Model(name='Camry', model_year=datetime.date(2023, 1, 1), brand=toyotaBrand)
             camry2022 = Model(name='Camry', model_year=datetime.date(2022, 1, 1), brand=toyotaBrand)
             camry2021 = Model(name='Camry', model_year=datetime.date(2021, 1, 1), brand=toyotaBrand)
-            supra2023 = Model(name='Supra', model_year=datetime.date(2023,1,1), brand=toyotaBrand )
+            supra2023 = Model(name='Supra', model_year=datetime.date(2023, 1, 1), brand=toyotaBrand)
             supra2022 = Model(name='Supra', model_year=datetime.date(2022, 1, 1), brand=toyotaBrand)
             session.add_all([camry2023, camry2022, camry2021, supra2023, supra2022])
             # raw data
-            camry2023Data = RawData(model=camry2023, raw_data={'year': 2023, 'engine': ['V6','I4']})
+            camry2023Data = RawData(model=camry2023, raw_data={'year': 2023, 'engine': ['V6', 'I4']})
             camry2022Data = RawData(model=camry2022, raw_data={'year': 2022, 'engine': ['V6', 'I4']})
             camry2021Data = RawData(model=camry2021, raw_data={'year': 2021, 'engine': ['V6', 'I4']})
             supra2023Data = RawData(model=supra2023, raw_data={'year': 2023, 'engine': ['I6', 'I4']})
             supra2022Data = RawData(model=supra2022, raw_data={'year': 2022, 'engine': ['I6', 'I4']})
             session.add_all([camry2023Data, camry2022Data, camry2021Data, supra2023Data, supra2022Data])
+            # model_attribute
+            camry2023Attribute0 = ModelAttribute(model=camry2023, attribute_type=AttributeType.GRADE, title="LE",
+                                                 attribute_metadata={'starting_msrp': 26_220})
+            camry2023Attribute1 = ModelAttribute(model=camry2023, attribute_type=AttributeType.GRADE, title="LE Hybrid",
+                                                 attribute_metadata={'starting_msrp': 28_355})
+            camry2023Attribute2 = ModelAttribute(model=camry2023, attribute_type=AttributeType.ENGINE,
+                                                 title="2.5L 4-Cyl. Gas Engine",
+                                                 attribute_metadata={'cylinders': 4})
+            camry2023Attribute3 = ModelAttribute(model=camry2023, attribute_type=AttributeType.ENGINE,
+                                                 title="2.5L 4-Cyl. Gas/Electric Hybrid Engine",
+                                                 attribute_metadata={'cylinders': 4})
+            camry2022Attribute0 = ModelAttribute(model=camry2022, attribute_type=AttributeType.GRADE, title="LE",
+                                                 attribute_metadata={'starting_msrp': 26_120})
+            session.add_all([camry2023Attribute0, camry2023Attribute1, camry2023Attribute2, camry2023Attribute3, camry2022Attribute0])
             session.commit()
 
     def deleteAll(self) -> None:
         with sessionFactory.newSession() as session:
             manufacturerService.deleteAllManufacturers(session)
             session.commit()
-
