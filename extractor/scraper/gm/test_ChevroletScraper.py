@@ -43,7 +43,7 @@ class TestChevroletScraper(TestCase):
         bodyStyle = "corvette-z06"
         modelName = "Corvette Z06"
         modelYear = date(2022, 1, 1)
-        expectedPath = "https://www.chevrolet.com/byo-vc/api/v2/trim-matrix/en/US/chevrolet/corvette/2022/corvette-z06?postalCode=94102"
+        expectedPath = "https://www.chevrolet.com/byo-vc/services/fullyConfigured/US/en/chevrolet/2022/corvette/corvette-z06?postalCode=94102&region=na"
         expectedMetaData = {"metadata": {"bodyStyle": bodyStyle, "carLine": carLine}}
         expected = {modelName : ModelFetchDto(modelName=modelName, modelCode=bodyStyle, path=expectedPath,
                                   metadata=expectedMetaData)}

@@ -1,10 +1,10 @@
 import importlib.resources
 
-from sqlalchemy import CheckConstraint, Column, Date, DateTime, ForeignKey, String, UniqueConstraint, text, Text
+from sqlalchemy import CheckConstraint, Column, Date, DateTime, ForeignKey, String, UniqueConstraint, text, Text, Enum
 from sqlalchemy.dialects.postgresql import JSONB, UUID
-from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import relationship, declarative_base
 
+from repository.DataTypes import AttributeType
 from repository.SessionFactory import sessionFactory
 
 Base = declarative_base()
@@ -42,6 +42,7 @@ class Model(Base):
 
     brand = relationship('Brand', back_populates='models')
     raw_data = relationship('RawData', back_populates='model', cascade='all, delete-orphan')
+    model_attribute = relationship('ModelAttribute', back_populates='model', cascade='all, delete-orphan')
 
 class RawData(Base):
     __tablename__ = 'model_raw_config_data'
@@ -55,6 +56,22 @@ class RawData(Base):
     created_at = Column(DateTime(True), nullable=False, server_default=text("CURRENT_TIMESTAMP"))
 
     model = relationship('Model', back_populates='raw_data')
+
+class ModelAttribute(Base):
+    __tablename__ = 'model_attribute'
+    __table_args__ = (
+        UniqueConstraint('attribute_type', 'title', 'model_id'),
+    )
+
+    attribute_id = Column(UUID, primary_key=True, server_default=text("uuid_generate_v4()"), nullable=False)
+    attribute_type = Column(Enum(AttributeType), nullable=False)
+    title = Column(Text, nullable=False)
+    model_id = Column(ForeignKey('model.model_id'), nullable=False)
+    attribute_metadata = Column(JSONB(astext_type=Text()), nullable=False)
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+
+    model = relationship('Model', back_populates='model_attribute')
+
 
 _SCHEMA_DIR = 'repository.resources'
 _SCHEMA_FILE = 'schema.sql'

@@ -1,0 +1,14 @@
+import enum
+
+
+class AttributeType(enum.Enum):
+    ENGINE = 'ENGINE'
+    TRANSMISSION = 'TRANSMISSION'
+    DRIVE = 'DRIVE'
+    BODY = 'BODY'
+    GRADE = 'GRADE'
+    PACKAGE = 'PACKAGE'
+    INTERIOR_COLOR = 'INTERIOR_COLOR'
+    EXTERIOR_COLOR = 'EXTERIOR_COLOR'
+    ACCESSORIES = 'ACCESSORIES'
+    OTHER = 'OTHER'

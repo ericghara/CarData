@@ -33,3 +33,26 @@ CREATE TABLE IF NOT EXISTS public.model_raw_config_data (
 	created_at timestamptz NOT NULL DEFAULT current_timestamp,
 	CONSTRAINT model_raw_config_no_dups UNIQUE (model_id,created_at)
 );
+
+CREATE TYPE public.attribute_type AS ENUM (
+	'ENGINE',
+	'TRANSMISSION',
+	'DRIVE',
+	'BODY',
+	'GRADE',
+	'PACKAGE',
+	'INTERIOR_COLOR',
+	'EXTERIOR_COLOR',
+	'ACCESSORIES',
+	'OTHER'
+);
+
+CREATE TABLE IF NOT EXISTS public.model_attribute (
+	attribute_id uuid NOT NULL DEFAULT uuid_generate_v4(),
+	attribute_type attribute_type NOT NULL,
+	title TEXT NOT NULL,
+	model_id uuid NOT NULL REFERENCES public.model,
+	attribute_metadata jsonb NOT NULL,
+	updated_at timestamptz NOT NULL DEFAULT current_timestamp,
+	CONSTRAINT model_attribute_no_dups UNIQUE(attribute_type, title, model_id)
+);

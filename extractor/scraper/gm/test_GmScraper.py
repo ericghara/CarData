@@ -84,30 +84,12 @@ class TestGmScraper(TestCase):
         # ensure both sources are used to create bodyStyle list (using a hacky monkey patch...)
         self.assertEqual({"blazar", "corvette-z06"}, set(self.scraper._fetchBodyStyles(date(2022, 1, 1))))
 
-    def test__createModelDataPathFullyConfigured(self):
-        expected = "https://www.chevrolet.com/byo-vc/services/fullyConfigured/US/en/chevrolet/2022/silverado/silverado-3500hd?postalCode=94102&region=na"
-        found = self.scraper._createModelDataPath(carLine="silverado", bodyStyle="silverado-3500hd",
-                                                  modelYear=date(2022, 1, 1), api='fullyConfigured')
-        self.assertEqual(expected, found)
-
-    def test__createModelDataPathDefault(self):
-        expected = "https://www.chevrolet.com/byo-vc/api/v2/trim-matrix/en/US/chevrolet/silverado/2022/silverado-3500hd?postalCode=94102"
-        found = self.scraper._createModelDataPath(carLine="silverado", bodyStyle="silverado-3500hd",
-                                                  modelYear=date(2022, 1, 1) )
-        self.assertEqual(expected, found)
-
-    def test__createModelDataTrimMatrix(self):
-        expected = "https://www.chevrolet.com/byo-vc/api/v2/trim-matrix/en/US/chevrolet/silverado/2022/silverado-3500hd?postalCode=94102"
-        found = self.scraper._createModelDataPath(carLine="silverado", bodyStyle="silverado-3500hd",
-                                                  modelYear=date(2022, 1, 1), api='trim-matrix' )
-        self.assertEqual(expected, found)
-
     def test__createModelFetchDtoReturnsExpected(self):
         self.scraper.bodyStyleToCarLine = {"corvette-z06": "corvette"}  # note: mutating scraper
         carLine = "corvette"
         bodyStyle = "corvette-z06"
         modelYear = date(2022, 1, 1)
-        expectedPath = "https://www.chevrolet.com/byo-vc/api/v2/trim-matrix/en/US/chevrolet/corvette/2022/corvette-z06?postalCode=94102"
+        expectedPath = "https://www.chevrolet.com/byo-vc/services/fullyConfigured/US/en/chevrolet/2022/corvette/corvette-z06?postalCode=94102&region=na"
         expectedMetaData = {"metadata": {"bodyStyle": bodyStyle, "carLine": carLine}}
         found = self.scraper._createModelFetchDto(bodyStyle=bodyStyle, modelName="Corvette Z06", modelYear=modelYear)
         expected = ModelFetchDto(modelName="Corvette Z06", modelCode=bodyStyle, path=expectedPath,
@@ -121,3 +103,21 @@ class TestGmScraper(TestCase):
         raises = lambda: self.scraper._createModelFetchDto(bodyStyle=bodyStyle, modelName="Corvette Z06",
                                                            modelYear=modelYear)
         self.assertRaises(ValueError, raises)
+
+    def test__createModelDataPathFullyConfigured(self):
+        expected = "https://www.chevrolet.com/byo-vc/services/fullyConfigured/US/en/chevrolet/2022/silverado/silverado-3500hd?postalCode=94102&region=na"
+        found = self.scraper._createModelDataPath(carLine="silverado", bodyStyle="silverado-3500hd",
+                                                  modelYear=date(2022, 1, 1), api='fullyConfigured')
+        self.assertEqual(expected, found)
+
+    def test__createModelDataPathDefault(self):
+        expected = "https://www.chevrolet.com/byo-vc/api/v2/trim-matrix/en/US/chevrolet/silverado/2022/silverado-3500hd?postalCode=94102"
+        found = self.scraper._createModelDataPath(carLine="silverado", bodyStyle="silverado-3500hd",
+                                                  modelYear=date(2022, 1, 1), api='trim-matrix' )
+        self.assertEqual(expected, found)
+
+    def test__createModelDataTrimMatrix(self):
+        expected = "https://www.chevrolet.com/byo-vc/api/v2/trim-matrix/en/US/chevrolet/silverado/2022/silverado-3500hd?postalCode=94102"
+        found = self.scraper._createModelDataPath(carLine="silverado", bodyStyle="silverado-3500hd",
+                                                  modelYear=date(2022, 1, 1), api='trim-matrix' )
+        self.assertEqual(expected, found)
