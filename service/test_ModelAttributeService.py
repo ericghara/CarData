@@ -6,7 +6,6 @@ from repository.Entities import ModelAttribute
 from repository.SessionFactory import sessionFactory
 from repository.test_common.DbContainer import DbContainer
 from service.ModelAttributeService import modelAttributeService
-from service.ModelService import modelService
 
 
 class TestModelAttributeService(TestCase):

@@ -1,4 +1,3 @@
-import json
 import logging
 from datetime import date
 from typing import List, Dict, Optional
@@ -10,9 +9,9 @@ from repository.Entities import RawData, Brand
 from repository.SessionFactory import sessionFactory
 from repository.dto import Model as ModelDto
 from service.BrandService import brandService
+from service.ManufacturerService import manufacturerService
 from service.ModelService import modelService
 from service.RawDataService import rawDataService
-from service.ManufacturerService import manufacturerService
 
 
 class Extractor:
@@ -22,9 +21,9 @@ class Extractor:
         self.scraper = scraper
         self.brandId = self._createOrFetchBrand(noPersist=kwargs.get("noPersist", False) )
 
-    def _createOrFetchBrand(self, noPersist: bool) -> UUID:
+    def _createOrFetchBrand(self, noPersist: bool) -> Optional[UUID]:
         if noPersist: # for testing
-            return
+            return None
         manufacturerCommon = self.scraper.getManufacturerCommon()
         brandName = self.scraper.getBrandName()
         with sessionFactory.newSession() as session:
