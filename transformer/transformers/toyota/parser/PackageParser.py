@@ -3,16 +3,17 @@ from typing import Dict
 from transformer.attribute_dto.AttributeDto import *
 from transformer.attribute_metadata.AttributeMetadata import AttributeMetadata
 from transformer.attribute_metadata.MetadataType import MetadataType
+from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser import util
 
 
-class PackageParser:
+class PackageParser(AttributeParser):
 
     def __init__(self, loggingTools: LoggingTools):
         self.loggingTools = loggingTools
 
-    def parse(self, jsonData: Dict) -> List[AttributeDto]:
+    def parse(self, jsonData: Dict) -> List[Package]:
         packageDtos = set()
         for modelJson in jsonData['model']:
             for packageJson in modelJson.get("packages", list()):
@@ -44,4 +45,4 @@ class PackageParser:
                                                  modelJson=modelJson)
             return None
         price = util.priceStrToInt(priceStr)
-        return AttributeMetadata(metadataType=MetadataType.COMMON_MSRP, value=price, units="$")
+        return AttributeMetadata(metadataType=MetadataType.COMMON_MSRP, value=price, unit="$")

@@ -14,7 +14,7 @@ class AttributeDto(ABC):
     def __init__(self, attributeType: AttributeType, title: str, metadata: Optional[List[AttributeMetadata]] = None):
         if metadata is None:
             metadata = list()
-        self.attribute_type = attributeType
+        self.attributeType = attributeType
         self.title = title
         self.metadata = metadata
 
@@ -26,27 +26,30 @@ class AttributeDto(ABC):
         """
         if not isinstance(other, self.__class__):
             return False
-        return self.attribute_type == other.attribute_type and self.title == other.title
+        return self.attributeType == other.attributeType and self.title == other.title
 
-    def _allParamEq(self, other: Any) -> bool:
+    def _assertStrictEq(self, other: Any) -> None:
         """
         For testing.  An equals implementation that compares all instance variables.
         :param other:
         :return:
         """
-        if not isinstance(other, self.__class__):
-            return False
-        return self.__dict__ == other.__dict__
+        if self.attributeType != other.attributeType:
+            raise AssertionError(f"AttributeType: {self.attributeType} != {other.attributeType}")
+        if self.title != other.title:
+            raise AssertionError(f"Title: {self.title} != {other.title}")
+        if set(self.metadata) != set(other.metadata):
+            raise AssertionError(f"Metadata: {self.metadata} != {other.metadata}")
 
     def __hash__(self) -> int:
         """
         Only ``attribute_type`` and ``title`` are hashed (similar to ``__eq__``)
         :return:
         """
-        return hash((self.attribute_type, self.title))
+        return hash((self.attributeType, self.title))
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.attribute_type}, {self.title})"
+        return f"{self.__class__.__name__}({self.attributeType}, {self.title})"
 
 
 class Engine(AttributeDto):

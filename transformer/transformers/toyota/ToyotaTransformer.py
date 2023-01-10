@@ -14,6 +14,4 @@ class ToyotaTransformer(Transformer):
         self.loggingTools = LoggingTools(logger=self.log)
 
     def transform(self, jsonData: Dict) -> List[AttributeDto]:
-        context = self.TransformContext(jsonData)
-
-        return context.attributeDtos  # think about this, could also just directly return ModelAttributes
+        pass

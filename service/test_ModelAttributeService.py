@@ -68,7 +68,7 @@ class TestModelAttributeService(TestCase):
         with sessionFactory.newSession() as session:
             camry2023 = modelAttributeService._getModel(brandName="toyota", modelName="Camry",
                                                         modelYear=date(2023, 1, 1), session=session)
-            expectedAttributes = {attribute for attribute in camry2023.model_attribute if attribute.attribute_type == AttributeType.GRADE}
+            expectedAttributes = {attribute for attribute in camry2023.model_attribute if attribute.attributeType == AttributeType.GRADE}
             foundAttributes = set(modelAttributeService.getAttributesByModelIdAndType(modelId=camry2023.model_id, attributeType=AttributeType.GRADE, session=session) )
             self.assertEqual(expectedAttributes, foundAttributes)
 

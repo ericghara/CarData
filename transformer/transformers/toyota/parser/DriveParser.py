@@ -1,26 +1,28 @@
 from typing import Dict
 
 from transformer.attribute_dto.AttributeDto import *
-from transformer.attribute_metadata.AttributeMetadata import AttributeMetadata
-from transformer.attribute_metadata.MetadataType import MetadataType
+from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 
 
-class DriveParser:
+class DriveParser(AttributeParser):
 
     def __init__(self, loggingTools: LoggingTools):
         self.loggingTools = loggingTools
 
-    def parse(self, jsonData: Dict) -> List[AttributeDto]:
+    def parse(self, jsonData: Dict) -> List[Drive]:
         driveDtos = set()
         for modelJson in jsonData['model']:
-            if title := self._getTitle(modelJson):
-                driveDtos.add(Drive(title=title))
+            if driveDto := self._getDrive(modelJson):
+                driveDtos.add(driveDto)
         return list(driveDtos)
 
-    def _getTitle(self, modelJson: Dict) -> Optional[str]:
+    def _getDrive(self, modelJson: Dict) -> Optional[Drive]:
         try:
-            return modelJson['drive']['title']
+            title = modelJson['drive']['title']
         except KeyError as e:
             self.loggingTools.logTitleFailure(transformer=self.__class__, exception=e, modelJson=modelJson)
             return None
+        if title:
+            return Drive(title=title)
+        return None

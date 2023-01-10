@@ -3,11 +3,12 @@ from typing import Dict
 from transformer.attribute_dto.AttributeDto import *
 from transformer.attribute_metadata.AttributeMetadata import AttributeMetadata
 from transformer.attribute_metadata.MetadataType import MetadataType
+from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser import util
 
 
-class AccessoryParser:
+class AccessoryParser(AttributeParser):
 
     def __init__(self, loggingTools: LoggingTools):
         self.loggingTools = loggingTools
@@ -39,9 +40,9 @@ class AccessoryParser:
             self.loggingTools.logTitleFailure(transformer=self.__class__, exception=e, modelJson=modelJson)
             return None
         price = util.priceStrToInt(priceStr)
-        return AttributeMetadata(metadataType=metadataType, value=price, units="$")
+        return AttributeMetadata(metadataType=metadataType, value=price, unit="$")
 
-    def parse(self, jsonData: Dict) -> List[AttributeDto]:
+    def parse(self, jsonData: Dict) -> List[Accessory]:
         accessoryDtos = set()
         for modelJson in jsonData['model']:
             for accessoryJson in modelJson['accessories']:
