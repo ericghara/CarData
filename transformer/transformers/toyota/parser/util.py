@@ -1,3 +1,4 @@
+import re
 
 
 def priceStrToInt(price: int | str) -> int:
@@ -5,4 +6,8 @@ def priceStrToInt(price: int | str) -> int:
         return price
     price = price.replace("$", "").replace(",", "")
     return int(price)
+
+def removeBracketed(text: str) -> str:
+    return re.sub(r'\[[^]]*]', '', text)
+
 

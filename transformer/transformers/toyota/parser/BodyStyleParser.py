@@ -3,8 +3,8 @@ from typing import Dict
 from transformer.attribute_dto.AttributeDto import *
 from transformer.attribute_metadata.AttributeMetadata import AttributeMetadata
 from transformer.attribute_metadata.MetadataType import MetadataType
-from transformer.transformers.Toyota.LoggingTools import LoggingTools
-from transformer.transformers.Toyota.parser import util
+from transformer.transformers.toyota.LoggingTools import LoggingTools
+from transformer.transformers.toyota.parser import util
 
 
 class BodyStyleParser:
@@ -29,14 +29,14 @@ class BodyStyleParser:
 
     def _createTitle(self, attributeMetadata: List[AttributeMetadata]) -> str:
         """
-        ``BodyStyle`` title is inferred from metadata.  Toyota does not have the concept
+        ``BodyStyle`` title is inferred from metadata.  toyota does not have the concept
         of ``BodyStyle`` that fits within the data model being used.
         :param attributeMetadata:
         :return:
         """
         titleByType = {metadata.key: metadata.label for metadata in attributeMetadata}
-        bed = titleByType.get(MetadataType.BODY_STYLE_BED.key)
-        cab = titleByType.get(MetadataType.BODY_STYLE_CAB.key)
+        bed = titleByType.get(MetadataType.BODY_STYLE_BED.name)
+        cab = titleByType.get(MetadataType.BODY_STYLE_CAB.name)
         if not bed and not cab:
             return "Standard"
         if bed and cab:

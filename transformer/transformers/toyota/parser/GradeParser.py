@@ -1,26 +1,26 @@
 from typing import Dict
 
 from transformer.attribute_dto.AttributeDto import *
-from transformer.transformers.Toyota.LoggingTools import LoggingTools
+from transformer.transformers.toyota.LoggingTools import LoggingTools
 
 
-class TransmissionParser:
+class GradeParser:
 
     def __init__(self, loggingTools: LoggingTools):
         self.loggingTools = loggingTools
 
     def _getTitle(self, modelJson: Dict) -> Optional[str]:
         try:
-            return modelJson['transmission']['title']
+            return modelJson['grade']['attributes']['title']['value']
         except KeyError as e:
             self.loggingTools.logTitleFailure(transformer=self.__class__, exception=e, modelJson=modelJson)
 
     def parse(self, jsonData: Dict) -> List[AttributeDto]:
-        transmissionAttributeDtos = set()
+        gradeAttributeDtos = set()
         for modelJson in jsonData['model']:
             if not (title := self._getTitle(modelJson)):
                 continue
-            transmissionAttributeDtos.add(AttributeDto(attributeType=AttributeType.TRANSMISSION, title=title))
-        if not transmissionAttributeDtos:
+            gradeAttributeDtos.add(AttributeDto(attributeType=AttributeType.GRADE, title=title))
+        if not gradeAttributeDtos:
             self.loggingTools.logNoAttributes(self.__class__)
-        return list(transmissionAttributeDtos)
+        return list(gradeAttributeDtos)

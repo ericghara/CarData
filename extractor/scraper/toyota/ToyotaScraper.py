@@ -22,7 +22,7 @@ class ToyotaScraper(ModelInfoScraper):
                    'priusv': 'Prius v', 'priusplugin': 'Prius Plug-in', 'sequoiahybrid': 'Sequoia Hybrid'}
 
     URL_PREFIX = 'https://www.toyota.com/config/pub'
-    MANUFACTURER_COMMON = BRAND_NAME = 'Toyota'
+    MANUFACTURER_COMMON = BRAND_NAME = 'toyota'
 
     # kwargs:
     #   - noPersist: True/False
@@ -71,7 +71,7 @@ class ToyotaScraper(ModelInfoScraper):
             modelCode = model.get('featureModel', "")
             if not modelCode:
                 raise KeyError(
-                    f"Model code could not be parsed.  Likely Toyota's response format has changed")
+                    f"Model code could not be parsed.  Likely toyota's response format has changed")
             modelName = self._getModelName(modelCode)
             subPath = model.get("path", "")
             fullPath = self._createModelDataURL(subPath)

@@ -13,7 +13,7 @@ from repository.test_common.mockSessionFactory import MockSessionFactory
 class TestToyotaScraper(TestCase):
 
     def setUp(self) -> None:
-        self.brand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name='Toyota')
+        self.brand = Brand(brand_id=uuid4(), manufacturer_id=uuid4(), name='toyota')
         self.sessionFactoryMock = MockSessionFactory()
         self.httpClientResponseMock = Response()
         self.httpClientResponseMock.json = MagicMock(return_value={})

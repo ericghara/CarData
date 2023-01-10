@@ -8,7 +8,7 @@ from typing import *
 class LexusScraper(ModelInfoScraper):
     URL_PREFIX = 'https://www.lexus.com/config/pub'
     BRAND_NAME = "Lexus"
-    MANUFACTURER_COMMON = "Toyota"
+    MANUFACTURER_COMMON = "toyota"
 
     # Note this is essentially the same as ToyotaScraper aside from _getModelName function
     # A decision was made to keep the code bases separate.  Their websites and formats could

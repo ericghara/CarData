@@ -25,31 +25,31 @@ class TestManufacturerService(TestCase):
 
     def test_get_manufacturer_by_common_name(self):
         with sessionFactory.newSession() as session:
-            toyotaManufacturer = manufacturerService.getManufacturerByCommonName('Toyota', session)
+            toyotaManufacturer = manufacturerService.getManufacturerByCommonName('toyota', session)
         self.assertTrue(toyotaManufacturer)
 
     def test_getManufacturerByManufacturerId(self):
         with sessionFactory.newSession() as session:
-            expected = manufacturerService.getManufacturerByCommonName(commonName='Toyota', session=session)
+            expected = manufacturerService.getManufacturerByCommonName(commonName='toyota', session=session)
             found = manufacturerService.getManufacturerById(manufacurerId=expected.manufacturer_id, session=session)
             self.assertEqual(found, expected)
 
     def test_get_all_manufacturers(self):
         with sessionFactory.newSession() as session:
             manufacturerCommonNames = [ manufacturer.common_name for manufacturer in manufacturerService.getAllManufacturers(session) ]
-        self.assertEqual(['Toyota'], manufacturerCommonNames)
+        self.assertEqual(['toyota'], manufacturerCommonNames)
 
     def test_deleteAllManufacturers(self):
         with sessionFactory.newSession() as session:
             manufacturerService.deleteAllManufacturers(session)
-            shouldBeNull = manufacturerService.getManufacturerByCommonName('Toyota', session)
+            shouldBeNull = manufacturerService.getManufacturerByCommonName('toyota', session)
             session.commit()
         self.assertIs(None, shouldBeNull)
 
     def test_delete_manufacturer_by_common_name(self):
         with sessionFactory.newSession() as session:
-            manufacturerService.deleteManufacturerByCommonName('Toyota', session)
-            shouldBeNull = manufacturerService.getManufacturerByCommonName('Toyota', session)
+            manufacturerService.deleteManufacturerByCommonName('toyota', session)
+            shouldBeNull = manufacturerService.getManufacturerByCommonName('toyota', session)
             session.commit()
         self.assertIs(None, shouldBeNull)
 

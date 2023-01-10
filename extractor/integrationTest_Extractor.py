@@ -70,7 +70,7 @@ class Test(TestCase):
 
     def test__createOrFetchBrandRaisesOnWrongManufacturer(self):
         with sessionFactory.newSession() as session:
-            toyotaManufacturer = Manufacturer(official_name="Toyota Motor Company", common_name="Toyota")
+            toyotaManufacturer = Manufacturer(official_name="toyota Motor Company", common_name="toyota")
             session.add(toyotaManufacturer)
             chevroletBrand = Brand(name="Chevrolet")
             toyotaManufacturer.brands.append(chevroletBrand)

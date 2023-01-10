@@ -82,7 +82,7 @@ class Grade(AttributeDto):
 class Package(AttributeDto):
 
     def __init__(self, title: str, metadata: List[AttributeMetadata] = None):
-        super().__init__(attributeType=AttributeType.PACKAGE, title=title, metadata=metadata)
+        super().__init__(attributeType=AttributeType.PACKAGES, title=title, metadata=metadata)
 
 
 class InteriorColor(AttributeDto):
@@ -97,10 +97,10 @@ class ExteriorColor(AttributeDto):
         super().__init__(attributeType=AttributeType.EXTERIOR_COLOR, title=title, metadata=metadata)
 
 
-class Accessories(AttributeDto):
+class Accessory(AttributeDto):
 
     def __init__(self, title: str, metadata: List[AttributeMetadata] = None):
-        super().__init__(attributeType=AttributeType.ACCESSORIES, title=title, metadata=metadata)
+        super().__init__(attributeType=AttributeType.ACCESSORY, title=title, metadata=metadata)
 
 
 class Other(AttributeDto):

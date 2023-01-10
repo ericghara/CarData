@@ -3,7 +3,7 @@ from typing import Dict
 from transformer.attribute_dto.AttributeDto import *
 from transformer.attribute_metadata.AttributeMetadata import AttributeMetadata
 from transformer.attribute_metadata.MetadataType import MetadataType
-from transformer.transformers.Toyota.LoggingTools import LoggingTools
+from transformer.transformers.toyota.LoggingTools import LoggingTools
 
 
 class DriveParser:

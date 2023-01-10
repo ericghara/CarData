@@ -29,3 +29,9 @@ class LoggingTools:
 
     def logDuplicateAttributeDto(self, transformer: type, attributeDto: AttributeDto) -> None:
         self.log.debug(f"{transformer.__name__} - duplicate attribute for {attributeDto}")
+
+    def logDebug(self, message: str, transformer: Optional[type] = "Unknown Transformer", modelJson: Optional[Dict] = None):
+        if not modelJson:
+            modelName = "Unknown Model"
+        modelName = self._getModelName(modelJson)
+        self.log.debug(f"{transformer.__name__} : {modelName} - {message}")
