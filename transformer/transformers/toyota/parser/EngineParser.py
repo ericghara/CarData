@@ -18,7 +18,10 @@ class EngineParser(AttributeParser):
         engineAttributeDtos = set()
         for modelJson in jsonData['model']:
             if engine := self._parseModel(modelJson):
-                engineAttributeDtos.add(engine)
+                if engine in engineAttributeDtos:
+                    self.loggingTools.logDuplicateAttributeDto(transformer=type(self), attributeDto=engine)
+                else:
+                    engineAttributeDtos.add(engine)
         if not engineAttributeDtos:
             self.loggingTools.logNoAttributes(self.__class__)
         return list(engineAttributeDtos)

@@ -26,17 +26,20 @@ class GradeParser(AttributeParser):
             self.loggingTools.logTitleFailure(transformer=self.__class__, exception=e, modelJson=modelJson)
         return None
 
-    def _getTitle(self, modelJson: Dict) -> Optional[str]:
+    def _parseModel(self, modelJson: Dict) -> Grade:
         # Lexus: has no concept of "Standard" trim, instead the Standard model has no dealertrim
         # Toyota: the base/standard grade is usually (always?) the model name
-        return self._getGrade(modelJson) or self._getDealerTrim(modelJson) or "Standard"
+        title = self._getGrade(modelJson) or self._getDealerTrim(modelJson) or "Standard"
+        return Grade(title=title)
 
     def parse(self, jsonData: Dict) -> List[Grade]:
         gradeAttributeDtos = set()
         for modelJson in jsonData['model']:
-            if not (title := self._getTitle(modelJson)):
-                continue
-            gradeAttributeDtos.add(Grade(title=title))
+            grade = self._parseModel(modelJson)
+            if grade in gradeAttributeDtos:
+                self.loggingTools.logDuplicateAttributeDto(transformer=type(self), attributeDto=grade)
+            else:
+                gradeAttributeDtos.add(grade)
         if not gradeAttributeDtos:
             self.loggingTools.logNoAttributes(self.__class__)
         return list(gradeAttributeDtos)

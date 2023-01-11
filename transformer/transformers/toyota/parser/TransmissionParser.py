@@ -22,7 +22,10 @@ class TransmissionParser(AttributeParser):
         for modelJson in jsonData['model']:
             if not (title := self._getTitle(modelJson)):
                 continue
-            transmissionAttributeDtos.add(Transmission(title=title))
+            if (transmission := Transmission(title=title)) in transmissionAttributeDtos:
+                self.loggingTools.logDuplicateAttributeDto(transformer=type(self), attributeDto=transmission)
+            else:
+                transmissionAttributeDtos.add(transmission)
         if not transmissionAttributeDtos:
             self.loggingTools.logNoAttributes(self.__class__)
         return list(transmissionAttributeDtos)

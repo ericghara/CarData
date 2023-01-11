@@ -18,12 +18,13 @@ class BodyStyleParser(AttributeParser):
         bodyStyleDtos = set()
         for modelJson in jsonData['model']:
             bodyStyleDto = self._parseModel(modelJson)
-            if not bodyStyleDtos.add(bodyStyleDto):
+            if bodyStyleDto in bodyStyleDtos:
                 self.loggingTools.logDuplicateAttributeDto(transformer=self.__class__, attributeDto=bodyStyleDto)
+            else:
+                bodyStyleDtos.add(bodyStyleDto)
         if not bodyStyleDtos:
             self.loggingTools.logNoAttributes(self.__class__)
         return list(bodyStyleDtos)
-
 
     def _parseModel(self, modelJson: Dict) -> BodyStyle:
         metadata = list()
@@ -33,7 +34,6 @@ class BodyStyleParser(AttributeParser):
         title = self._createTitle(metadata)
         return BodyStyle(title=title, metadata=metadata)
 
-
     def _createTitle(self, attributeMetadata: List[AttributeMetadata]) -> str:
         """
         ``BodyStyle`` title is inferred from metadata.  toyota does not have the concept
@@ -41,19 +41,15 @@ class BodyStyleParser(AttributeParser):
         :param attributeMetadata:
         :return:
         """
-        titleByType = {metadata.key: metadata.label for metadata in attributeMetadata}
-        bed = titleByType.get(MetadataType.BODY_STYLE_BED.name)
-        cab = titleByType.get(MetadataType.BODY_STYLE_CAB.name)
-        if not bed and not cab:
-            return "Standard"
-        if bed and cab:
-            return f"{cab} {bed}"
-        return bed or cab
+        titleByType = {metadata.metadataType: metadata.value for metadata in attributeMetadata}
+        cab = titleByType.get(MetadataType.BODY_STYLE_CAB)
+        bed = titleByType.get(MetadataType.BODY_STYLE_BED)
+        return " ".join([part for part in [cab, bed] if part]) or "Standard"
 
     def _getBed(self, modelJson: Dict) -> Optional[AttributeMetadata]:
         metadataType = MetadataType.BODY_STYLE_BED
         try:
-            bed = f"{modelJson['bed']['title']} Bed"  # ex: f"{"8.1ft"} Bed"
+            bed = modelJson['bed']['title']
         except KeyError as e:
             self.loggingTools.logMetadataFailure(metadataType=metadataType, exception=e, modelJson=modelJson)
             return None

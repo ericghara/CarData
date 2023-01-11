@@ -64,7 +64,7 @@ class TestEngineParser(TestCase):
         expectedEnginesByTitle = { engine.title : engine for engine in [self.onlyTitleEngine, self.titleFullMetadataEngine] }
         for foundEngine in foundEngines:
             self.assertIsNotNone(expectedEngine := expectedEnginesByTitle.get(foundEngine.title), f"incorrect title {foundEngine}")
-            expectedEngine._assertFullyEq(foundEngine)
+            expectedEngine._assertStrictEq(foundEngine)
 
 
 
