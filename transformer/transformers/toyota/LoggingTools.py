@@ -1,8 +1,7 @@
 import logging
 from typing import Dict
 
-from transformer.attribute_dto.AttributeDto import *
-from transformer.attribute_metadata.MetadataType import MetadataType
+from transformer.common.enum.MetadataType import MetadataType
 
 
 class LoggingTools:
@@ -20,18 +19,22 @@ class LoggingTools:
         self.log.debug(f"Failure to parse: {metadataType.name} for model {self._getModelName(modelJson)}")
         self.log.debug(f"Error message:\n", exception.__cause__)
 
-    def logTitleFailure(self, transformer: type, exception: Exception, modelJson: Dict) -> None:
-        self.log.debug(f"Failure to parse title: {transformer.__name__} for model {self._getModelName(modelJson)}")
+    def logTitleFailure(self, parser: type, exception: Exception, modelJson: Dict) -> None:
+        self.log.debug(f"Failure to parse title: {parser.__name__} for model {self._getModelName(modelJson)}")
         self.log.debug(f"Error message:\n", exception.__cause__)
 
-    def logNoAttributes(self, transformer: type) -> None:
-        self.log.debug(f"No Attributes found for {transformer.__name__}")
+    def logNoAttributes(self, parser: type) -> None:
+        self.log.debug(f"No Attributes found for {parser.__name__}")
 
-    def logDuplicateAttributeDto(self, transformer: type, attributeDto: AttributeDto) -> None:
-        self.log.debug(f"{transformer.__name__} - duplicate attribute for {attributeDto}")
+    def logDuplicateAttributeDto(self, parser: type, attributeDto: AttributeDto) -> None:
+        self.log.debug(f"{parser.__name__} - duplicate attribute for {attributeDto}")
 
-    def logDebug(self, message: str, transformer: Optional[type] = "Unknown Transformer", modelJson: Optional[Dict] = None):
+    def logDebug(self, message: str, parser: Optional[type] = "Unknown Transformer", modelJson: Optional[Dict] = None):
         if not modelJson:
             modelName = "Unknown Model"
         modelName = self._getModelName(modelJson)
-        self.log.debug(f"{transformer.__name__} : {modelName} - {message}")
+        self.log.debug(f"{parser.__name__} : {modelName} - {message}")
+
+    def logParserFailure(self, transformer: type, parser: type, exception: Exception) -> None:
+        logging.info(f"{transformer.__name__} - {parser.__name__} ")
+        logging.debug("Parser Failure:\n", exc_info=exception)

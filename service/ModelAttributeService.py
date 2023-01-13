@@ -4,7 +4,7 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
-from repository.DataTypes import AttributeType
+from repository.AttributeType import AttributeType
 from repository.Entities import ModelAttribute, Model
 from service.ModelService import modelService
 

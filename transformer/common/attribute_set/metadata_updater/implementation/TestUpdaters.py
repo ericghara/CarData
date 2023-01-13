@@ -4,10 +4,20 @@ from transformer.common.attribute_set.metadata_updater.MetadataUpdater import Me
 from transformer.common.dto.AttributeMetadata import AttributeMetadata
 
 
-class AlwaysRaisesUpdater(MetadataUpdater):
+class AlwaysRaises(MetadataUpdater):
     """
     For Testing.
     """
 
-    def update(self, dictMetadata: List[AttributeMetadata], newMetadata: List[AttributeMetadata]):
+    def update(self, dictMetadata: List[AttributeMetadata], newMetadata: List[AttributeMetadata]) -> bool:
         raise AssertionError("Update should not be called")
+
+class AlwaysUpdates(MetadataUpdater):
+
+    def update(self, dictMetadata: List[AttributeMetadata], newMetadata: List[AttributeMetadata]) -> bool:
+        return True
+
+class NeverUpdates(MetadataUpdater):
+
+    def update(self, dictMetadata: List[AttributeMetadata], newMetadata: List[AttributeMetadata]) -> bool:
+        return False

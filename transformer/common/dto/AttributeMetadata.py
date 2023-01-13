@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
-from transformer.common.attribute_metadata.MetadataType import MetadataType
-from transformer.common.attribute_metadata.MetadataUnit import MetadataUnit
+from transformer.common.enum.MetadataType import MetadataType
+from transformer.common.enum.MetadataUnit import MetadataUnit
 
 
 class AttributeMetadata:

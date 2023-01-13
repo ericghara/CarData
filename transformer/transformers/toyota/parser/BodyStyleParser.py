@@ -1,9 +1,8 @@
 from typing import Dict
 
-from transformer.attribute_dto.AttributeDto import *
-from transformer.attribute_metadata.AttributeMetadata import AttributeMetadata
-from transformer.attribute_metadata.MetadataType import MetadataType
-from transformer.attribute_metadata.MetadataUnit import MetadataUnit
+from transformer.common.dto import AttributeMetadata
+from transformer.common.enum.MetadataType import MetadataType
+from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser import util
@@ -19,7 +18,7 @@ class BodyStyleParser(AttributeParser):
         for modelJson in jsonData['model']:
             bodyStyleDto = self._parseModel(modelJson)
             if bodyStyleDto in bodyStyleDtos:
-                self.loggingTools.logDuplicateAttributeDto(transformer=self.__class__, attributeDto=bodyStyleDto)
+                self.loggingTools.logDuplicateAttributeDto(parser=self.__class__, attributeDto=bodyStyleDto)
             else:
                 bodyStyleDtos.add(bodyStyleDto)
         if not bodyStyleDtos:

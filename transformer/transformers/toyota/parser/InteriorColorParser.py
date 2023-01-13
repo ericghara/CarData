@@ -1,9 +1,8 @@
 from typing import Dict, Iterable
 
-from transformer.attribute_dto.AttributeDto import *
-from transformer.attribute_metadata.AttributeMetadata import AttributeMetadata
-from transformer.attribute_metadata.MetadataType import MetadataType
-from transformer.attribute_metadata.MetadataUnit import MetadataUnit
+from transformer.common.dto import AttributeMetadata
+from transformer.common.enum.MetadataType import MetadataType
+from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser import util
@@ -20,7 +19,7 @@ class InteriorColorParser(AttributeParser):
         try:
             colorTitle = colorJson['title']
         except KeyError as e:
-            self.loggingTools.logTitleFailure(transformer=self.__class__, exception=e, modelJson=modelJson)
+            self.loggingTools.logTitleFailure(parser=self.__class__, exception=e, modelJson=modelJson)
             return None
         if not colorTitle:
             return None
@@ -51,7 +50,7 @@ class InteriorColorParser(AttributeParser):
         for modelJson in jsonData['model']:
             for interiorColor in self._parseModel(modelJson):
                 if interiorColor in interiorDtos:
-                    self.loggingTools.logDuplicateAttributeDto(transformer=type(self), attributeDto=interiorColor)
+                    self.loggingTools.logDuplicateAttributeDto(parser=type(self), attributeDto=interiorColor)
                 else:
                     interiorDtos.add(interiorColor)
         return list(interiorDtos)

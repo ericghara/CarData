@@ -7,7 +7,7 @@ from glbls import variables
 from repository.Entities import Manufacturer, Brand, Model, RawData, ModelAttribute
 from repository.SessionFactory import sessionFactory
 from service.ManufacturerService import manufacturerService
-from repository.DataTypes import AttributeType
+from repository.AttributeType import AttributeType
 
 
 class DbContainer:

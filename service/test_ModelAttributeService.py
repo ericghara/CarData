@@ -1,7 +1,7 @@
 from datetime import date
 from unittest import TestCase
 
-from repository.DataTypes import AttributeType
+from repository.AttributeType import AttributeType
 from repository.Entities import ModelAttribute
 from repository.SessionFactory import sessionFactory
 from repository.test_common.DbContainer import DbContainer

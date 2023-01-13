@@ -1,10 +1,10 @@
 import logging
 from unittest import TestCase
 
-from transformer.attribute_dto.AttributeDto import InteriorColor
-from transformer.attribute_metadata.AttributeMetadata import AttributeMetadata
-from transformer.attribute_metadata.MetadataType import MetadataType
-from transformer.attribute_metadata.MetadataUnit import MetadataUnit
+from transformer.common.attribute_dto import InteriorColor
+from transformer.common.dto import AttributeMetadata
+from transformer.common.enum.MetadataType import MetadataType
+from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser.InteriorColorParser import InteriorColorParser
 

@@ -2,7 +2,7 @@ from abc import ABC
 from typing import List, Optional, Any
 
 from repository.AttributeType import AttributeType
-from transformer.common.enum.AttributeMetadata import AttributeMetadata
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
 
 
 class AttributeDto(ABC):
@@ -66,6 +66,9 @@ class Transmission(AttributeDto):
 
     def __init__(self, title: str, metadata: List[AttributeMetadata] = None):
         super().__init__(attributeType=AttributeType.TRANSMISSION, title=title, metadata=metadata)
+
+    def __dict__(self):
+        return {'title' : self.title, 'metadata' : self.metadata}
 
 
 class Drive(AttributeDto):

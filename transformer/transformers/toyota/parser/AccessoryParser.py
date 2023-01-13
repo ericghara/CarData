@@ -1,9 +1,8 @@
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Optional
 
-from transformer.attribute_dto.AttributeDto import *
-from transformer.attribute_metadata.AttributeMetadata import AttributeMetadata
-from transformer.attribute_metadata.MetadataType import MetadataType
-from transformer.attribute_metadata.MetadataUnit import MetadataUnit
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
+from transformer.common.enum.MetadataType import MetadataType
+from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser import util
@@ -18,7 +17,7 @@ class AccessoryParser(AttributeParser):
         try:
             accessoryTitle = accessoryJson['title']
         except KeyError as e:
-            self.loggingTools.logTitleFailure(transformer=self.__class__, exception=e, modelJson=modelJson)
+            self.loggingTools.logTitleFailure(parser=self.__class__, exception=e, modelJson=modelJson)
             return None
         if not accessoryTitle:
             return None
@@ -29,7 +28,7 @@ class AccessoryParser(AttributeParser):
         try:
             category = accessoryJson['attributes']['group']['value']
         except KeyError as e:
-            self.loggingTools.logTitleFailure(transformer=self.__class__, exception=e, modelJson=modelJson)
+            self.loggingTools.logTitleFailure(parser=self.__class__, exception=e, modelJson=modelJson)
             return None
         if not category:
             return None
@@ -40,7 +39,7 @@ class AccessoryParser(AttributeParser):
         try:
             priceStr = accessoryJson['price']
         except KeyError as e:
-            self.loggingTools.logTitleFailure(transformer=self.__class__, exception=e, modelJson=modelJson)
+            self.loggingTools.logTitleFailure(parser=self.__class__, exception=e, modelJson=modelJson)
             return None
         if not priceStr:
             return None
@@ -60,7 +59,7 @@ class AccessoryParser(AttributeParser):
         for modelJson in jsonData['model']:
             for accessory in self._parseModel(modelJson):
                 if accessory in accessoryDtos:
-                    self.loggingTools.logDuplicateAttributeDto(transformer=self.__class__, attributeDto=accessory)
+                    self.loggingTools.logDuplicateAttributeDto(parser=self.__class__, attributeDto=accessory)
                 else:
                     accessoryDtos.add(accessory)
         return list(accessoryDtos)

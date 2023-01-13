@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Set
+from repository.dto import Model as ModelDto
 
-from transformer.attribute_dto.AttributeDto import AttributeDto
+from transformer.common.dto import AttributeDto
 
 
 class Transformer(ABC):
@@ -15,7 +16,7 @@ class Transformer(ABC):
             raise ValueError("jsonData was None or Empty.")
 
     @abstractmethod
-    def transform(self, jsonData: Dict) -> List[AttributeDto]:
+    def transform(self, jsonData: Dict, modelDto: ModelDto) -> List[AttributeDto]:
         pass
 
     def getManufacturerCommon(self) -> str:

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Optional, Dict
 from uuid import UUID
-from repository.DataTypes import AttributeType
+from repository.AttributeType import AttributeType
 
 # These are simple objects. They are not DB proxies like entities
 

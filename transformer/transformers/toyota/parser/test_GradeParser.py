@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from nose_parameterized import parameterized
 
-from transformer.attribute_dto.AttributeDto import Grade
+from transformer.common.attribute_dto import Grade
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser.GradeParser import GradeParser
 

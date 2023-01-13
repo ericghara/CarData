@@ -1,6 +1,5 @@
 from typing import Dict
 
-from transformer.attribute_dto.AttributeDto import *
 from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 
@@ -21,7 +20,7 @@ class DriveParser(AttributeParser):
         try:
             title = modelJson['drive']['title']
         except KeyError as e:
-            self.loggingTools.logTitleFailure(transformer=self.__class__, exception=e, modelJson=modelJson)
+            self.loggingTools.logTitleFailure(parser=self.__class__, exception=e, modelJson=modelJson)
             return None
         if title:
             return Drive(title=title)

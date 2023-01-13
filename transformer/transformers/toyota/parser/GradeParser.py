@@ -1,6 +1,5 @@
 from typing import Dict
 
-from transformer.attribute_dto.AttributeDto import *
 from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 
@@ -15,7 +14,7 @@ class GradeParser(AttributeParser):
         try:
             return modelJson['grade']['attributes']['title']['value']
         except KeyError as e:
-            self.loggingTools.logTitleFailure(transformer=self.__class__, exception=e, modelJson=modelJson)
+            self.loggingTools.logTitleFailure(parser=self.__class__, exception=e, modelJson=modelJson)
         return None
 
     def _getDealerTrim(self, modelJson: Dict) -> Optional[str]:
@@ -23,7 +22,7 @@ class GradeParser(AttributeParser):
         try:
             return modelJson['attributes']['dealertrim']['value']
         except KeyError as e:
-            self.loggingTools.logTitleFailure(transformer=self.__class__, exception=e, modelJson=modelJson)
+            self.loggingTools.logTitleFailure(parser=self.__class__, exception=e, modelJson=modelJson)
         return None
 
     def _parseModel(self, modelJson: Dict) -> Grade:
@@ -37,7 +36,7 @@ class GradeParser(AttributeParser):
         for modelJson in jsonData['model']:
             grade = self._parseModel(modelJson)
             if grade in gradeAttributeDtos:
-                self.loggingTools.logDuplicateAttributeDto(transformer=type(self), attributeDto=grade)
+                self.loggingTools.logDuplicateAttributeDto(parser=type(self), attributeDto=grade)
             else:
                 gradeAttributeDtos.add(grade)
         if not gradeAttributeDtos:

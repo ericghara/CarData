@@ -1,9 +1,8 @@
 from typing import Dict
 
-from transformer.attribute_dto.AttributeDto import *
-from transformer.attribute_metadata.AttributeMetadata import AttributeMetadata
-from transformer.attribute_metadata.MetadataType import MetadataType
-from transformer.attribute_metadata.MetadataUnit import MetadataUnit
+from transformer.common.dto import AttributeMetadata
+from transformer.common.enum.MetadataType import MetadataType
+from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser import util
@@ -19,7 +18,7 @@ class EngineParser(AttributeParser):
         for modelJson in jsonData['model']:
             if engine := self._parseModel(modelJson):
                 if engine in engineAttributeDtos:
-                    self.loggingTools.logDuplicateAttributeDto(transformer=type(self), attributeDto=engine)
+                    self.loggingTools.logDuplicateAttributeDto(parser=type(self), attributeDto=engine)
                 else:
                     engineAttributeDtos.add(engine)
         if not engineAttributeDtos:
@@ -40,7 +39,7 @@ class EngineParser(AttributeParser):
         try:
             return modelJson['engine']['title']
         except KeyError as e:
-            self.loggingTools.logTitleFailure(transformer=self.__class__, exception=e, modelJson=modelJson)
+            self.loggingTools.logTitleFailure(parser=self.__class__, exception=e, modelJson=modelJson)
 
     def _getCylinders(self, modelJson: Dict) -> Optional[AttributeMetadata]:
         metadataType = MetadataType.ENGINE_CYLINDERS

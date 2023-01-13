@@ -4,7 +4,7 @@ from sqlalchemy import CheckConstraint, Column, Date, DateTime, ForeignKey, Stri
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship, declarative_base
 
-from repository.DataTypes import AttributeType
+from repository.AttributeType import AttributeType
 from repository.SessionFactory import sessionFactory
 
 Base = declarative_base()
