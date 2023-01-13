@@ -1,8 +1,8 @@
 from abc import ABC
 from typing import List, Optional, Any
 
-from repository.DataTypes import AttributeType
-from transformer.attribute_metadata.AttributeMetadata import AttributeMetadata
+from repository.AttributeType import AttributeType
+from transformer.common.enum.AttributeMetadata import AttributeMetadata
 
 
 class AttributeDto(ABC):
@@ -12,8 +12,6 @@ class AttributeDto(ABC):
     """
 
     def __init__(self, attributeType: AttributeType, title: str, metadata: Optional[List[AttributeMetadata]] = None):
-        if metadata is None:
-            metadata = list()
         self.attributeType = attributeType
         self.title = title
         self.metadata = metadata
@@ -38,6 +36,8 @@ class AttributeDto(ABC):
             raise AssertionError(f"AttributeType: {self.attributeType} != {other.attributeType}")
         if self.title != other.title:
             raise AssertionError(f"Title: {self.title} != {other.title}")
+        if self.metadata is None or other.metadata is None:
+            return self.metadata is None and other.metadata is None
         if set(self.metadata) != set(other.metadata):
             raise AssertionError(f"Metadata: {self.metadata} != {other.metadata}")
 
@@ -50,6 +50,10 @@ class AttributeDto(ABC):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.attributeType}, {self.title})"
+
+    def __str__(self):
+        return f"{self.attributeType.value}: {self.title}\n" \
+               f"\t{self.metadata}"
 
 
 class Engine(AttributeDto):
