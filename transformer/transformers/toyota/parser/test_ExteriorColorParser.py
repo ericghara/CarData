@@ -1,8 +1,8 @@
 import logging
 from unittest import TestCase
 
-from transformer.common.attribute_dto import ExteriorColor
-from transformer.common.dto import AttributeMetadata
+from transformer.common.dto.AttributeDto import ExteriorColor
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
 from transformer.common.enum.MetadataType import MetadataType
 from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.toyota.LoggingTools import LoggingTools
@@ -60,3 +60,14 @@ class TestExteriorColorParser(TestCase):
         expectedColors = {ExteriorColor(title="Solar Shift"),
                           ExteriorColor(title="Ice Cap")}
         self.assertEqual(expectedColors, foundColors)  # __eq__ used, strict proven by other tests
+
+    def test__parseMultipleModelsSameKeepsHighestPrice(self):
+        jsonData = {"model": [{"exteriorcolor": [{"title": "Solar Shift", "price" : "$100"}]},
+                              {"exteriorcolor": [{"title": "Solar Shift", "price" : "$0.00"}]}
+                              ]}
+        foundColors = list(self.exteriorColorParser.parse(jsonData))
+        expectedColors = [ExteriorColor(title="Solar Shift",
+                                        metadata=[AttributeMetadata(metadataType=MetadataType.COMMON_MSRP,
+                                                                    value=100, unit=MetadataUnit.DOLLARS)])]
+        self.assertEqual(expectedColors, foundColors)
+        expectedColors[0]._assertStrictEq(foundColors[0])

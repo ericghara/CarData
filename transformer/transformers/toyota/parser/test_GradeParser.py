@@ -3,7 +3,10 @@ from unittest import TestCase
 
 from nose_parameterized import parameterized
 
-from transformer.common.attribute_dto import Grade
+from transformer.common.dto.AttributeDto import Grade
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
+from transformer.common.enum.MetadataType import MetadataType
+from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser.GradeParser import GradeParser
 
@@ -27,6 +30,14 @@ class TestGradeParser(TestCase):
         expectedGrade = Grade(title=expectedTitle)
         expectedGrade._assertStrictEq(foundGrade)
 
+    def test_parseModelWithPrice(self):
+        model = {"attributes": {"msrp": {"value": "$100"}}}
+        foundGrade = self.gradeParser._parseModel(model)
+        expectedGrade = Grade(title="Standard",
+                              metadata=[AttributeMetadata(metadataType=MetadataType.COMMON_BASE_MSRP,
+                                                          value=100, unit=MetadataUnit.DOLLARS)])
+        expectedGrade._assertStrictEq(foundGrade)
+
     def test__parse(self):
         jsonData = {"model": [
             {"grade": {"attributes": {"title": {"value": "Grade"}}}},
@@ -35,4 +46,17 @@ class TestGradeParser(TestCase):
         ]}
         foundGrades = self.gradeParser.parse(jsonData)
         expectedGrades = [Grade(title="Grade"), Grade(title="Dealer Trim"), Grade(title="Standard")]
-        self.assertEqual(set(expectedGrades), set(foundGrades) )
+        self.assertEqual(set(expectedGrades), set(foundGrades))
+
+    def test__parseLowestPriceOnConflict(self):
+        jsonData = {"model": [
+            {"grade": {"attributes": {"title": {"value": "Grade"}}},
+             "attributes" : {"msrp" : {"value" : "$30,000"}}},
+            {"grade": {"attributes": {"title": {"value": "Grade"}}},
+             "attributes": {"msrp": {"value": "$29,999"}}}
+        ]}
+        foundGrades = self.gradeParser.parse(jsonData)
+        expectedGrades = [Grade(title="Grade", metadata=[AttributeMetadata(metadataType=MetadataType.COMMON_BASE_MSRP,
+                                                          value=29_999, unit=MetadataUnit.DOLLARS)])]
+        self.assertEqual(expectedGrades, foundGrades)
+        expectedGrades[0]._assertStrictEq(foundGrades[0])

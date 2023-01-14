@@ -1,8 +1,8 @@
 import logging
 from unittest import TestCase
 
-from transformer.common.attribute_dto import Package
-from transformer.common.dto import AttributeMetadata
+from transformer.common.dto.AttributeDto import Package
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
 from transformer.common.enum.MetadataType import MetadataType
 from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.toyota.LoggingTools import LoggingTools
@@ -57,24 +57,40 @@ class TestPackageParser(TestCase):
         expectedPackages = {Package("Technology Package"), Package("50 State Emissions Package")}
         self.assertEqual(expectedPackages, foundPackages)
 
-    def test__parseModelHasDuplicatePackages(self):
-        modelJson = {"model": [
+    def test__parseHasDuplicatePackages(self):
+        jsonData = {"model": [
             {"packages": [
                 {"title": "Technology Package"}]},
             {"packages": [
                 {"title": "Technology Package"}]}
         ]}
-        foundPackages = self.packageParser.parse(modelJson)
+        foundPackages = self.packageParser.parse(jsonData)
         expectedPackages = [Package("Technology Package")]
         self.assertEqual(expectedPackages, foundPackages)
 
-    def test_parseModelMultipleModels(self):
-        modelJson = {"model": [
+    def test_parseMultipleModels(self):
+        jsonData = {"model": [
             {"packages": [
                 {"title": "Technology Package"}]},
             {"packages": [
                 {"title": "50 State Emissions Package"}]}
         ]}
-        foundPackages = set(self.packageParser.parse(modelJson))
+        foundPackages = set(self.packageParser.parse(jsonData))
         expectedPackages = {Package("Technology Package"), Package("50 State Emissions Package")}
         self.assertEqual(expectedPackages, foundPackages)
+
+    def test_parseModelKeepsHighestPriceOnDuplicate(self):
+        jsonData = {"model": [
+            {"packages": [
+                {"title": "Technology Package",
+                 "price": "$0.00"}]},
+            {"packages": [
+                {"title": "Technology Package",
+                 "price": "$1,500.99"}]}
+        ]}
+        foundPackages = self.packageParser.parse(jsonData)
+        expectedPackages = [Package(title="Technology Package",
+                                   metadata=[AttributeMetadata(metadataType=MetadataType.COMMON_MSRP, value=1_501,
+                                                               unit=MetadataUnit.DOLLARS)])]
+        self.assertEqual(foundPackages, expectedPackages)
+        expectedPackages[0]._assertStrictEq(foundPackages[0])

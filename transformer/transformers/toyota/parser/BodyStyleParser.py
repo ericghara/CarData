@@ -1,6 +1,9 @@
-from typing import Dict
+from typing import Dict, List, Optional
 
-from transformer.common.dto import AttributeMetadata
+from transformer.common.attribute_set.AttributeSet import AttributeSet
+from transformer.common.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
+from transformer.common.dto.AttributeDto import BodyStyle
 from transformer.common.enum.MetadataType import MetadataType
 from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.AttributeParser import AttributeParser
@@ -14,13 +17,12 @@ class BodyStyleParser(AttributeParser):
         self.loggingTools = loggingTools
 
     def parse(self, jsonData: Dict) -> List[BodyStyle]:
-        bodyStyleDtos = set()
+        bodyStyleDtos = AttributeSet(updater=PriceUpdater(metadataType=MetadataType.COMMON_BASE_MSRP, keepLowest=True))
         for modelJson in jsonData['model']:
             bodyStyleDto = self._parseModel(modelJson)
             if bodyStyleDto in bodyStyleDtos:
                 self.loggingTools.logDuplicateAttributeDto(parser=self.__class__, attributeDto=bodyStyleDto)
-            else:
-                bodyStyleDtos.add(bodyStyleDto)
+            bodyStyleDtos.add(bodyStyleDto)
         if not bodyStyleDtos:
             self.loggingTools.logNoAttributes(self.__class__)
         return list(bodyStyleDtos)
@@ -54,7 +56,7 @@ class BodyStyleParser(AttributeParser):
             return None
         if not bed:
             return None
-        return AttributeMetadata(metadataType=metadataType, value=bed)
+        return AttributeMetadata(metadataType=metadataType, value=util.removeBracketed(bed) )
 
     def _getCab(self, modelJson: Dict) -> Optional[AttributeMetadata]:
         metadataType = MetadataType.BODY_STYLE_CAB
@@ -65,7 +67,7 @@ class BodyStyleParser(AttributeParser):
             return None
         if not cab:
             return None
-        return AttributeMetadata(metadataType=metadataType, value=cab)
+        return AttributeMetadata(metadataType=metadataType, value=util.removeBracketed(cab) )
 
     def _getSeating(self, modelJson: Dict) -> Optional[AttributeMetadata]:
         metadataType = MetadataType.BODY_STYLE_SEATING
@@ -80,7 +82,7 @@ class BodyStyleParser(AttributeParser):
         return AttributeMetadata(metadataType=metadataType, value=seatingInt, unit=MetadataUnit.PASSENGERS)
 
     def _getMSRP(self, modelJson: Dict) -> Optional[AttributeMetadata]:
-        metadataType = MetadataType.BODY_STYLE_BASE_MSRP
+        metadataType = MetadataType.COMMON_BASE_MSRP
         try:
             msrpStr = modelJson['attributes']['msrp']['value']  # ex "$101,500"
         except KeyError as e:

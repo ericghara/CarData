@@ -1,6 +1,7 @@
-from typing import Dict
+from typing import Dict, List, Optional
 
-from transformer.common.dto import AttributeMetadata
+from transformer.common.dto.AttributeDto import Engine
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
 from transformer.common.enum.MetadataType import MetadataType
 from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.AttributeParser import AttributeParser
@@ -35,11 +36,15 @@ class EngineParser(AttributeParser):
                 engineMetadata.append(attributeMetadata)
         return Engine(title=title, metadata=engineMetadata if engineMetadata else None)
 
-    def _getTitle(self, modelJson: Dict) -> str:
+    def _getTitle(self, modelJson: Dict) -> Optional[str]:
         try:
-            return modelJson['engine']['title']
+            title = modelJson['engine']['title']
         except KeyError as e:
             self.loggingTools.logTitleFailure(parser=self.__class__, exception=e, modelJson=modelJson)
+            return None
+        if not title:
+            return None
+        return util.removeBracketed(title)
 
     def _getCylinders(self, modelJson: Dict) -> Optional[AttributeMetadata]:
         metadataType = MetadataType.ENGINE_CYLINDERS

@@ -1,6 +1,9 @@
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Optional, List
 
-from transformer.common.dto import AttributeMetadata
+from transformer.common.attribute_set.AttributeSet import AttributeSet
+from transformer.common.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
+from transformer.common.dto.AttributeDto import ExteriorColor
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
 from transformer.common.enum.MetadataType import MetadataType
 from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.AttributeParser import AttributeParser
@@ -46,11 +49,11 @@ class ExteriorColorParser(AttributeParser):
                 yield ExteriorColor(title=title, metadata=metadata)
 
     def parse(self, jsonData: Dict) -> List[ExteriorColor]:
-        exteriorDtos = set()
+        exteriorDtos = AttributeSet(
+            updater=PriceUpdater(metadataType=MetadataType.COMMON_MSRP, keepLowest=False))  # keeps highest MSRP
         for modelJson in jsonData['model']:
             for exteriorColor in self._parseModel(modelJson):
                 if exteriorColor in exteriorDtos:
                     self.loggingTools.logDuplicateAttributeDto(parser=type(self), attributeDto=exteriorColor)
-                else:
-                    exteriorDtos.add(exteriorColor)
+                exteriorDtos.add(exteriorColor)
         return list(exteriorDtos)

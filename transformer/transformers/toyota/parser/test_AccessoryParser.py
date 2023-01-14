@@ -1,8 +1,8 @@
 import logging
 from unittest import TestCase
 
-from transformer.common.attribute_dto import Accessory
-from transformer.common.dto import AttributeMetadata
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
+from transformer.common.dto.AttributeDto import Accessory
 from transformer.common.enum.MetadataType import MetadataType
 from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.toyota.LoggingTools import LoggingTools
@@ -74,4 +74,17 @@ class TestAccessoryParser(TestCase):
         ]}
         foundAccessories = set(self.accessoryParser.parse(jsonData))
         expectedAccessories = {Accessory(title="Touring Package"), Accessory(title="Cargo Net")}
+        self.assertEqual(expectedAccessories, foundAccessories)
 
+    def test__parseModelDuplicatesKeepsHighestPrice(self):
+        jsonData = {"model": [{"accessories": [
+            {"title": "Cargo Net",
+             "price": "$75.00"},
+            {"title": "Cargo Net",
+             "price": "$85.00"}]
+        }]}
+        foundAccessories = self.accessoryParser.parse(jsonData)
+        expectedAccessories = [Accessory(title="Cargo Net", metadata=[
+            AttributeMetadata(metadataType=MetadataType.COMMON_MSRP, value=85, unit=MetadataUnit.DOLLARS)])]
+        self.assertEqual(foundAccessories, expectedAccessories, "loose equality")
+        foundAccessories[0]._assertStrictEq(expectedAccessories[0])

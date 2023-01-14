@@ -1,8 +1,9 @@
 import logging
 from unittest import TestCase
 
-from transformer.common.attribute_dto import Engine
-from transformer.common.dto import AttributeMetadata
+
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
+from transformer.common.dto.AttributeDto import Engine
 from transformer.common.enum.MetadataType import MetadataType
 from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.toyota.LoggingTools import LoggingTools

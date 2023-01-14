@@ -1,5 +1,8 @@
-from typing import Dict, Iterable, Optional
+from typing import Dict, Iterable, Optional, List
 
+from transformer.common.attribute_set.AttributeSet import AttributeSet
+from transformer.common.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
+from transformer.common.dto.AttributeDto import Accessory
 from transformer.common.dto.AttributeMetadata import AttributeMetadata
 from transformer.common.enum.MetadataType import MetadataType
 from transformer.common.enum.MetadataUnit import MetadataUnit
@@ -55,11 +58,11 @@ class AccessoryParser(AttributeParser):
                 yield Accessory(title=title, metadata=metadata if metadata else None)
 
     def parse(self, jsonData: Dict) -> List[Accessory]:
-        accessoryDtos = set()
+        accessoryDtos = AttributeSet(
+            updater=PriceUpdater(metadataType=MetadataType.COMMON_MSRP, keepLowest=False))  # keeps the highest price
         for modelJson in jsonData['model']:
             for accessory in self._parseModel(modelJson):
                 if accessory in accessoryDtos:
                     self.loggingTools.logDuplicateAttributeDto(parser=self.__class__, attributeDto=accessory)
-                else:
-                    accessoryDtos.add(accessory)
+                accessoryDtos.add(accessory)
         return list(accessoryDtos)

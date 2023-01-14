@@ -1,7 +1,7 @@
 import logging
 from unittest import TestCase
 
-from transformer.common.attribute_dto import Transmission
+from transformer.common.dto.AttributeDto import Transmission
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser.TransmissionParser import TransmissionParser
 

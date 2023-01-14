@@ -1,6 +1,9 @@
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Optional, List
 
-from transformer.common.dto import AttributeMetadata
+from transformer.common.attribute_set.AttributeSet import AttributeSet
+from transformer.common.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
+from transformer.common.dto.AttributeDto import InteriorColor
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
 from transformer.common.enum.MetadataType import MetadataType
 from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.AttributeParser import AttributeParser
@@ -10,7 +13,7 @@ from transformer.transformers.toyota.parser import util
 
 class InteriorColorParser(AttributeParser):
 
-    # Exterior and InteriorColorParsers are essentially the same
+    # Interior and InteriorColorParsers are essentially the same
 
     def __init__(self, loggingTools: LoggingTools):
         self.loggingTools = loggingTools
@@ -46,11 +49,11 @@ class InteriorColorParser(AttributeParser):
                 yield InteriorColor(title=title, metadata=metadata)
 
     def parse(self, jsonData: Dict) -> List[InteriorColor]:
-        interiorDtos = set()
+        interiorDtos = AttributeSet(
+            updater=PriceUpdater(metadataType=MetadataType.COMMON_MSRP, keepLowest=False))  # keeps highest MSRP
         for modelJson in jsonData['model']:
             for interiorColor in self._parseModel(modelJson):
                 if interiorColor in interiorDtos:
                     self.loggingTools.logDuplicateAttributeDto(parser=type(self), attributeDto=interiorColor)
-                else:
-                    interiorDtos.add(interiorColor)
+                interiorDtos.add(interiorColor)
         return list(interiorDtos)

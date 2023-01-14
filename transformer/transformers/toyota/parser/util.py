@@ -29,4 +29,4 @@ def digitsToInt(input: str | int | float) -> Optional[int]:
 
 
 def removeBracketed(text: str) -> str:
-    return re.sub(r'\[[^]]*]', '', text)
+    return re.sub(r'\[[^]]*]', '', text).strip()

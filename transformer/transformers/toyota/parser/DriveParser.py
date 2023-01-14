@@ -1,7 +1,9 @@
-from typing import Dict
+from typing import Dict, List, Optional
 
+from transformer.common.dto.AttributeDto import Drive
 from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
+from transformer.transformers.toyota.parser import util
 
 
 class DriveParser(AttributeParser):
@@ -22,6 +24,6 @@ class DriveParser(AttributeParser):
         except KeyError as e:
             self.loggingTools.logTitleFailure(parser=self.__class__, exception=e, modelJson=modelJson)
             return None
-        if title:
-            return Drive(title=title)
-        return None
+        if not title:
+            return None
+        return Drive(title=util.removeBracketed(title))

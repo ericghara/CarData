@@ -1,6 +1,9 @@
-from typing import Dict, Iterable
+from typing import Dict, Iterable, List, Optional
 
-from transformer.common.dto import AttributeMetadata
+from transformer.common.attribute_set.AttributeSet import AttributeSet
+from transformer.common.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
+from transformer.common.dto.AttributeDto import Package
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
 from transformer.common.enum.MetadataType import MetadataType
 from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.AttributeParser import AttributeParser
@@ -14,7 +17,8 @@ class PackageParser(AttributeParser):
         self.loggingTools = loggingTools
 
     def parse(self, jsonData: Dict) -> List[Package]:
-        packages = set()
+        packages = AttributeSet(updater=PriceUpdater(
+            metadataType=MetadataType.COMMON_MSRP, keepLowest=False))  # keeps highest MSRP
         for modelJson in jsonData['model']:
             for package in self._parseModel(modelJson):
                 if not package:
@@ -22,8 +26,7 @@ class PackageParser(AttributeParser):
                 if package in packages:
                     self.loggingTools.logDuplicateAttributeDto(
                         parser=self.__class__, attributeDto=package)
-                else:
-                    packages.add(package)
+                packages.add(package)
         return list(packages)
 
     def _parseModel(self, modelJson: Dict) -> Iterable[Package]:
@@ -37,11 +40,14 @@ class PackageParser(AttributeParser):
     def _getTitle(self, packageJson: Dict, modelJson: Dict) -> Optional[str]:
         # modelJson only used for debug message
         try:
-            return packageJson['title']
+            title = packageJson['title']
         except KeyError as e:
             self.loggingTools.logDebug(parser=self.__class__, modelJson=modelJson,
                                        message="Failure to extract title")
             return None
+        if not title:
+            return None
+        return util.removeBracketed(title)
 
     def _getPrice(self, packageJson: Dict, modelJson: Dict) -> Optional[AttributeMetadata]:
         # modelJson only used for debug message

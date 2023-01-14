@@ -1,8 +1,8 @@
 import logging
 from unittest import TestCase
 
-from transformer.common.attribute_dto import InteriorColor
-from transformer.common.dto import AttributeMetadata
+from transformer.common.dto.AttributeDto import InteriorColor
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
 from transformer.common.enum.MetadataType import MetadataType
 from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.toyota.LoggingTools import LoggingTools
@@ -44,7 +44,7 @@ class TestInteriorColorParser(TestCase):
                           InteriorColor(title="Genuine White Rhino Leather")}
         self.assertEqual(expectedColors, foundColors)  # __eq__ used, strict proven by other tests
 
-    def test__parseMultipleModelsDuplicateColors(self):
+    def test_parseMultipleModelsDuplicateColors(self):
         jsonData = {"model": [{"interiorcolor": [{"title": "Black Ultrasuede"}]},
                               {"interiorcolor": [{"title": "Black Ultrasuede"}]}]}
         foundColors = self.interiorColorParser.parse(jsonData)
@@ -52,7 +52,7 @@ class TestInteriorColorParser(TestCase):
         self.assertEqual(expectedColors, foundColors)
         expectedColors[0]._assertStrictEq(foundColors[0])
 
-    def test__parseMultipleModelsMultipleColors(self):
+    def test_parseMultipleModelsMultipleColors(self):
         jsonData = {"model": [{"interiorcolor": [{"title": "Black Ultrasuede"}]},
                               {"interiorcolor": [{"title": "Genuine White Rhino Leather"}]},
                               {}]}
@@ -60,3 +60,14 @@ class TestInteriorColorParser(TestCase):
         expectedColors = {InteriorColor(title="Black Ultrasuede"),
                           InteriorColor(title="Genuine White Rhino Leather")}
         self.assertEqual(expectedColors, foundColors)  # __eq__ used, strict proven by other tests
+        
+    def test_parseMultipleModelsSameKeepsHighestPrice(self):
+        jsonData = {"model": [{"interiorcolor": [{"title": "Black Ultrasuede", "price" : "$100"}]},
+                              {"interiorcolor": [{"title": "Black Ultrasuede", "price" : "$0.00"}]}
+                              ]}
+        foundColors = list(self.interiorColorParser.parse(jsonData))
+        expectedColors = [InteriorColor(title="Black Ultrasuede",
+                                        metadata=[AttributeMetadata(metadataType=MetadataType.COMMON_MSRP,
+                                                                    value=100, unit=MetadataUnit.DOLLARS)])]
+        self.assertEqual(expectedColors, foundColors)
+        expectedColors[0]._assertStrictEq(foundColors[0])

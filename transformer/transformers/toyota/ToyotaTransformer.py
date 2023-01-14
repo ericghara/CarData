@@ -1,7 +1,8 @@
 import logging
-from typing import Dict
+from typing import Dict, List
 
 from transformer.Transformer import Transformer
+from transformer.common.dto.AttributeDto import AttributeDto, Accessory, Package
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser.AccessoryParser import AccessoryParser
 from transformer.transformers.toyota.parser.BodyStyleParser import BodyStyleParser
@@ -31,9 +32,23 @@ class ToyotaTransformer(Transformer):
         attributes = list()
         for parser in self.parsers:
             try:
-                attributes.extend(parser.parse(jsonData) )
+                attributes.extend(parser.parse(jsonData))
             except Exception as e:
                 self.loggingTools.logParserFailure(transformer=type(self), parser=type(parser), exception=e)
-        return attributes
+        return self._deDupAccessoryPackage(attributes)
 
-
+    def _deDupAccessoryPackage(self, attributes: List[AttributeDto]):
+        """
+        Packages are often dual listed as accessories and Grades by Toyota. This message,
+        strips all accessories that are also listed in packages
+        :return:
+        """
+        otherAttributes = list()
+        accessoryGradeByTitle = dict()
+        for attribute in attributes:
+            if isinstance(attribute, (Accessory, Package) ):
+                if isinstance(accessoryGradeByTitle.get(attribute.title, None), (type(None), Accessory) ):
+                    accessoryGradeByTitle[attribute.title] = attribute
+            else:
+                otherAttributes.append(attribute)
+        return otherAttributes + list(accessoryGradeByTitle.values())
