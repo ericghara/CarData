@@ -4,8 +4,8 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-from transformer.common.dto.AttributeMetadata import AttributeMetadata
 from transformer.common.dto.AttributeDto import BodyStyle
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
 from transformer.common.enum.MetadataType import MetadataType
 from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.toyota.LoggingTools import LoggingTools
@@ -35,6 +35,12 @@ class TestBodyStyleParser(TestCase):
             AttributeMetadata(metadataType=MetadataType.COMMON_BASE_MSRP, value=47_185, unit=MetadataUnit.DOLLARS)
         ])
         expectedBodyStyle._assertStrictEq(foundBodyStyle)
+
+    def test__getBedAddsBedToName(self):
+        modelWithBed = {'bed' : {'title':'5-ft.'}}
+        found = self.bodyStyleParser._getBed(modelWithBed)
+        expected = AttributeMetadata(metadataType=MetadataType.BODY_STYLE_BED, value="5-ft. Bed")
+        self.assertEqual(expected, found)
 
     def test__parseModelNullAttributes(self):
         modelNullAttributes = {

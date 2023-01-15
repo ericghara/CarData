@@ -1,9 +1,10 @@
+import re
 from typing import Dict, List, Optional
 
 from transformer.common.attribute_set.AttributeSet import AttributeSet
 from transformer.common.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
-from transformer.common.dto.AttributeMetadata import AttributeMetadata
 from transformer.common.dto.AttributeDto import BodyStyle
+from transformer.common.dto.AttributeMetadata import AttributeMetadata
 from transformer.common.enum.MetadataType import MetadataType
 from transformer.common.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.AttributeParser import AttributeParser
@@ -56,6 +57,9 @@ class BodyStyleParser(AttributeParser):
             return None
         if not bed:
             return None
+        if not re.search("bed", bed, re.IGNORECASE):
+            # Toyota is inconsistent, sometimes bed title is "5-ft." others "5-ft. Bed"
+            bed = f"{bed.strip()} Bed"
         return AttributeMetadata(metadataType=metadataType, value=util.removeBracketed(bed) )
 
     def _getCab(self, modelJson: Dict) -> Optional[AttributeMetadata]:
