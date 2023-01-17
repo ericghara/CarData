@@ -1,6 +1,7 @@
 import logging
 from typing import Dict, List
 
+from repository.dto import Model as ModelDto
 from transformer.Transformer import Transformer
 from transformer.common.dto.AttributeDto import AttributeDto, Accessory, Package
 from transformer.transformers.toyota.LoggingTools import LoggingTools
@@ -13,7 +14,6 @@ from transformer.transformers.toyota.parser.GradeParser import GradeParser
 from transformer.transformers.toyota.parser.InteriorColorParser import InteriorColorParser
 from transformer.transformers.toyota.parser.PackageParser import PackageParser
 from transformer.transformers.toyota.parser.TransmissionParser import TransmissionParser
-from repository.dto import Model as ModelDto
 
 
 class ToyotaTransformer(Transformer):
@@ -39,7 +39,7 @@ class ToyotaTransformer(Transformer):
 
     def _deDupAccessoryPackage(self, attributes: List[AttributeDto]):
         """
-        Packages are often dual listed as accessories and Grades by Toyota. This message,
+        Packages are often dual listed as accessories and Grades by Toyota. This method,
         strips all accessories that are also listed in packages
         :return:
         """

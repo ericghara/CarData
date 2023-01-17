@@ -1,7 +1,8 @@
 from abc import ABC
+from datetime import datetime
 from typing import List, Optional, Any
+from uuid import UUID
 
-from repository.AttributeType import AttributeType
 from transformer.common.dto.AttributeMetadata import AttributeMetadata
 
 
@@ -11,9 +12,13 @@ class AttributeDto(ABC):
     serializable allowing straightforward conversion to a ``ModelAttribute`` entity.
     """
 
-    def __init__(self, title: str, metadata: Optional[List[AttributeMetadata]] = None):
+    def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
+                 metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
+        self.attributeId = attributeId
         self.title = title
+        self.modelId = modelId
         self.metadata = metadata
+        self.updatedAt = updatedAt
 
     def __eq__(self, other: Any) -> bool:
         """
@@ -47,7 +52,7 @@ class AttributeDto(ABC):
         Only ``attribute_type`` and ``title`` are hashed (similar to ``__eq__``)
         :return:
         """
-        return hash( (type(self), self.title) )
+        return hash((type(self), self.title))
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.title})"
@@ -59,58 +64,68 @@ class AttributeDto(ABC):
 
 class Engine(AttributeDto):
 
-    def __init__(self, title: str, metadata: List[AttributeMetadata] = None):
-        super().__init__(title=title, metadata=metadata)
+    def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
+                 metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
+        super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
 
 
 class Transmission(AttributeDto):
 
-    def __init__(self, title: str, metadata: List[AttributeMetadata] = None):
-        super().__init__(title=title, metadata=metadata)
+    def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
+                 metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
+        super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
+
 
 class Drive(AttributeDto):
 
-    def __init__(self, title: str, metadata: List[AttributeMetadata] = None):
-        super().__init__(title=title, metadata=metadata)
+    def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
+                 metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
+        super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
 
 
 class BodyStyle(AttributeDto):
 
-    def __init__(self, title: str, metadata: List[AttributeMetadata] = None):
-        super().__init__(title=title, metadata=metadata)
+    def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
+                 metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
+        super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
 
 
 class Grade(AttributeDto):
 
-    def __init__(self, title: str, metadata: List[AttributeMetadata] = None):
-        super().__init__(title=title, metadata=metadata)
+    def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
+                 metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
+        super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
 
 
 class Package(AttributeDto):
 
-    def __init__(self, title: str, metadata: List[AttributeMetadata] = None):
-        super().__init__(title=title, metadata=metadata)
+    def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
+                 metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
+        super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
 
 
 class InteriorColor(AttributeDto):
 
-    def __init__(self, title: str, metadata: List[AttributeMetadata] = None):
-        super().__init__(title=title, metadata=metadata)
+    def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
+                 metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
+        super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
 
 
 class ExteriorColor(AttributeDto):
 
-    def __init__(self, title: str, metadata: List[AttributeMetadata] = None):
-        super().__init__(title=title, metadata=metadata)
-
+    def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
+                 metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
+        super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
 
 class Accessory(AttributeDto):
 
-    def __init__(self, title: str, metadata: List[AttributeMetadata] = None):
-        super().__init__(title=title, metadata=metadata)
+    def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
+                 metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
+        super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
 
 
 class Other(AttributeDto):
 
-    def __init__(self, title: str, metadata: List[AttributeMetadata] = None):
-        super().__init__(title=title, metadata=metadata)
+    def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
+                 metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
+        super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
