@@ -3,9 +3,9 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
+from common.domain.dto.AttributeMetadata import AttributeMetadata
+from common.domain.enum.MetadataType import MetadataType
 from transformer.common.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
-from transformer.common.dto.AttributeMetadata import AttributeMetadata
-from transformer.common.enum.MetadataType import MetadataType
 
 
 class TestPriceUpdater(TestCase):

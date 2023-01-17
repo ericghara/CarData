@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from transformer.common.dto.AttributeMetadata import AttributeMetadata
+from common.domain.dto.AttributeMetadata import AttributeMetadata
 
 
 class MetadataUpdater(ABC):

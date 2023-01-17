@@ -1,9 +1,9 @@
 import logging
 from typing import Dict, List
 
-from repository.dto import Model as ModelDto
+from common.domain.dto.AttributeDto import AttributeDto, Accessory, Package
+from common.domain.dto.modelDto import Model as ModelDto
 from transformer.Transformer import Transformer
-from transformer.common.dto.AttributeDto import AttributeDto, Accessory, Package
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser.AccessoryParser import AccessoryParser
 from transformer.transformers.toyota.parser.BodyStyleParser import BodyStyleParser

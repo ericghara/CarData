@@ -5,9 +5,9 @@ from uuid import uuid4
 
 from requests import Response
 
+from common.repository.Entities import Brand
 from extractor.scraper.common.fetchModelData import ModelFetchDto
 from extractor.scraper.gm.GmScraper import GmScraper, CarLineAndBodyStyle, BodyStyleAndName
-from repository.Entities import Brand
 
 
 class TestGmScraper(TestCase):

@@ -1,20 +1,15 @@
-from unittest import TestCase, mock
 from datetime import date
+from unittest import TestCase, mock
 from unittest.mock import MagicMock
+from uuid import uuid4
 
 from parameterized import parameterized
-
-from extractor.scraper.common.fetchModelData import ModelFetchDto
-from extractor.scraper.gm.ChevroletScraper import ChevroletScraper
-from repository.Entities import Brand, Manufacturer
-from repository.SessionFactory import sessionFactory
-from repository.test_common.DbContainer import DbContainer
-from repository.test_common.mockSessionFactory import MockSessionFactory
-from uuid import uuid4
 from requests import Response
 
-from service.ModelService import modelService
-from service.RawDataService import rawDataService
+from common.repository.Entities import Brand
+from common.repository.test_common.mockSessionFactory import MockSessionFactory
+from extractor.scraper.common.fetchModelData import ModelFetchDto
+from extractor.scraper.gm.ChevroletScraper import ChevroletScraper
 
 
 class TestChevroletScraper(TestCase):

@@ -1,22 +1,17 @@
 import datetime
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
-from uuid import uuid4
 
-from sqlalchemy import select
-from sqlalchemy.orm import make_transient
-
+from common.domain.dto.modelDto import Model as ModelDto
+from common.repository.Entities import Manufacturer, Brand
+from common.repository.SessionFactory import sessionFactory
+from common.repository.test_common import DbContainer
+from common.service.persistence.BrandService import brandService
+from common.service.persistence.ManufacturerService import manufacturerService
+from common.service.persistence.ModelService import modelService
+from extractor.Extractor import Extractor
 from extractor.scraper.common.fetchModelData import ModelDtosAndJsonDataByName
 from extractor.scraper.gm.ChevroletScraper import ChevroletScraper
-from repository.test_common.DbContainer import DbContainer
-from repository.SessionFactory import sessionFactory
-from repository.Entities import Manufacturer, Brand
-from extractor.Extractor import Extractor
-from repository.dto import Model as ModelDto
-from service.BrandService import brandService
-from service.ManufacturerService import manufacturerService
-
-from service.ModelService import modelService
 
 
 class Test(TestCase):

@@ -1,8 +1,8 @@
 import logging
 from typing import Dict, Optional
 
-from transformer.common.dto.AttributeDto import AttributeDto
-from transformer.common.enum.MetadataType import MetadataType
+from common.domain.dto.AttributeDto import AttributeDto
+from common.domain.enum.MetadataType import MetadataType
 
 
 class LoggingTools:

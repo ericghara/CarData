@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import *
 
+from common.domain.dto.modelDto import Model as ModelDto
 from extractor.scraper.common.HttpClient import httpClient
-from repository.dto import Model as ModelDto
 
 log = logging.getLogger()
 

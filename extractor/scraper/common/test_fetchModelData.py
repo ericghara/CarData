@@ -1,13 +1,13 @@
 import datetime
-import uuid
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
 
 from requests import Response
 
-from extractor.scraper.common.fetchModelData import _addMetadata, _createUnsyncedModelDto, ModelFetchDto, _fetchJsonData, \
+from common.domain.dto.modelDto import Model as ModelDto
+from extractor.scraper.common.fetchModelData import _addMetadata, _createUnsyncedModelDto, ModelFetchDto, \
+    _fetchJsonData, \
     ModelDtosAndJsonDataByName, fetchModels
-from repository.dto import Model as ModelDto
 
 
 class Test(TestCase):

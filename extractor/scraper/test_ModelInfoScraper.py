@@ -1,11 +1,10 @@
+import datetime
+from typing import *
 from unittest import TestCase
 
+from common.repository.Entities import RawData
 from extractor.scraper.ModelInfoScraper import ModelInfoScraper
-from repository.Entities import Brand, RawData
-from unittest import mock
-from typing import *
-import datetime
-from uuid import uuid4
+
 
 # Minimal implementation of ModelInfoScraper for testing
 class TestScraper(ModelInfoScraper):

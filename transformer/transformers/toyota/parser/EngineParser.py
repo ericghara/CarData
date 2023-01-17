@@ -1,9 +1,9 @@
 from typing import Dict, List, Optional
 
-from transformer.common.dto.AttributeDto import Engine
-from transformer.common.dto.AttributeMetadata import AttributeMetadata
-from transformer.common.enum.MetadataType import MetadataType
-from transformer.common.enum.MetadataUnit import MetadataUnit
+from common.domain.dto.AttributeDto import Engine
+from common.domain.dto.AttributeMetadata import AttributeMetadata
+from common.domain.enum.MetadataType import MetadataType
+from common.domain.enum.MetadataUnit import MetadataUnit
 from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser import util

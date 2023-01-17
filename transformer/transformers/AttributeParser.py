@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from typing import Dict, List
 
-from transformer.common.dto import AttributeDto
+from common.domain.dto import AttributeDto
 
 
 class AttributeParser(ABC):

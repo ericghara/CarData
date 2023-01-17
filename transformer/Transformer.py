@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Set
-from repository.dto import Model as ModelDto
 
-from transformer.common.dto import AttributeDto
+from common.domain.dto.AttributeDto import AttributeDto
+from common.domain.dto.modelDto import Model as ModelDto
 
 
 class Transformer(ABC):

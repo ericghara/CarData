@@ -4,10 +4,10 @@ from uuid import uuid4
 
 from requests import Response
 
+from common.repository.Entities import Brand
+from common.repository.test_common.mockSessionFactory import MockSessionFactory
 from extractor.scraper.common.fetchModelData import ModelFetchDto
 from extractor.scraper.toyota.ToyotaScraper import ToyotaScraper
-from repository.Entities import Brand
-from repository.test_common.mockSessionFactory import MockSessionFactory
 
 
 class TestToyotaScraper(TestCase):

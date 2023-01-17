@@ -1,9 +1,9 @@
-from collections.abc import Container, Sequence
+from collections.abc import Sequence
 from typing import Optional, List, Iterator, Any
 
+from common.domain.dto.AttributeDto import AttributeDto
+from common.domain.dto.AttributeMetadata import AttributeMetadata
 from transformer.common.attribute_set.metadata_updater.MetadataUpdater import MetadataUpdater
-from transformer.common.dto.AttributeDto import AttributeDto
-from transformer.common.dto.AttributeMetadata import AttributeMetadata
 
 
 class AttributeSet(Sequence):

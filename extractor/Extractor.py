@@ -3,15 +3,15 @@ from datetime import date
 from typing import List, Dict, Optional
 from uuid import UUID
 
+from common.domain.dto.modelDto import Model as ModelDto
+from common.repository.Entities import RawData, Brand
+from common.repository.SessionFactory import sessionFactory
+from common.service.persistence.BrandService import brandService
+from common.service.persistence.ManufacturerService import manufacturerService
+from common.service.persistence.ModelService import modelService
+from common.service.persistence.RawDataService import rawDataService
 from extractor.scraper.ModelInfoScraper import ModelInfoScraper
 from extractor.scraper.common.fetchModelData import ModelDtosAndJsonDataByName
-from repository.Entities import RawData, Brand
-from repository.SessionFactory import sessionFactory
-from repository.dto import Model as ModelDto
-from service.BrandService import brandService
-from service.ManufacturerService import manufacturerService
-from service.ModelService import modelService
-from service.RawDataService import rawDataService
 
 
 class Extractor:

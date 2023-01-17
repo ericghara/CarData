@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from transformer.common.dto.AttributeDto import Drive
+from common.domain.dto.AttributeDto import Drive
 from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser import util
