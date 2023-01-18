@@ -4,8 +4,8 @@ from common.domain.dto.AttributeDto import Grade
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
-from transformer.common.attribute_set.AttributeSet import AttributeSet
-from transformer.common.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
+from transformer.domain.attribute_set.AttributeSet import AttributeSet
+from transformer.domain.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
 from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser import util
@@ -28,7 +28,7 @@ class GradeParser(AttributeParser):
         return list(gradeAttributeDtos)
 
     def _getGrade(self, modelJson: Dict) -> Optional[str]:
-        # More common for Toyota
+        # More domain for Toyota
         try:
             return modelJson['grade']['attributes']['title']['value']
         except KeyError as e:
@@ -36,7 +36,7 @@ class GradeParser(AttributeParser):
         return None
 
     def _getDealerTrim(self, modelJson: Dict) -> Optional[str]:
-        # more common for Lexus
+        # more domain for Lexus
         try:
             return modelJson['attributes']['dealertrim']['value']
         except KeyError as e:

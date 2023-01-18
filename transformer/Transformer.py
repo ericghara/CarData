@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Set
+from typing import Dict, List
 
 from common.domain.dto.AttributeDto import AttributeDto
-from common.domain.dto.modelDto import Model as ModelDto
+from common.domain.dto.RawDataDto import RawDataDto
 
 
 class Transformer(ABC):
 
-    def __init__(self, manufacturerCommon: str, brandNames: Set[str]):
+    def __init__(self, manufacturerCommon: str, brandNames: List[str]):
         self.manufacturerCommon = manufacturerCommon
         self.brandNames = brandNames
 
@@ -16,12 +16,12 @@ class Transformer(ABC):
             raise ValueError("jsonData was None or Empty.")
 
     @abstractmethod
-    def transform(self, jsonData: Dict, modelDto: ModelDto) -> List[AttributeDto]:
+    def transform(self, rawDataDto: RawDataDto) -> List[AttributeDto]:
         pass
 
     def getManufacturerCommon(self) -> str:
         return self.manufacturerCommon
 
-    def canTransform(self, brandName) -> bool:
-        return brandName in self.brandNames
+    def canTransform(self) -> List[str]:
+        return self.brandNames
 

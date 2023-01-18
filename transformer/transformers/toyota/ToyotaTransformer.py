@@ -1,8 +1,8 @@
 import logging
-from typing import Dict, List
+from typing import List
 
 from common.domain.dto.AttributeDto import AttributeDto, Accessory, Package
-from common.domain.dto.modelDto import Model as ModelDto
+from common.domain.dto.RawDataDto import RawDataDto
 from transformer.Transformer import Transformer
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser.AccessoryParser import AccessoryParser
@@ -19,7 +19,7 @@ from transformer.transformers.toyota.parser.TransmissionParser import Transmissi
 class ToyotaTransformer(Transformer):
 
     def __init__(self):
-        super().__init__(manufacturerCommon="toyota", brandNames={"toyota", "Lexus"})
+        super().__init__(manufacturerCommon="toyota", brandNames=["toyota", "Lexus"])
         self.log = logging.getLogger(self.__class__.__name__)
         self.loggingTools = LoggingTools(logger=self.log)
         self.parsers = [EngineParser(self.loggingTools), TransmissionParser(self.loggingTools),
@@ -28,7 +28,8 @@ class ToyotaTransformer(Transformer):
                         InteriorColorParser(self.loggingTools), ExteriorColorParser(self.loggingTools),
                         AccessoryParser(self.loggingTools)]
 
-    def transform(self, jsonData: Dict, modelDto: ModelDto) -> List[AttributeDto]:
+    def transform(self, rawDataDto: RawDataDto) -> List[AttributeDto]:
+        jsonData = rawDataDto.rawData
         attributes = list()
         for parser in self.parsers:
             try:

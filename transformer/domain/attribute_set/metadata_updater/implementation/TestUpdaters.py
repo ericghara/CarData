@@ -1,7 +1,7 @@
 from typing import List
 
 from common.domain.dto.AttributeMetadata import AttributeMetadata
-from transformer.common.attribute_set.metadata_updater.MetadataUpdater import MetadataUpdater
+from transformer.domain.attribute_set.metadata_updater.MetadataUpdater import MetadataUpdater
 
 
 class AlwaysRaises(MetadataUpdater):

@@ -3,7 +3,7 @@ from typing import Optional, List, Iterator, Any
 
 from common.domain.dto.AttributeDto import AttributeDto
 from common.domain.dto.AttributeMetadata import AttributeMetadata
-from transformer.common.attribute_set.metadata_updater.MetadataUpdater import MetadataUpdater
+from transformer.domain.attribute_set.metadata_updater.MetadataUpdater import MetadataUpdater
 
 
 class AttributeSet(Sequence):

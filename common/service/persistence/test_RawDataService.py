@@ -20,7 +20,7 @@ class TestRawDataService(TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-              cls.container.stop() 
+        cls.container.stop()
 
     def setUp(self) -> None:
         self.container.insetTestRecords()
@@ -28,23 +28,22 @@ class TestRawDataService(TestCase):
     def tearDown(self) -> None:
         self.container.deleteAll()
 
-
     def test__getModel(self):
         with sessionFactory.newSession() as session:
             camry2023 = rawDataService._getModel(
-                brandName='toyota', modelName='Camry', modelYear=datetime.date(2023,1,1), session=session)
+                brandName='toyota', modelName='Camry', modelYear=datetime.date(2023, 1, 1), session=session)
         self.assertTrue(camry2023)
 
     def test__getModelRaisesWhenNoRecord(self):
         with sessionFactory.newSession() as session:
             raises = lambda: rawDataService._getModel(
-                brandName='toyota', modelName='NotCamry', modelYear=datetime.date(2023,1,1), session=session)
+                brandName='toyota', modelName='NotCamry', modelYear=datetime.date(2023, 1, 1), session=session)
             self.assertRaises(ValueError, raises)
 
     def test_getMostRecentlyCreatedDataBy(self):
         with sessionFactory.newSession() as session:
             session.begin()
-            data = {'id':str(uuid.uuid4() )}
+            data = {'id': str(uuid.uuid4())}
             rawDataService.insertDataBy(
                 data=data, brandName='toyota', modelName='Camry', modelYear=datetime.date(2023, 1, 1), session=session)
             session.commit()
@@ -52,9 +51,20 @@ class TestRawDataService(TestCase):
                                                                  modelYear=datetime.date(2023, 1, 1), session=session)
             self.assertEqual(data['id'], newestRecord.raw_data['id'])
 
+    def test_getByDataId(self):
+        with sessionFactory.newSession() as session:
+            session.begin()
+            camry2023 = rawDataService._getModel(
+                brandName='toyota', modelName='Camry', modelYear=datetime.date(2023, 1, 1), session=session)
+            expected = RawData(raw_data={}, model=camry2023, model_id=uuid.uuid4())
+            rawDataService.insert(rawData=expected, session=session)
+            session.commit()
+            found = rawDataService.getByDataId(dataId=expected.data_id, session=session)
+            self.assertEqual(expected, found)
+
     def test_insertDataBy(self):
         with sessionFactory.newSession() as session:
-            toInsert = {'id': str(uuid.uuid4() ) }
+            toInsert = {'id': str(uuid.uuid4())}
             rawDataService.insertDataBy(
                 data=toInsert, brandName='toyota', modelName='Camry', modelYear=datetime.date(2023, 1, 1),
                 session=session)
@@ -65,7 +75,7 @@ class TestRawDataService(TestCase):
 
     def test_insertRefModelId(self):
         with sessionFactory.newSession() as session:
-            model = modelService.getMostRecentModel(brandName='toyota',modelName='Camry', session=session)
+            model = modelService.getMostRecentModel(brandName='toyota', modelName='Camry', session=session)
             toInsert = RawData(raw_data={}, model_id=model.model_id)
             rawDataService.insert(toInsert, session)
             session.commit()
@@ -75,14 +85,13 @@ class TestRawDataService(TestCase):
 
     def test_insertRefModel(self):
         with sessionFactory.newSession() as session:
-            model = modelService.getMostRecentModel(brandName='toyota',modelName='Camry', session=session)
+            model = modelService.getMostRecentModel(brandName='toyota', modelName='Camry', session=session)
             toInsert = RawData(raw_data={}, model=model)
             rawDataService.insert(toInsert, session)
             session.commit()
             fetched = rawDataService.getMostRecentlyCreated(brandName='toyota', modelName=model.name,
                                                             modelYear=model.model_year, session=session)
             self.assertEqual(toInsert, fetched)
-
 
     def test_getDataFor(self):
         with sessionFactory.newSession() as session:
@@ -94,7 +103,7 @@ class TestRawDataService(TestCase):
 
     def test_deleteAllButMostRecent(self):
         with sessionFactory.newSession() as session:
-            session.begin() # w/o separate transaction for insert there's a statement visibility issue
+            session.begin()  # w/o separate transaction for insert there's a statement visibility issue
             data = {'forTest': True}
             rawDataService.insertDataBy(
                 data=data, brandName='toyota', modelName='Camry', modelYear=datetime.date(2023, 1, 1),
@@ -102,7 +111,8 @@ class TestRawDataService(TestCase):
             session.commit()
             newestRecord = rawDataService.getMostRecentlyCreated(brandName='toyota', modelName='Camry',
                                                                  modelYear=datetime.date(2023, 1, 1), session=session)
-            rawDataService.deleteAllButMostRecent(brandName='toyota', modelName='Camry', modelYear=datetime.date(2023,1,1), session=session )
+            rawDataService.deleteAllButMostRecent(brandName='toyota', modelName='Camry',
+                                                  modelYear=datetime.date(2023, 1, 1), session=session)
             camry2023Data = rawDataService.getDataFor(
                 brandName='toyota', modelName='Camry', modelYear=datetime.date(2023, 1, 1), session=session)
             for record in camry2023Data:
@@ -112,8 +122,5 @@ class TestRawDataService(TestCase):
     def test_deleteAllButMostRecentRaisesWhenNoRecord(self):
         with sessionFactory.newSession() as session:
             raises = lambda: rawDataService.deleteAllButMostRecent(brandName='toyota', modelName='Camry',
-                                                  modelYear=datetime.date(2080, 1, 1), session=session)
+                                                                   modelYear=datetime.date(2080, 1, 1), session=session)
             self.assertRaises(ValueError, raises)
-
-
-

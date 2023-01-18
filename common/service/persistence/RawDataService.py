@@ -1,5 +1,6 @@
 from datetime import date
 from typing import *
+from uuid import UUID
 
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
@@ -22,6 +23,9 @@ class RawDataService:
     def getMostRecentlyCreated(self, brandName: str, modelName: str, modelYear: date, session: 'Session') -> 'RawData':
         model = self._getModel(brandName=brandName, modelName=modelName,modelYear=modelYear, session=session)
         return session.query(RawData).where(RawData.model==model).order_by(desc(RawData.created_at) ).first()
+
+    def getByDataId(self, dataId: UUID, session: 'Session') -> RawData:
+        return session.query(RawData).where(RawData.data_id==dataId).first()
 
     def insertDataBy(self, data: Dict, brandName: str, modelName: str, modelYear: date, session: 'Session') -> None:
         model = self._getModel(brandName=brandName, modelName=modelName, modelYear=modelYear, session=session)

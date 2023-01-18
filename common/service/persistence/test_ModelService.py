@@ -44,6 +44,14 @@ class TestModelService(TestCase):
                 brandName='toyota', modelName='Camry', modelYear=datetime.date(2023, 1, 1), session=session)
         self.assertTrue(camry2023)
 
+    def test_getModelByModelId(self):
+        with sessionFactory.newSession() as session:
+            expectedModel = modelService.getModelByBrandNameModelNameModelYear(
+                brandName='toyota', modelName='Camry', modelYear=datetime.date(2023, 1, 1), session=session)
+            foundModel = modelService.getModelByModelId(expectedModel.model_id, session=session)
+            session.flush()
+            self.assertEqual(expectedModel, foundModel)
+
     def test_getMostRecentModel(self):
         with sessionFactory.newSession() as session:
             supra2023 = modelService.getMostRecentModel(brandName='toyota', modelName='Supra', session=session)

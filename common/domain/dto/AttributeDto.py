@@ -4,6 +4,7 @@ from typing import List, Optional, Any
 from uuid import UUID
 
 from common.domain.dto.AttributeMetadata import AttributeMetadata
+from common.domain.enum.AttributeType import AttributeType
 
 
 class AttributeDto(ABC):
@@ -117,6 +118,7 @@ class ExteriorColor(AttributeDto):
                  metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
         super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
 
+
 class Accessory(AttributeDto):
 
     def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
@@ -129,3 +131,22 @@ class Other(AttributeDto):
     def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
                  metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
         super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
+
+
+# registry for mapping AttributeType and corresponding AttributeDto
+attributeDtoToAttributeType = {
+    Engine: AttributeType.ENGINE,
+    Transmission: AttributeType.TRANSMISSION,
+    Drive: AttributeType.DRIVE,
+    BodyStyle: AttributeType.BODY_STYLE,
+    Grade: AttributeType.GRADE,
+    Package: AttributeType.PACKAGE,
+    InteriorColor: AttributeType.INTERIOR_COLOR,
+    ExteriorColor: AttributeType.EXTERIOR_COLOR,
+    Accessory: AttributeType.ACCESSORY,
+    Other: AttributeType.OTHER
+}
+
+# inverse mapping of attributeDtoToAttributeType
+attributeTypeToAttributeDto = {attributeType: attributeDto for attributeDto, attributeType in
+                               attributeDtoToAttributeType.items()}

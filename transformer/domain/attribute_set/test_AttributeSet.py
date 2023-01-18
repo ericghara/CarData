@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from common.domain.dto.AttributeDto import Transmission, Engine
 from common.domain.enum.MetadataType import MetadataType
-from transformer.common.attribute_set.AttributeSet import AttributeSet
-from transformer.common.attribute_set.metadata_updater.implementation.TestUpdaters import *
+from transformer.domain.attribute_set.AttributeSet import AttributeSet
+from transformer.domain.attribute_set.metadata_updater.implementation.TestUpdaters import *
 
 
 class TestAttributeSet(TestCase):

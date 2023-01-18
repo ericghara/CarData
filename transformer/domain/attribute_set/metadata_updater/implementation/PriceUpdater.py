@@ -2,7 +2,7 @@ from typing import Optional, List, Any
 
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
-from transformer.common.attribute_set.metadata_updater.MetadataUpdater import MetadataUpdater
+from transformer.domain.attribute_set.metadata_updater.MetadataUpdater import MetadataUpdater
 
 
 class PriceUpdater(MetadataUpdater):

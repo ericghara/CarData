@@ -4,8 +4,8 @@ from common.domain.dto.AttributeDto import Package
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
-from transformer.common.attribute_set.AttributeSet import AttributeSet
-from transformer.common.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
+from transformer.domain.attribute_set.AttributeSet import AttributeSet
+from transformer.domain.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
 from transformer.transformers.AttributeParser import AttributeParser
 from transformer.transformers.toyota.LoggingTools import LoggingTools
 from transformer.transformers.toyota.parser import util

@@ -5,7 +5,7 @@ from parameterized import parameterized
 
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
-from transformer.common.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
+from transformer.domain.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
 
 
 class TestPriceUpdater(TestCase):

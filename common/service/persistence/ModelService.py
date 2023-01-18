@@ -1,5 +1,6 @@
 from datetime import date
 from typing import *
+from uuid import UUID
 
 from sqlalchemy import select, desc
 from sqlalchemy.dialects.postgresql import insert
@@ -32,6 +33,9 @@ class ModelService:
         query = session.query(Model).outerjoin(Brand).where(
             brandName == Brand.name, modelName == Model.name, modelYear == Model.model_year)
         return query.first()
+
+    def getModelByModelId(self, modelId: UUID, session: 'Session') -> Optional['Model']:
+        return session.query(Model).where(Model.model_id==modelId).first()
 
     def getMostRecentModel(self, brandName: str, modelName: str, session: 'Session') -> 'Model':
         stmt = select(Model).outerjoin(Brand).where(
