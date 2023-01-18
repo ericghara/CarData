@@ -7,8 +7,8 @@ from common.domain.dto.AttributeDto import Grade
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
-from transformer.transformers.toyota.LoggingTools import LoggingTools
-from transformer.transformers.toyota.parser.GradeParser import GradeParser
+from transformer.transformer.toyota.LoggingTools import LoggingTools
+from transformer.transformer.toyota.parser.GradeParser import GradeParser
 
 
 class TestGradeParser(TestCase):

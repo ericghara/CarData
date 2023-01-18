@@ -1,9 +1,9 @@
 from typing import Dict, Optional, List
 
 from common.domain.dto.AttributeDto import Transmission
-from transformer.transformers.AttributeParser import AttributeParser
-from transformer.transformers.toyota.LoggingTools import LoggingTools
-from transformer.transformers.toyota.parser import util
+from transformer.transformer.AttributeParser import AttributeParser
+from transformer.transformer.toyota.LoggingTools import LoggingTools
+from transformer.transformer.toyota.parser import util
 
 
 class TransmissionParser(AttributeParser):

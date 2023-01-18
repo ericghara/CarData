@@ -1,0 +1,2 @@
+class IllegalArgumentError(RuntimeError):
+    pass

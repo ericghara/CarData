@@ -4,8 +4,6 @@ from datetime import date
 from sqlalchemy.orm import Session
 
 from common.domain.dto.AttributeDto import *
-from common.domain.json.JsonDecoder import jsonDecoder
-from common.domain.json.JsonEncoder import jsonEncoder
 from common.repository.Entities import ModelAttribute, Model
 from common.service.persistence.ModelService import modelService
 
@@ -14,27 +12,6 @@ class ModelAttributeService:
 
     def __init__(self):
         pass
-
-    # Consider a converter package in domain
-    def _convertModelAttributeToModelDto(self, modelAttribute: ModelAttribute) -> AttributeDto:
-        metadata = None
-        mapper = jsonDecoder.getMappingFunction(AttributeMetadata)
-        if modelAttribute.attribute_metadata:
-            metadata = [mapper(rawMetadata) for rawMetadata in modelAttribute.attribute_metadata]
-        try:
-            constructor = attributeTypeToAttributeDto[modelAttribute.attribute_type]
-        except KeyError as e:
-            raise ValueError(f"attribute_type {modelAttribute.attribute_type} has an unknown AttributeDto mapping.")
-        return constructor(title=modelAttribute.title, modelId=modelAttribute.model_id, metadata=metadata,
-                           updatedAt=modelAttribute.updated_at)
-
-    def _convertAttributeDtoToModelAttribute(self, attributeDto: AttributeDto) -> ModelAttribute:
-        # while unnecessary for some parameters, jsonEncoder maps AttributeDto to attribute_type
-        # and encodes the metadata
-        attributeDict = jsonEncoder.default(attributeDto)
-        return ModelAttribute(attribute_id=attributeDict['attributeId'], attribute_type=attributeDict['attributeType'],
-                              title=attributeDict['title'], model_id=attributeDict['modelId'],
-                              attribute_metadata=attributeDict['attributeMetadata'], updated_at=attributeDict['updatedAt'])
 
     def _getModel(self, brandName: str, modelName: str, modelYear: date, session: 'Session') -> Model:
         model = modelService.getModelByBrandNameModelNameModelYear(brandName=brandName, modelName=modelName,

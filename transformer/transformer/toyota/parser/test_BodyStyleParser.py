@@ -8,8 +8,8 @@ from common.domain.dto.AttributeDto import BodyStyle
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
-from transformer.transformers.toyota.LoggingTools import LoggingTools
-from transformer.transformers.toyota.parser.BodyStyleParser import BodyStyleParser
+from transformer.transformer.toyota.LoggingTools import LoggingTools
+from transformer.transformer.toyota.parser.BodyStyleParser import BodyStyleParser
 
 
 class TestBodyStyleParser(TestCase):

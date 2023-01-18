@@ -1,14 +1,7 @@
-import uuid
-from datetime import date, datetime
+from datetime import date
 from unittest import TestCase
 
-from nose_parameterized import parameterized
-
-from common.domain.dto.AttributeDto import AttributeDto, Transmission, Grade
-from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.AttributeType import AttributeType
-from common.domain.enum.MetadataType import MetadataType
-from common.domain.enum.MetadataUnit import MetadataUnit
 from common.repository.Entities import ModelAttribute
 from common.repository.SessionFactory import sessionFactory
 from common.repository.test_common.DbContainer import DbContainer
@@ -33,50 +26,6 @@ class TestModelAttributeService(TestCase):
 
     def tearDown(self) -> None:
         self.container.deleteAll()
-
-    @parameterized.expand([(ModelAttribute(attribute_id=uuid.UUID('00000000-0000-0000-0000-000000000000'),
-                                           attribute_type=AttributeType.TRANSMISSION, title='test',
-                                           model_id=uuid.UUID('11111111-1111-1111-1111-111111111111'),
-                                           attribute_metadata=None,
-                                           updated_at=datetime.fromtimestamp(800025)),
-                            Transmission(title="test", attributeId=uuid.UUID('00000000-0000-0000-0000-000000000000'),
-                                         modelId=uuid.UUID('11111111-1111-1111-1111-111111111111'), metadata=None,
-                                         updatedAt=datetime.fromtimestamp(800025))),
-                           # Testcase with metadata
-                           (ModelAttribute(title="title", attribute_type=AttributeType.GRADE, attribute_metadata=[
-                               {"metadataType": "COMMON_MSRP", "value": "Test", "unit": "DOLLARS"}]),
-                            Grade(title="title", metadata=[
-                                AttributeMetadata(metadataType=MetadataType.COMMON_MSRP, value="Test",
-                                                  unit=MetadataUnit.DOLLARS)]))
-                           ])
-    def test__convertModelAttributeToModelDto(self, modelAttribute: ModelAttribute, expected: AttributeDto):
-        found = modelAttributeService._convertModelAttributeToModelDto(modelAttribute)
-        expected._assertStrictEq(found)
-
-    @parameterized.expand([(Transmission(title="test", attributeId=uuid.UUID('00000000-0000-0000-0000-000000000000'),
-                                         modelId=uuid.UUID('11111111-1111-1111-1111-111111111111'), metadata=None,
-                                         updatedAt=datetime.fromtimestamp(800025)),
-                            ModelAttribute(attribute_id=uuid.UUID('00000000-0000-0000-0000-000000000000'),
-                                           attribute_type=AttributeType.TRANSMISSION, title='test',
-                                           model_id=uuid.UUID('11111111-1111-1111-1111-111111111111'),
-                                           attribute_metadata=None,
-                                           updated_at=datetime.fromtimestamp(800025))
-                            ),
-                           # Testcase with metadata
-                           (Grade(title="title", metadata=[
-                               AttributeMetadata(metadataType=MetadataType.COMMON_MSRP, value="Test",
-                                                 unit=MetadataUnit.DOLLARS)]),
-                            ModelAttribute(attribute_id=None, attribute_type=AttributeType.GRADE, title="title",
-                                           model_id=None,
-                                           attribute_metadata=[
-                                               {"metadataType": "COMMON_MSRP", "value": "Test", "unit": "DOLLARS"}],
-                                           updated_at=None))
-                           ])
-    def test__convertAttributeDtoToModelAttribute(self, attributeDto: AttributeDto, expected: ModelAttribute):
-        stripPrivate = lambda modelAttribute: {key: value for key, value in modelAttribute.__dict__.items() if
-                                               not key.startswith("_")}
-        found = modelAttributeService._convertAttributeDtoToModelAttribute(attributeDto)
-        self.assertEqual(stripPrivate(expected), stripPrivate(found))
 
     def test_insert(self) -> None:
         with sessionFactory.newSession() as session:

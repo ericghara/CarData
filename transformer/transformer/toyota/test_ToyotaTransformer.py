@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from common.domain.dto.AttributeDto import Accessory, Package, Engine
-from transformer.transformers.toyota.ToyotaTransformer import ToyotaTransformer
+from transformer.transformer.toyota.ToyotaTransformer import ToyotaTransformer
 
 
 class TestToyotaTransformer(TestCase):

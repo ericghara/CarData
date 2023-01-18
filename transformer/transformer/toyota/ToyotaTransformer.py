@@ -3,17 +3,17 @@ from typing import List
 
 from common.domain.dto.AttributeDto import AttributeDto, Accessory, Package
 from common.domain.dto.RawDataDto import RawDataDto
-from transformer.Transformer import Transformer
-from transformer.transformers.toyota.LoggingTools import LoggingTools
-from transformer.transformers.toyota.parser.AccessoryParser import AccessoryParser
-from transformer.transformers.toyota.parser.BodyStyleParser import BodyStyleParser
-from transformer.transformers.toyota.parser.DriveParser import DriveParser
-from transformer.transformers.toyota.parser.EngineParser import EngineParser
-from transformer.transformers.toyota.parser.ExteriorColorParser import ExteriorColorParser
-from transformer.transformers.toyota.parser.GradeParser import GradeParser
-from transformer.transformers.toyota.parser.InteriorColorParser import InteriorColorParser
-from transformer.transformers.toyota.parser.PackageParser import PackageParser
-from transformer.transformers.toyota.parser.TransmissionParser import TransmissionParser
+from transformer.transformer.Transformer import Transformer
+from transformer.transformer.toyota.LoggingTools import LoggingTools
+from transformer.transformer.toyota.parser.AccessoryParser import AccessoryParser
+from transformer.transformer.toyota.parser.BodyStyleParser import BodyStyleParser
+from transformer.transformer.toyota.parser.DriveParser import DriveParser
+from transformer.transformer.toyota.parser.EngineParser import EngineParser
+from transformer.transformer.toyota.parser.ExteriorColorParser import ExteriorColorParser
+from transformer.transformer.toyota.parser.GradeParser import GradeParser
+from transformer.transformer.toyota.parser.InteriorColorParser import InteriorColorParser
+from transformer.transformer.toyota.parser.PackageParser import PackageParser
+from transformer.transformer.toyota.parser.TransmissionParser import TransmissionParser
 
 
 class ToyotaTransformer(Transformer):

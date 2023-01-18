@@ -4,8 +4,8 @@ from typing import List, NamedTuple
 from common.domain.dto.RawDataDto import RawDataDto
 from common.repository.SessionFactory import sessionFactory
 from common.service.persistence.RawDataService import rawDataService
-from transformer.Transformer import Transformer
 from transformer.adapter.TransformDestination import TransformDestination
+from transformer.transformer.Transformer import Transformer
 
 
 class RawDataDtoAndBrandName(NamedTuple):

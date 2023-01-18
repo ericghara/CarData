@@ -4,9 +4,9 @@ from common.domain.dto.AttributeDto import Engine
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
-from transformer.transformers.AttributeParser import AttributeParser
-from transformer.transformers.toyota.LoggingTools import LoggingTools
-from transformer.transformers.toyota.parser import util
+from transformer.transformer.AttributeParser import AttributeParser
+from transformer.transformer.toyota.LoggingTools import LoggingTools
+from transformer.transformer.toyota.parser import util
 
 
 class EngineParser(AttributeParser):
