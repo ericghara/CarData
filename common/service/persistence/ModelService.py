@@ -34,7 +34,9 @@ class ModelService:
             brandName == Brand.name, modelName == Model.name, modelYear == Model.model_year)
         return query.first()
 
-    def getModelByModelId(self, modelId: UUID, session: 'Session') -> Optional['Model']:
+    def getModelByModelId(self, modelId: UUID | str, session: 'Session') -> Optional['Model']:
+        if isinstance(modelId, UUID):
+            modelId = str(modelId)
         return session.query(Model).where(Model.model_id==modelId).first()
 
     def getMostRecentModel(self, brandName: str, modelName: str, session: 'Session') -> 'Model':

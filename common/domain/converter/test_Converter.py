@@ -8,14 +8,20 @@ from parameterized import parameterized
 from common.domain.converter.Converter import converter
 from common.domain.dto.AttributeDto import Grade, Transmission, AttributeDto
 from common.domain.dto.AttributeMetadata import AttributeMetadata
+from common.domain.dto.RawDataDto import RawDataDto
 from common.domain.enum.AttributeType import AttributeType
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
 from common.exception.IllegalStateError import IllegalStateError
-from common.repository.Entities import ModelAttribute
+from common.repository.Entities import ModelAttribute, RawData
 
 
 class TestConverter(TestCase):
+
+    @parameterized.expand([("test", int),
+                           (Grade(title="title"), int)])
+    def test_ConvertRaisesOnUnknownTypeConversion(self, obj: Any, outputType: Type):
+        self.assertRaises(IllegalStateError, lambda: converter.convert(obj=obj, outputType=outputType))
 
     @parameterized.expand([(ModelAttribute(attribute_id=UUID('00000000-0000-0000-0000-000000000000'),
                                            attribute_type=AttributeType.TRANSMISSION, title='test',
@@ -61,9 +67,12 @@ class TestConverter(TestCase):
         found = converter.convert(attributeDto, ModelAttribute)
         self.assertEqual(stripPrivate(expected), stripPrivate(found))
 
-    @parameterized.expand([("test", int),
-                           (Grade(title="title"), int)])
-    def test_ConvertRaisesOnUnknownTypeConversion(self, obj: Any, outputType: Type):
-        self.assertRaises(IllegalStateError, lambda: converter.convert(obj=obj, outputType=outputType))
-
-
+    def test_convertRawDataEntityToRawDataDto(self):
+        entity = RawData(data_id=UUID('00000000-0000-0000-0000-000000000000'), raw_data={"test": True},
+                         model_id=UUID('11111111-1111-1111-1111-111111111111'),
+                         created_at=datetime.fromtimestamp(800025))
+        expectedDto = RawDataDto(dataId=UUID('00000000-0000-0000-0000-000000000000'), rawData={"test": True},
+                                 modelId=UUID('11111111-1111-1111-1111-111111111111'),
+                                 createdAt=datetime.fromtimestamp(800025))
+        foundDto = converter.convert(entity, RawDataDto)
+        self.assertEqual(expectedDto, foundDto)

@@ -19,7 +19,7 @@ from transformer.transformer.toyota.parser.TransmissionParser import Transmissio
 class ToyotaTransformer(Transformer):
 
     def __init__(self):
-        super().__init__(manufacturerCommon="toyota", brandNames=["toyota", "Lexus"])
+        super().__init__(manufacturerCommon='Toyota', brandNames=['Toyota', "Lexus"])
         self.log = logging.getLogger(self.__class__.__name__)
         self.loggingTools = LoggingTools(logger=self.log)
         self.parsers = [EngineParser(self.loggingTools), TransmissionParser(self.loggingTools),
@@ -30,6 +30,7 @@ class ToyotaTransformer(Transformer):
 
     def transform(self, rawDataDto: RawDataDto) -> List[AttributeDto]:
         jsonData = rawDataDto.rawData
+        self._assertValidJsonData(jsonData)
         attributes = list()
         for parser in self.parsers:
             try:

@@ -8,5 +8,5 @@ from common.domain.dto.RawDataDto import RawDataDto
 class TransformDestination(ABC):
 
     @abstractmethod
-    def accept(self, attributes: List[AttributeDto], rawDataDto: RawDataDto) -> None:
+    def accept(self, attributeDtos: List[AttributeDto], rawDataDto: RawDataDto) -> None:
         pass

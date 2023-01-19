@@ -28,7 +28,7 @@ class TestBrandService(TestCase):
 
     def test__getManufacturerGets(self):
         with sessionFactory.newSession() as session:
-            toyotaMan = brandService._getManufacturer('toyota', session)
+            toyotaMan = brandService._getManufacturer('Toyota', session)
         self.assertTrue(toyotaMan)
 
     def test__getManufacturerThrowsWhenNoRecord(self):
@@ -38,7 +38,7 @@ class TestBrandService(TestCase):
 
     def test_get_brand_by_name_and_manufacturer(self):
         with sessionFactory.newSession() as session:
-            lexusBrand = brandService.getBrandByNameAndManufacturer(manufacturerCommon='toyota', brandName='Lexus', session=session)
+            lexusBrand = brandService.getBrandByNameAndManufacturer(manufacturerCommon='Toyota', brandName='Lexus', session=session)
         self.assertTrue(lexusBrand)
         self.assertEqual('Lexus', lexusBrand.name)
 
@@ -51,16 +51,16 @@ class TestBrandService(TestCase):
 
     def test_insertBrand(self):
         with sessionFactory.newSession() as session:
-            brandService.insertBrand(manufacturerCommon='toyota', brand=Brand(name='Scion'), session=session)
-            scionBrand = brandService.getBrandByNameAndManufacturer(manufacturerCommon='toyota', brandName='Scion', session=session)
+            brandService.insertBrand(manufacturerCommon='Toyota', brand=Brand(name='Scion'), session=session)
+            scionBrand = brandService.getBrandByNameAndManufacturer(manufacturerCommon='Toyota', brandName='Scion', session=session)
             session.commit()
         self.assertTrue(scionBrand)
 
     def test_deleteBrandByName(self):
         with sessionFactory.newSession() as session:
-            brandService.deleteBrandByName('toyota', session)
+            brandService.deleteBrandByName('Toyota', session)
             session.commit()
-            self.assertIs(None, brandService.getBrandByName('toyota', session))
+            self.assertIs(None, brandService.getBrandByName('Toyota', session))
 
 
     def test_deleteBrandByNameRaisesWhenNoRecord(self):

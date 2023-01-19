@@ -1,11 +1,16 @@
 import logging
 from typing import List, NamedTuple
 
+from common.domain.converter.Converter import converter
 from common.domain.dto.RawDataDto import RawDataDto
+from common.exception.IllegalArgumentError import IllegalArgumentError
+from common.exception.IllegalStateError import IllegalStateError
 from common.repository.SessionFactory import sessionFactory
 from common.service.persistence.RawDataService import rawDataService
 from transformer.adapter.TransformDestination import TransformDestination
+from transformer.adapter.transform_destination.RepositoryDestination import RepositoryDestination
 from transformer.transformer.Transformer import Transformer
+from transformer.transformer.toyota.ToyotaTransformer import ToyotaTransformer
 
 
 class RawDataDtoAndBrandName(NamedTuple):
@@ -31,25 +36,31 @@ class TransformerService:
 
     def _validateRawDataDto(self, rawDataDto: RawDataDto):
         if not rawDataDto.dataId:
-            raise ValueError("RawDataDto must have (data_id or raw_data) and model_id.")
+            raise IllegalArgumentError("RawDataDto must have (data_id or raw_data) and model_id.")
 
     def _fetchRawDataDtoAndBrandName(self, rawDataDto: RawDataDto) -> RawDataDtoAndBrandName:
         with sessionFactory.newSession() as session:
             rawDataEntity = rawDataService.getByDataId(dataId=rawDataDto.dataId, session=session)
             if rawDataDto.modelId and rawDataDto.modelId != rawDataEntity.model_id:
                 self.log.warning(f"Expected modelId: {rawDataDto.modelId} found modelId: {rawDataEntity.model_id}.")
-                raise ValueError("The provided modelId is inconsistent with the fetched model_id")
-            fetchedDto = RawDataDto(dataId=rawDataEntity.data_id, rawData=rawDataEntity.raw_data,
-                                    modelId=rawDataEntity.model_id, createdAt=rawDataEntity.created_at)
+                raise IllegalStateError("The provided modelId is inconsistent with the fetched model_id")
+            fetchedDto = converter.convert(obj=rawDataEntity, outputType=RawDataDto)
             brandName = rawDataEntity.model.brand.name
         return RawDataDtoAndBrandName(rawDataDto=fetchedDto, brandName=brandName)
 
     def _selectTransformer(self, brandName: str) -> Transformer:
-        pass
+        try:
+            return self.brandNameToTransformer[brandName]
+        except KeyError as e:
+            raise IllegalArgumentError(f"No transformer is registered for the provided brandName: {brandName}")
 
     def transform(self, rawDataDto: RawDataDto) -> None:
         self._validateRawDataDto(rawDataDto)
         syncedRawDataDto, brandName = self._fetchRawDataDtoAndBrandName(rawDataDto)
         transformer = self._selectTransformer(brandName)
         attributeDtos = transformer.transform(rawDataDto)
-        self.destination.accept(attributes=attributeDtos, rawDataDto=syncedRawDataDto)
+        self.destination.accept(attributeDtos=attributeDtos, rawDataDto=syncedRawDataDto)
+
+
+transformerService = TransformerService(destination=RepositoryDestination(overwriteExisting=False),
+                                        transformers=[ToyotaTransformer()])

@@ -29,7 +29,7 @@ class TestModelAttributeService(TestCase):
 
     def test_insert(self) -> None:
         with sessionFactory.newSession() as session:
-            camry2023 = modelAttributeService._getModel(brandName="toyota", modelName="Camry",
+            camry2023 = modelAttributeService._getModel(brandName='Toyota', modelName="Camry",
                                                         modelYear=date(2023, 1, 1), session=session)
             beforeCount = len(camry2023.model_attribute)
             newAttribute = ModelAttribute(model=camry2023, attribute_type=AttributeType.GRADE,
@@ -43,14 +43,14 @@ class TestModelAttributeService(TestCase):
     def test_getAttributesFor(self) -> None:
         expectedNum = 4
         with sessionFactory.newSession() as session:
-            foundAttributes = modelAttributeService.getAttributesFor(brandName='toyota', modelName='Camry',
+            foundAttributes = modelAttributeService.getAttributesFor(brandName='Toyota', modelName='Camry',
                                                                      modelYear=date(2023, 1, 1), session=session)
             foundNum = len(foundAttributes)
         self.assertEqual(expectedNum, foundNum)
 
     def test_getAttributeByTypeAndTitle(self) -> None:
         with sessionFactory.newSession() as session:
-            camry2023 = modelAttributeService._getModel(brandName="toyota", modelName="Camry",
+            camry2023 = modelAttributeService._getModel(brandName='Toyota', modelName="Camry",
                                                         modelYear=date(2023, 1, 1), session=session)
             foundAttribute = modelAttributeService.getAttributeByTypeAndTitle(attributeType=AttributeType.GRADE,
                                                                               title="LE", modelId=camry2023.model_id,
@@ -60,7 +60,7 @@ class TestModelAttributeService(TestCase):
 
     def test_getAttributesByModelId(self) -> None:
         with sessionFactory.newSession() as session:
-            camry2023 = modelAttributeService._getModel(brandName="toyota", modelName="Camry",
+            camry2023 = modelAttributeService._getModel(brandName='Toyota', modelName="Camry",
                                                         modelYear=date(2023, 1, 1), session=session)
             expectedAttributes = set(camry2023.model_attribute)
             foundAttributes = set(
@@ -69,7 +69,7 @@ class TestModelAttributeService(TestCase):
 
     def test_getAttributesByModelIdAndType(self) -> None:
         with sessionFactory.newSession() as session:
-            camry2023 = modelAttributeService._getModel(brandName="toyota", modelName="Camry",
+            camry2023 = modelAttributeService._getModel(brandName='Toyota', modelName="Camry",
                                                         modelYear=date(2023, 1, 1), session=session)
             expectedAttributes = {attribute for attribute in camry2023.model_attribute if
                                   attribute.attribute_type == AttributeType.GRADE}
@@ -80,7 +80,7 @@ class TestModelAttributeService(TestCase):
 
     def test_getAttributesByAttributeId(self) -> None:
         with sessionFactory.newSession() as session:
-            camry2023 = modelAttributeService._getModel(brandName="toyota", modelName="Camry",
+            camry2023 = modelAttributeService._getModel(brandName='Toyota', modelName="Camry",
                                                         modelYear=date(2023, 1, 1), session=session)
             expectedAttributes = {attribute for attribute in camry2023.model_attribute}
             queryIds = [attribute.attribute_id for attribute in expectedAttributes]

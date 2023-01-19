@@ -36,15 +36,15 @@ CREATE TABLE IF NOT EXISTS public.model_raw_config_data (
 
 CREATE TYPE public.attribute_type AS ENUM (
 	'ENGINE',
-	'TRANSMISSION',
-	'DRIVE',
-	'BODY',
-	'GRADE',
-	'PACKAGE',
-	'INTERIOR_COLOR',
-	'EXTERIOR_COLOR',
-	'ACCESSORIES',
-	'OTHER'
+    'TRANSMISSION',
+    'DRIVE',
+    'BODY_STYLE',
+    'GRADE',
+    'PACKAGE',
+    'INTERIOR_COLOR',
+    'EXTERIOR_COLOR',
+    'ACCESSORY',
+    'OTHER'
 );
 
 CREATE TABLE IF NOT EXISTS public.model_attribute (

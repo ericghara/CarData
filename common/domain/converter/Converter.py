@@ -5,6 +5,7 @@ from common.domain.converter.type_converter.AttributeDtoToModelAttributeConverte
     AttributeDtoToModelAttributeConverter
 from common.domain.converter.type_converter.ModelAttributeToAttributeDtoConverter import \
     ModelAttributeToAttributeDtoConverter
+from common.domain.converter.type_converter.RawDataEntityToRawDataDto import RawDataEntityToRawDataDto
 from common.domain.converter.type_converter.TypeConverter import TypeConverter
 from common.exception.IllegalStateError import IllegalStateError
 
@@ -49,5 +50,7 @@ class Converter:
             raise IllegalStateError(f"No converter is registered for the conversion: {conversion}")
         return typeConverter.convert(obj)
 
-converter = Converter([ModelAttributeToAttributeDtoConverter(),
-                       AttributeDtoToModelAttributeConverter()])
+
+converter = Converter(typeConverters=[ModelAttributeToAttributeDtoConverter(),
+                                      AttributeDtoToModelAttributeConverter(),
+                                      RawDataEntityToRawDataDto()])

@@ -33,10 +33,10 @@ class DbContainer:
     def insetTestRecords(self) -> None:
         with sessionFactory.newSession() as session:
             # manufacturer
-            toyotaManufacturer = Manufacturer(official_name='toyota Motor Company', common_name='toyota')
+            toyotaManufacturer = Manufacturer(official_name='Toyota Motor Company', common_name='Toyota')
             session.add(toyotaManufacturer)
             # brands
-            toyotaBrand = Brand(name='toyota', manufacturer=toyotaManufacturer)
+            toyotaBrand = Brand(name='Toyota', manufacturer=toyotaManufacturer)
             lexusBrand = Brand(name='Lexus', manufacturer=toyotaManufacturer)
             session.add_all([toyotaBrand, lexusBrand])
             # models
