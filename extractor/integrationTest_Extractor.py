@@ -3,12 +3,12 @@ from unittest import TestCase, mock
 from unittest.mock import MagicMock
 
 from common.domain.dto.modelDto import Model as ModelDto
-from common.repository.Entities import Manufacturer, Brand
+from common.domain.entities import Manufacturer, Brand
+from common.repository.BrandRepository import brandRepository
+from common.repository.ManufacturerRepository import manufacturerRepository
+from common.repository.ModelRepository import modelRepository
 from common.repository.SessionFactory import sessionFactory
 from common.repository.test_common import DbContainer
-from common.service.persistence.BrandService import brandService
-from common.service.persistence.ManufacturerService import manufacturerService
-from common.service.persistence.ModelService import modelService
 from extractor.Extractor import Extractor
 from extractor.scraper.common.fetchModelData import ModelDtosAndJsonDataByName
 from extractor.scraper.gm.ChevroletScraper import ChevroletScraper
@@ -49,13 +49,13 @@ class Test(TestCase):
     def test__createOrFetchBrandCreatesBrand(self):
         extractor = Extractor(scraper=self.scraper, noPersist=False)
         with sessionFactory.newSession() as session:
-            foundBrand = brandService.getBrandByName(brandName="Chevrolet", session=session)
+            foundBrand = brandRepository.getBrandByName(brandName="Chevrolet", session=session)
             self.assertEqual(self.manufacturerId, foundBrand.manufacturer.manufacturer_id)
             self.assertEqual(extractor.brandId, foundBrand.brand_id)
 
     def test__createOrFetchBrandFetchesBrand(self):
         with sessionFactory.newSession() as session:
-            gmManufacturer = manufacturerService.getManufacturerById(manufacurerId=self.manufacturerId, session=session)
+            gmManufacturer = manufacturerRepository.getManufacturerById(manufacurerId=self.manufacturerId, session=session)
             chevroletBrand = Brand(name="Chevrolet")
             gmManufacturer.brands.append(chevroletBrand)
             session.commit()
@@ -75,7 +75,7 @@ class Test(TestCase):
 
     def test__createOrFetchBrandRaisesOnNoManufacturer(self):
         with sessionFactory.newSession() as session:
-            manufacturerService.deleteAllManufacturers(session)
+            manufacturerRepository.deleteAllManufacturers(session)
             session.commit()
         shouldRaise = lambda: Extractor(scraper=self.scraper, noPersist=False)
         self.assertRaises(ValueError, shouldRaise)
@@ -91,8 +91,8 @@ class Test(TestCase):
         self.scraper.fetchModelYear = MagicMock(return_value=modelDtosAndJsonData)
         extractor.extract(modelYear)
         with sessionFactory.newSession() as session:
-            models = modelService.getModelYear(brandName='Chevrolet', manufacturerCommon='GM', modelYear=modelYear,
-                                               session=session)
+            models = modelRepository.getModelYear(brandName='Chevrolet', manufacturerCommon='GM', modelYear=modelYear,
+                                                  session=session)
             self.assertEqual({'Camaro', 'Corvette Stingray'}, {model.name for model in models}, "Unexpected models found")
             for model in models:
                 self.assertEqual(1, len(model.raw_data),

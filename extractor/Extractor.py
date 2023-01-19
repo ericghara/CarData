@@ -4,12 +4,12 @@ from typing import List, Dict, Optional
 from uuid import UUID
 
 from common.domain.dto.modelDto import Model as ModelDto
-from common.repository.Entities import RawData, Brand
+from common.domain.entities import RawData, Brand
+from common.repository.BrandRepository import brandRepository
+from common.repository.ManufacturerRepository import manufacturerRepository
+from common.repository.ModelRepository import modelRepository
+from common.repository.RawDataRepository import rawDataRepository
 from common.repository.SessionFactory import sessionFactory
-from common.service.persistence.BrandService import brandService
-from common.service.persistence.ManufacturerService import manufacturerService
-from common.service.persistence.ModelService import modelService
-from common.service.persistence.RawDataService import rawDataService
 from extractor.scraper.ModelInfoScraper import ModelInfoScraper
 from extractor.scraper.common.fetchModelData import ModelDtosAndJsonDataByName
 
@@ -27,11 +27,11 @@ class Extractor:
         manufacturerCommon = self.scraper.getManufacturerCommon()
         brandName = self.scraper.getBrandName()
         with sessionFactory.newSession() as session:
-            fetchedBrand = brandService.getBrandByName(brandName=brandName, session=session)
+            fetchedBrand = brandRepository.getBrandByName(brandName=brandName, session=session)
             if not fetchedBrand:  # create brand
                 self.log.info(
                     f"Creating brand {self.scraper.getBrandName()} for manufacturer {self.scraper.getManufacturerCommon()}")
-                manufacturer = manufacturerService.getManufacturerByCommonName(commonName=manufacturerCommon, session=session)
+                manufacturer = manufacturerRepository.getManufacturerByCommonName(commonName=manufacturerCommon, session=session)
                 if not manufacturer:
                     raise ValueError(f"Common name {manufacturerCommon} does not match any manufacturers")
                 fetchedBrand = Brand(name=brandName)
@@ -53,9 +53,9 @@ class Extractor:
             raise ValueError(f"Missing model <-> jsonData relationship for modelName(s): {diff}")
         with sessionFactory.newSession() as session:
             session.begin()
-            for modelEntity in modelService.upsert(modelDtos, session):
+            for modelEntity in modelRepository.upsert(modelDtos, session):
                 jsonData = jsonDataByName[modelEntity.name]
-                rawDataService.insert(RawData(raw_data=jsonData, model_id=modelEntity.model_id), session=session)
+                rawDataRepository.insert(RawData(raw_data=jsonData, model_id=modelEntity.model_id), session=session)
             session.commit()
 
     def extract(self, modelYear: date, persist: bool = True) -> Optional[ModelDtosAndJsonDataByName]:

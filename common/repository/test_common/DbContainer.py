@@ -1,12 +1,12 @@
 import datetime
+import importlib
 
 from testcontainers.postgres import PostgresContainer
 
+from common.domain.entities import Manufacturer, Brand, Model, RawData, ModelAttribute
 from common.domain.enum.AttributeType import AttributeType
-from common.repository import Entities
-from common.repository.Entities import Manufacturer, Brand, Model, RawData, ModelAttribute
+from common.repository.ManufacturerRepository import manufacturerRepository
 from common.repository.SessionFactory import sessionFactory
-from common.service.persistence.ManufacturerService import manufacturerService
 from glbls import variables
 
 
@@ -28,7 +28,14 @@ class DbContainer:
         self.postgresContainer.stop()
 
     def initTables(self) -> None:
-        Entities.createAll()
+        SCHEMA_DIR = 'common.repository.resources'
+        SCHEMA_FILE = 'schema.sql'
+        schema_resource = importlib.resources.files(SCHEMA_DIR).joinpath(SCHEMA_FILE)
+        with importlib.resources.as_file(schema_resource) as schema_file:
+            schema = schema_file.read_text()
+            # for more complex schemas or where there are errors, might be a good
+            # idea to execute statement by statement.
+            sessionFactory.getEngine().execute(schema)
 
     def insetTestRecords(self) -> None:
         with sessionFactory.newSession() as session:
@@ -71,5 +78,5 @@ class DbContainer:
 
     def deleteAll(self) -> None:
         with sessionFactory.newSession() as session:
-            manufacturerService.deleteAllManufacturers(session)
+            manufacturerRepository.deleteAllManufacturers(session)
             session.commit()

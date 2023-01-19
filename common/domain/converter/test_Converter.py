@@ -9,11 +9,11 @@ from common.domain.converter.Converter import converter
 from common.domain.dto.AttributeDto import Grade, Transmission, AttributeDto
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.dto.RawDataDto import RawDataDto
+from common.domain.entities import ModelAttribute, RawData
 from common.domain.enum.AttributeType import AttributeType
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
 from common.exception.IllegalStateError import IllegalStateError
-from common.repository.Entities import ModelAttribute, RawData
 
 
 class TestConverter(TestCase):

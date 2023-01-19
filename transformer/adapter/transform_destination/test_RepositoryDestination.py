@@ -6,15 +6,15 @@ from common.domain.converter.Converter import converter
 from common.domain.dto.AttributeDto import Grade, BodyStyle, Transmission
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.dto.RawDataDto import RawDataDto
+from common.domain.entities import Manufacturer, Brand, Model, RawData, ModelAttribute
 from common.domain.enum.AttributeType import AttributeType
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
 from common.exception.IllegalArgumentError import IllegalArgumentError
 from common.exception.IllegalStateError import IllegalStateError
-from common.repository.Entities import Manufacturer, Brand, Model, RawData, ModelAttribute
+from common.repository.ModelAttributeRepository import modelAttributeRepository
 from common.repository.SessionFactory import sessionFactory
 from common.repository.test_common.DbContainer import DbContainer
-from common.service.persistence.ModelAttributeService import modelAttributeService
 from transformer.adapter.transform_destination.RepositoryDestination import RepositoryDestination
 
 
@@ -60,7 +60,7 @@ class IntegrationTestRepositoryDestination(TestCase):
         self.destination.accept(attributeDtos=attributeDtos, rawDataDto=self.rawDataDto)
         with sessionFactory.newSession() as session:
             modelAttributes = list(
-                modelAttributeService.getAttributesByModelId(modelId=self.rawDataDto.modelId, session=session))
+                modelAttributeRepository.getAttributesByModelId(modelId=self.rawDataDto.modelId, session=session))
             self.assertEqual(1, len(modelAttributes), "A single ModelAttribute record inserted to database")
             foundModelAttribute = modelAttributes[0]
             expectedModelAttribute = converter.convert(attributeDtos[0], ModelAttribute)
@@ -79,7 +79,7 @@ class IntegrationTestRepositoryDestination(TestCase):
         self.destination.accept(attributeDtos=attributeDtos, rawDataDto=self.rawDataDto)
         with sessionFactory.newSession() as session:
             modelAttributes = list(
-                modelAttributeService.getAttributesByModelId(modelId=self.rawDataDto.modelId, session=session))
+                modelAttributeRepository.getAttributesByModelId(modelId=self.rawDataDto.modelId, session=session))
             self.assertEqual(1, len(modelAttributes), "A single ModelAttribute record inserted to database")
             foundModelAttribute = modelAttributes[0]
             expectedMetadata = [{"metadataType": "COMMON_BASE_MSRP", "value": 30_000, "unit": "DOLLARS"}]
@@ -90,7 +90,7 @@ class IntegrationTestRepositoryDestination(TestCase):
         self.destination.accept(attributeDtos=attributeDtos, rawDataDto=self.rawDataDto)
         with sessionFactory.newSession() as session:
             modelAttributes = list(
-                modelAttributeService.getAttributesByModelId(modelId=self.rawDataDto.modelId, session=session))
+                modelAttributeRepository.getAttributesByModelId(modelId=self.rawDataDto.modelId, session=session))
             self.assertEqual(2, len(modelAttributes), "Two model attributes inserted into database")
             foundTypeAndTitle = {(modelAttribute.attribute_type, modelAttribute.title) for modelAttribute in
                                  modelAttributes}
@@ -112,7 +112,7 @@ class IntegrationTestRepositoryDestination(TestCase):
         self.destination.accept(attributeDtos=secondInsert, rawDataDto=self.rawDataDto)  # second insert
         with sessionFactory.newSession() as session:
             modelAttributes = list(
-                modelAttributeService.getAttributesByModelId(modelId=self.rawDataDto.modelId, session=session))
+                modelAttributeRepository.getAttributesByModelId(modelId=self.rawDataDto.modelId, session=session))
             self.assertEqual(1, len(modelAttributes), "A single ModelAttribute record inserted to database")
             foundModelAttribute = modelAttributes[0]
             self.assertEqual(AttributeType.TRANSMISSION, foundModelAttribute.attribute_type, "Expected AttributeType")

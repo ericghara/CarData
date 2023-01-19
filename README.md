@@ -20,8 +20,8 @@ CarData is composed of 2 units:
   - Buick
   - GMC
 - **Transformer** - Work in progress
-  - Toyota/Lexus transformer
-  - General Motors brands (work in progress)
+  - Toyota/Lexus
+  - General Motors brands - Work in progress
 
 ### Currently Accessible Data
 - 406 car models

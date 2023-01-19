@@ -1,11 +1,11 @@
 from unittest import TestCase
 
+from common.repository.ManufacturerRepository import manufacturerRepository
 from common.repository.SessionFactory import sessionFactory
 from common.repository.test_common.DbContainer import DbContainer
-from common.service.persistence.ManufacturerService import manufacturerService
 
 
-class TestManufacturerService(TestCase):
+class TestManufacturerRepository(TestCase):
     container = None
 
     @classmethod
@@ -26,38 +26,38 @@ class TestManufacturerService(TestCase):
 
     def test_get_manufacturer_by_common_name(self):
         with sessionFactory.newSession() as session:
-            toyotaManufacturer = manufacturerService.getManufacturerByCommonName('Toyota', session)
+            toyotaManufacturer = manufacturerRepository.getManufacturerByCommonName('Toyota', session)
         self.assertTrue(toyotaManufacturer)
 
     def test_getManufacturerByManufacturerId(self):
         with sessionFactory.newSession() as session:
-            expected = manufacturerService.getManufacturerByCommonName(commonName='Toyota', session=session)
-            found = manufacturerService.getManufacturerById(manufacurerId=expected.manufacturer_id, session=session)
+            expected = manufacturerRepository.getManufacturerByCommonName(commonName='Toyota', session=session)
+            found = manufacturerRepository.getManufacturerById(manufacurerId=expected.manufacturer_id, session=session)
             self.assertEqual(found, expected)
 
     def test_get_all_manufacturers(self):
         with sessionFactory.newSession() as session:
-            manufacturerCommonNames = [ manufacturer.common_name for manufacturer in manufacturerService.getAllManufacturers(session) ]
+            manufacturerCommonNames = [manufacturer.common_name for manufacturer in manufacturerRepository.getAllManufacturers(session)]
         self.assertEqual(['Toyota'], manufacturerCommonNames)
 
     def test_deleteAllManufacturers(self):
         with sessionFactory.newSession() as session:
-            manufacturerService.deleteAllManufacturers(session)
-            shouldBeNull = manufacturerService.getManufacturerByCommonName('Toyota', session)
+            manufacturerRepository.deleteAllManufacturers(session)
+            shouldBeNull = manufacturerRepository.getManufacturerByCommonName('Toyota', session)
             session.commit()
         self.assertIs(None, shouldBeNull)
 
     def test_delete_manufacturer_by_common_name(self):
         with sessionFactory.newSession() as session:
-            manufacturerService.deleteManufacturerByCommonName('Toyota', session)
-            shouldBeNull = manufacturerService.getManufacturerByCommonName('Toyota', session)
+            manufacturerRepository.deleteManufacturerByCommonName('Toyota', session)
+            shouldBeNull = manufacturerRepository.getManufacturerByCommonName('Toyota', session)
             session.commit()
         self.assertIs(None, shouldBeNull)
 
     def test_deleteManufacturerByCommonNameRaisesWhenNoRecord(self):
         with sessionFactory.newSession() as session:
             self.assertRaises(ValueError,
-                              lambda: manufacturerService.deleteManufacturerByCommonName('NotToyota', session) )
+                              lambda: manufacturerRepository.deleteManufacturerByCommonName('NotToyota', session))
 
 
 

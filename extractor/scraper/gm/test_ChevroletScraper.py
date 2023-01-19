@@ -6,7 +6,7 @@ from uuid import uuid4
 from parameterized import parameterized
 from requests import Response
 
-from common.repository.Entities import Brand
+from common.domain.entities import Brand
 from common.repository.test_common.mockSessionFactory import MockSessionFactory
 from extractor.scraper.common.fetchModelData import ModelFetchDto
 from extractor.scraper.gm.ChevroletScraper import ChevroletScraper

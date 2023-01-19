@@ -3,10 +3,10 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from common.repository.Entities import Manufacturer
+from common.domain.entities import Manufacturer
 
 
-class ManufacturerService:
+class ManufacturerRepository:
 
     def __init__(self):
         pass
@@ -34,7 +34,7 @@ class ManufacturerService:
             session.delete(manufacturer)
 
 
-manufacturerService = ManufacturerService()
+manufacturerRepository = ManufacturerRepository()
 
 
 

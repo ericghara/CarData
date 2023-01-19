@@ -5,8 +5,8 @@ from common.domain.converter.Converter import converter
 from common.domain.dto.RawDataDto import RawDataDto
 from common.exception.IllegalArgumentError import IllegalArgumentError
 from common.exception.IllegalStateError import IllegalStateError
+from common.repository.RawDataRepository import rawDataRepository
 from common.repository.SessionFactory import sessionFactory
-from common.service.persistence.RawDataService import rawDataService
 from transformer.adapter.TransformDestination import TransformDestination
 from transformer.adapter.transform_destination.RepositoryDestination import RepositoryDestination
 from transformer.transform.Transformer import Transformer
@@ -40,7 +40,7 @@ class TransformerService:
 
     def _fetchRawDataDtoAndBrandName(self, rawDataDto: RawDataDto) -> RawDataDtoAndBrandName:
         with sessionFactory.newSession() as session:
-            rawDataEntity = rawDataService.getByDataId(dataId=rawDataDto.dataId, session=session)
+            rawDataEntity = rawDataRepository.getByDataId(dataId=rawDataDto.dataId, session=session)
             if rawDataDto.modelId and rawDataDto.modelId != rawDataEntity.model_id:
                 self.log.warning(f"Expected modelId: {rawDataDto.modelId} found modelId: {rawDataEntity.model_id}.")
                 raise IllegalStateError("The provided modelId is inconsistent with the fetched model_id")

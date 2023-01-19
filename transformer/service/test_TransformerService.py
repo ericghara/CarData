@@ -7,9 +7,9 @@ from parameterized import parameterized
 from common.domain.converter.Converter import converter
 from common.domain.dto.AttributeDto import Other
 from common.domain.dto.RawDataDto import RawDataDto
+from common.domain.entities import Manufacturer, Brand, Model, RawData
 from common.exception.IllegalArgumentError import IllegalArgumentError
 from common.exception.IllegalStateError import IllegalStateError
-from common.repository.Entities import Manufacturer, Brand, Model, RawData
 from common.repository.SessionFactory import sessionFactory
 from common.repository.test_common.DbContainer import DbContainer
 from transformer.adapter.transform_destination.MockDestination import MockDestination

@@ -1,11 +1,8 @@
-import importlib.resources
-
 from sqlalchemy import CheckConstraint, Column, Date, DateTime, ForeignKey, String, UniqueConstraint, text, Text, Enum
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship, declarative_base
 
 from common.domain.enum.AttributeType import AttributeType
-from common.repository.SessionFactory import sessionFactory
 
 Base = declarative_base()
 
@@ -71,15 +68,3 @@ class ModelAttribute(Base):
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=text("CURRENT_TIMESTAMP"))
 
     model = relationship('Model', back_populates='model_attribute')
-
-
-_SCHEMA_DIR = 'common.repository.resources'
-_SCHEMA_FILE = 'schema.sql'
-
-def createAll() -> None:
-    schema_resource = importlib.resources.files(_SCHEMA_DIR).joinpath(_SCHEMA_FILE)
-    with importlib.resources.as_file(schema_resource) as schema_file:
-        schema = schema_file.read_text()
-        # for more complex schemas or where there are errors, might be a good
-        # idea to execute statement by statement.
-        sessionFactory.getEngine().execute(schema)

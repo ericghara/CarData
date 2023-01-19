@@ -1,15 +1,15 @@
 from sqlalchemy.orm import Session
 
-from common.repository.Entities import Brand, Manufacturer
-from common.service.persistence.ManufacturerService import manufacturerService
+from common.domain.entities import Brand, Manufacturer
+from common.repository.ManufacturerRepository import manufacturerRepository
 
 
-class BrandService:
+class BrandRepository:
     def __init__(self):
         pass
 
     def _getManufacturer(self, manufacturerCommon: str, session: 'Session') -> 'Manufacturer':
-        manufacturer = manufacturerService.getManufacturerByCommonName(manufacturerCommon, session)
+        manufacturer = manufacturerRepository.getManufacturerByCommonName(manufacturerCommon, session)
         if not manufacturer:
             raise ValueError('Manufacturer Common name not found.')
         return manufacturer
@@ -36,7 +36,7 @@ class BrandService:
         session.delete(toDel)
         return
 
-brandService = BrandService()
+brandRepository = BrandRepository()
 
 
 

@@ -2,7 +2,7 @@ import datetime
 from typing import *
 from unittest import TestCase
 
-from common.repository.Entities import RawData
+from common.domain.entities import RawData
 from extractor.scraper.ModelInfoScraper import ModelInfoScraper
 
 

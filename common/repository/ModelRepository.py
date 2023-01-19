@@ -7,17 +7,17 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from common.domain.dto.modelDto import Model as ModelDto
-from common.repository.Entities import Model, Brand, Manufacturer
-from common.service.persistence.BrandService import brandService
+from common.domain.entities import Model, Brand, Manufacturer
+from common.repository.BrandRepository import brandRepository
 
 
-class ModelService:
+class ModelRepository:
 
     def __init__(self):
         self.table = Model.__table__
 
     def _getBrand(self, manufacturerCommon: str, brandName: str, session: 'Session') -> 'Brand':
-        brand = brandService.getBrandByNameAndManufacturer(manufacturerCommon, brandName, session)
+        brand = brandRepository.getBrandByNameAndManufacturer(manufacturerCommon, brandName, session)
         if not brand:
             raise ValueError(f'Could not find brand matching manufacturer common name: {manufacturerCommon}, brand name {brandName}')
         return brand
@@ -71,7 +71,7 @@ class ModelService:
         for modelRecord in session.execute(updateStmt):
             yield ModelDto(**modelRecord)
 
-modelService = ModelService()
+modelRepository = ModelRepository()
 
 
 

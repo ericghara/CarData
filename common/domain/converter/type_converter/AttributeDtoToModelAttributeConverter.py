@@ -1,7 +1,7 @@
 from common.domain.converter.type_converter.TypeConverter import TypeConverter
 from common.domain.dto.AttributeDto import AttributeDto
+from common.domain.entities import ModelAttribute
 from common.domain.json.JsonEncoder import jsonEncoder
-from common.repository.Entities import ModelAttribute
 
 
 class AttributeDtoToModelAttributeConverter(TypeConverter):

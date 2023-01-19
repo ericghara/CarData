@@ -4,18 +4,18 @@ from datetime import date
 from sqlalchemy.orm import Session
 
 from common.domain.dto.AttributeDto import *
-from common.repository.Entities import ModelAttribute, Model
-from common.service.persistence.ModelService import modelService
+from common.domain.entities import ModelAttribute, Model
+from common.repository.ModelRepository import modelRepository
 
 
-class ModelAttributeService:
+class ModelAttributeRepository:
 
     def __init__(self):
         pass
 
     def _getModel(self, brandName: str, modelName: str, modelYear: date, session: 'Session') -> Model:
-        model = modelService.getModelByBrandNameModelNameModelYear(brandName=brandName, modelName=modelName,
-                                                                   modelYear=modelYear, session=session)
+        model = modelRepository.getModelByBrandNameModelNameModelYear(brandName=brandName, modelName=modelName,
+                                                                      modelYear=modelYear, session=session)
         if not model:
             raise ValueError(
                 f'No record found matching brand name: {brandName} model name: {modelName} modelYear: {modelYear}')
@@ -49,4 +49,4 @@ class ModelAttributeService:
         return session.query(ModelAttribute).where(ModelAttribute.attribute_id.in_(attributeIds))
 
 
-modelAttributeService = ModelAttributeService()
+modelAttributeRepository = ModelAttributeRepository()

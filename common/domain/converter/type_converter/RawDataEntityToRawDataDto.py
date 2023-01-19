@@ -1,6 +1,6 @@
 from common.domain.converter.type_converter.TypeConverter import TypeConverter
 from common.domain.dto.RawDataDto import RawDataDto
-from common.repository.Entities import RawData
+from common.domain.entities import RawData
 
 
 class RawDataEntityToRawDataDto(TypeConverter):

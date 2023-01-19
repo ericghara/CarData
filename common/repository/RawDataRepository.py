@@ -5,17 +5,17 @@ from uuid import UUID
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
-from common.repository.Entities import RawData, Model
-from common.service.persistence.ModelService import modelService
+from common.domain.entities import RawData, Model
+from common.repository.ModelRepository import modelRepository
 
 
-class RawDataService:
+class RawDataRepository:
 
     def __init__(self):
         pass
 
     def _getModel(self, brandName: str, modelName: str, modelYear: date, session: 'Session') -> Model:
-        model = modelService.getModelByBrandNameModelNameModelYear(brandName=brandName, modelName=modelName,modelYear=modelYear, session=session)
+        model = modelRepository.getModelByBrandNameModelNameModelYear(brandName=brandName, modelName=modelName, modelYear=modelYear, session=session)
         if not model:
             raise ValueError(f'No record found matching brand name: {brandName} model name: {modelName} modelYear: {modelYear}')
         return model
@@ -48,5 +48,5 @@ class RawDataService:
         for record in toDel:
             session.delete(record)
 
-rawDataService = RawDataService()
+rawDataRepository = RawDataRepository()
 
