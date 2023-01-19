@@ -9,7 +9,7 @@ The ultimate goal of CarData is to create a dataset of model information with a 
 
 CarData is composed of 2 units:
 - **Extractor** - scrapes JSON data from auto manufacturers' websites, by interacting directly with their *public* APIs
-- **Transformer** - translates data retrieved from the extractor to a brand-agnostic schema
+- **Transformer** - translates data retrieved by the extractor into a brand-agnostic schema
 
 ## Project Status
 - **Extractor**
@@ -20,4 +20,9 @@ CarData is composed of 2 units:
   - Buick
   - GMC
 - **Transformer** - Work in progress
-  - Toyota/Lexus transformer nearly complete
+  - Toyota/Lexus transformer
+  - General Motors brands (work in progress)
+
+### Currently Accessible Data
+- 406 car models
+- 24,400 configuration options
