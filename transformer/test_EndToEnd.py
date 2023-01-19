@@ -2,7 +2,7 @@ from datetime import date
 from unittest import TestCase
 
 from common.domain.converter.Converter import converter
-from common.domain.dto.AttributeDto import AttributeDto, Accessory
+from common.domain.dto.AttributeDto import AttributeDto, Accessory, Grade, BodyStyle
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.dto.RawDataDto import RawDataDto
 from common.domain.enum.MetadataType import MetadataType
@@ -50,7 +50,7 @@ class TestEndToEnd(TestCase):
             session.commit()
 
     def test_ToyotaBrandTransformToDatabaseDestination(self):
-        raw_data = {"model" : [{"accessories": [
+        raw_data = {"model": [{"accessories": [
             {"title": "Touring Package",
              "price": "$2,540",
              "attributes": {"group": {"value": "Exterior"}}}]}]}
@@ -67,10 +67,13 @@ class TestEndToEnd(TestCase):
                 modelAttributeService.getAttributesByModelId(modelId=rawDataDto.modelId, session=session))
             attributeDtos = [converter.convert(obj=modelAttribute, outputType=AttributeDto) for modelAttribute in
                              modelAttributes]
-        # There are some default attributes, so filtering to get accessory
-        foundAccessory = next(attributeDto for attributeDto in attributeDtos if isinstance(attributeDto, Accessory))
+        # There are some default attributes
+        self.assertEqual(3, len(attributeDtos), "expected number of attributes")
+        foundAccessoryByType = {type(attributeDto): attributeDto for attributeDto in attributeDtos}
         expectedAccessory = Accessory(title="Touring Package", metadata=[
             AttributeMetadata(metadataType=MetadataType.COMMON_MSRP, value=2540, unit=MetadataUnit.DOLLARS),
             AttributeMetadata(metadataType=MetadataType.ACCESSORY_CATEGORY, value="Exterior")
         ])
-        expectedAccessory._assertStrictEq(foundAccessory)
+        expectedAccessory._assertStrictEq(foundAccessoryByType.get(Accessory))
+        Grade("Standard")._assertStrictEq(foundAccessoryByType.get(Grade))
+        BodyStyle("Standard")._assertStrictEq(foundAccessoryByType.get(BodyStyle))
