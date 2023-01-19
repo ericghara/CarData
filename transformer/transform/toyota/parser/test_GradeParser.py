@@ -1,14 +1,14 @@
 import logging
 from unittest import TestCase
 
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 from common.domain.dto.AttributeDto import Grade
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
-from transformer.transformer.toyota.LoggingTools import LoggingTools
-from transformer.transformer.toyota.parser.GradeParser import GradeParser
+from transformer.transform.toyota.LoggingTools import LoggingTools
+from transformer.transform.toyota.parser.GradeParser import GradeParser
 
 
 class TestGradeParser(TestCase):

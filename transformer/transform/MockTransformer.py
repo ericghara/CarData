@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from common.domain.dto.AttributeDto import AttributeDto
 from common.domain.dto.RawDataDto import RawDataDto
-from transformer.transformer.Transformer import Transformer
+from transformer.transform.Transformer import Transformer
 
 
 class MockTransformer(Transformer):

@@ -1,19 +1,19 @@
 from typing import Dict, Iterable, Optional, List
 
-from common.domain.dto.AttributeDto import ExteriorColor
+from common.domain.dto.AttributeDto import InteriorColor
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
 from transformer.domain.attribute_set.AttributeSet import AttributeSet
 from transformer.domain.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
-from transformer.transformer.AttributeParser import AttributeParser
-from transformer.transformer.toyota.LoggingTools import LoggingTools
-from transformer.transformer.toyota.parser import util
+from transformer.transform.AttributeParser import AttributeParser
+from transformer.transform.toyota.LoggingTools import LoggingTools
+from transformer.transform.toyota.parser import util
 
 
-class ExteriorColorParser(AttributeParser):
+class InteriorColorParser(AttributeParser):
 
-    # Exterior and InteriorColorParsers are essentially the same
+    # Interior and InteriorColorParsers are essentially the same
 
     def __init__(self, loggingTools: LoggingTools):
         self.loggingTools = loggingTools
@@ -40,20 +40,20 @@ class ExteriorColorParser(AttributeParser):
         price = util.priceStrToInt(priceStr)
         return AttributeMetadata(metadataType=metadataType, value=price, unit=MetadataUnit.DOLLARS)
 
-    def _parseModel(self, modelJson: Dict) -> Iterable[ExteriorColor]:
-        for colorJson in modelJson.get('exteriorcolor', list()):
+    def _parseModel(self, modelJson: Dict) -> Iterable[InteriorColor]:
+        for colorJson in modelJson.get('interiorcolor', list()):
             if title := self._getTitle(colorJson=colorJson, modelJson=modelJson):
                 metadata = None
                 if (priceMetadata := self._getPrice(colorJson=colorJson, modelJson=modelJson)):
                     metadata = [priceMetadata]
-                yield ExteriorColor(title=title, metadata=metadata)
+                yield InteriorColor(title=title, metadata=metadata)
 
-    def parse(self, jsonData: Dict) -> List[ExteriorColor]:
-        exteriorDtos = AttributeSet(
+    def parse(self, jsonData: Dict) -> List[InteriorColor]:
+        interiorDtos = AttributeSet(
             updater=PriceUpdater(metadataType=MetadataType.COMMON_MSRP, keepLowest=False))  # keeps highest MSRP
         for modelJson in jsonData['model']:
-            for exteriorColor in self._parseModel(modelJson):
-                if exteriorColor in exteriorDtos:
-                    self.loggingTools.logDuplicateAttributeDto(parser=type(self), attributeDto=exteriorColor)
-                exteriorDtos.add(exteriorColor)
-        return list(exteriorDtos)
+            for interiorColor in self._parseModel(modelJson):
+                if interiorColor in interiorDtos:
+                    self.loggingTools.logDuplicateAttributeDto(parser=type(self), attributeDto=interiorColor)
+                interiorDtos.add(interiorColor)
+        return list(interiorDtos)

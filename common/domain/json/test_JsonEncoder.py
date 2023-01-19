@@ -3,7 +3,7 @@ from typing import Dict
 from unittest import TestCase
 from uuid import UUID
 
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 from common.domain.dto.AttributeDto import AttributeDto, BodyStyle
 from common.domain.dto.AttributeMetadata import AttributeMetadata

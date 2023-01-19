@@ -1,9 +1,9 @@
 from typing import Dict, List, Optional
 
 from common.domain.dto.AttributeDto import Drive
-from transformer.transformer.AttributeParser import AttributeParser
-from transformer.transformer.toyota.LoggingTools import LoggingTools
-from transformer.transformer.toyota.parser import util
+from transformer.transform.AttributeParser import AttributeParser
+from transformer.transform.toyota.LoggingTools import LoggingTools
+from transformer.transform.toyota.parser import util
 
 
 class DriveParser(AttributeParser):

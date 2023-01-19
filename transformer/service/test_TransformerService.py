@@ -14,13 +14,13 @@ from common.repository.SessionFactory import sessionFactory
 from common.repository.test_common.DbContainer import DbContainer
 from transformer.adapter.transform_destination.MockDestination import MockDestination
 from transformer.service.TransformerService import TransformerService
-from transformer.transformer.MockTransformer import MockTransformer
+from transformer.transform.MockTransformer import MockTransformer
 
 
 class TestTransformerService(TestCase):
 
     def setUp(self):
-        self.sessionFactoryMock = mock.patch('transformer.service.TransformerService.sessionFactory.newSession',
+        self.sessionFactoryMock = mock.patch('transform.service.TransformerService.sessionFactory.newSession',
                                              side_effect=AssertionError('Should not interact with repository'))
         self.mockTransformer0 = MockTransformer(manufacturerCommon='Toyota', brandNames=['Lexus', 'Toyota'])
         self.mockTransformer1 = MockTransformer(manufacturerCommon='manufacturer', brandNames=['brand'])

@@ -2,8 +2,8 @@ import logging
 from unittest import TestCase
 
 from common.domain.dto.AttributeDto import Drive
-from transformer.transformer.toyota.LoggingTools import LoggingTools
-from transformer.transformer.toyota.parser.DriveParser import DriveParser
+from transformer.transform.toyota.LoggingTools import LoggingTools
+from transformer.transform.toyota.parser.DriveParser import DriveParser
 
 
 class TestDriveParser(TestCase):

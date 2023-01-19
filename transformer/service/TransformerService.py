@@ -9,8 +9,8 @@ from common.repository.SessionFactory import sessionFactory
 from common.service.persistence.RawDataService import rawDataService
 from transformer.adapter.TransformDestination import TransformDestination
 from transformer.adapter.transform_destination.RepositoryDestination import RepositoryDestination
-from transformer.transformer.Transformer import Transformer
-from transformer.transformer.toyota.ToyotaTransformer import ToyotaTransformer
+from transformer.transform.Transformer import Transformer
+from transformer.transform.toyota.ToyotaTransformer import ToyotaTransformer
 
 
 class RawDataDtoAndBrandName(NamedTuple):
@@ -55,6 +55,12 @@ class TransformerService:
             raise IllegalArgumentError(f"No transformer is registered for the provided brandName: {brandName}")
 
     def transform(self, rawDataDto: RawDataDto) -> None:
+        """
+
+        :param rawDataDto: The Only required field in rawDataDto is dataId, modelId is recommended
+        as when it is provided it is verified with the retrived object.
+        :return:
+        """
         self._validateRawDataDto(rawDataDto)
         syncedRawDataDto, brandName = self._fetchRawDataDtoAndBrandName(rawDataDto)
         transformer = self._selectTransformer(brandName)

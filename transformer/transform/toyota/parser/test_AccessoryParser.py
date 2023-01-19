@@ -5,8 +5,8 @@ from common.domain.dto.AttributeDto import Accessory
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
-from transformer.transformer.toyota.LoggingTools import LoggingTools
-from transformer.transformer.toyota.parser.AccessoryParser import AccessoryParser
+from transformer.transform.toyota.LoggingTools import LoggingTools
+from transformer.transform.toyota.parser.AccessoryParser import AccessoryParser
 
 
 class TestAccessoryParser(TestCase):

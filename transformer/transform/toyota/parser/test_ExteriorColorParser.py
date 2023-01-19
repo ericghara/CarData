@@ -5,8 +5,8 @@ from common.domain.dto.AttributeDto import ExteriorColor
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
-from transformer.transformer.toyota.LoggingTools import LoggingTools
-from transformer.transformer.toyota.parser.ExteriorColorParser import ExteriorColorParser
+from transformer.transform.toyota.LoggingTools import LoggingTools
+from transformer.transform.toyota.parser.ExteriorColorParser import ExteriorColorParser
 
 
 class TestExteriorColorParser(TestCase):
