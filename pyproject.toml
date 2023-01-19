@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "car_data"
+version = "0.1.0"
+description = ""
+authors = ["ericghara <eric.ghara@gmail.com>"]
+readme = "README.md"
+packages = [{include = "car_data"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+jupyter = "^1.0.0"
+requests = "^2.28.1"
+sqlalchemy = "^1.4.43"
+sqlacodegen = "^2.3.0"
+psycopg2 = "^2.9.5"
+testcontainers = "^3.7.0"
+parameterized = "^0.8.1"
+coverage = "^7.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

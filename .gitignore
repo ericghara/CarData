@@ -1,5 +1,4 @@
 /glbls.py
-pyproject.toml
 /venv
 *.ipynb
 /*/.ipynb_checkpoints
