@@ -34,6 +34,7 @@ class SessionFactory:
         return self._sessionGenerator()
 
     def purgeEngine(self) -> None:
+        sessionmaker.close_all()
         if self._engine:
             self._engine.dispose()
         self._engine = None
