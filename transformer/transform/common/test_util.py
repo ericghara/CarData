@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-from transformer.transform.toyota.parser import util
+from transformer.transform.common import util
 
 
 class Test_Util(TestCase):

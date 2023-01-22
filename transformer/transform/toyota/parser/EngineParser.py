@@ -6,7 +6,7 @@ from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
 from transformer.transform.AttributeParser import AttributeParser
 from transformer.transform.toyota.parser.LoggingTools import LoggingTools
-from transformer.transform.toyota.parser import util
+from transformer.transform.common import util
 
 
 class EngineParser(AttributeParser):

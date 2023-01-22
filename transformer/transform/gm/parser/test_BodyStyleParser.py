@@ -63,3 +63,14 @@ class TestBodyStyleParser(TestCase):
         # Only works for len(bodyStyles) <= 1
         for expectedBodyStyle, foundBodyStyle in zip(expectedBodyStyles, foundBodyStyles):
             expectedBodyStyle._assertStrictEq(foundBodyStyle)
+
+    def test_parseMultipleBodyStyles(self):
+        dataDict = {"modelMatrix": {"bodyTypes": [{"formattedConfig": "Body0", "lowestMSRPValue": None},
+                                                  {"formattedConfig": "Body1"}]}}
+        bodyStyleByname = lambda bodyStyles: {bodyStyle.title: bodyStyle for bodyStyle in bodyStyles}
+        foundBodyStyles = self.parser.parse(dataDict)
+        expectedBodyStylesByName = bodyStyleByname([BodyStyle("Body0"), BodyStyle("Body1")])
+        foundBodyStylesByname = bodyStyleByname(foundBodyStyles)
+        self.assertEqual(expectedBodyStylesByName, foundBodyStylesByname)
+        for name, bodyStyle in expectedBodyStylesByName.items():
+            bodyStyle._assertStrictEq(foundBodyStylesByname[name])

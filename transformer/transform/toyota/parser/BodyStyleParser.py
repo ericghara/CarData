@@ -9,7 +9,7 @@ from transformer.domain.attribute_set.AttributeSet import AttributeSet
 from transformer.domain.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
 from transformer.transform.AttributeParser import AttributeParser
 from transformer.transform.toyota.parser.LoggingTools import LoggingTools
-from transformer.transform.toyota.parser import util
+from transformer.transform.common import util
 
 
 class BodyStyleParser(AttributeParser):
@@ -60,7 +60,7 @@ class BodyStyleParser(AttributeParser):
         if not re.search("bed", bed, re.IGNORECASE):
             # Toyota is inconsistent, sometimes bed title is "5-ft." others "5-ft. Bed"
             bed = f"{bed.strip()} Bed"
-        return AttributeMetadata(metadataType=metadataType, value=util.removeBracketed(bed) )
+        return AttributeMetadata(metadataType=metadataType, value=util.removeBracketed(bed))
 
     def _getCab(self, modelJson: Dict) -> Optional[AttributeMetadata]:
         metadataType = MetadataType.BODY_STYLE_CAB
@@ -71,7 +71,7 @@ class BodyStyleParser(AttributeParser):
             return None
         if not cab:
             return None
-        return AttributeMetadata(metadataType=metadataType, value=util.removeBracketed(cab) )
+        return AttributeMetadata(metadataType=metadataType, value=util.removeBracketed(cab))
 
     def _getSeating(self, modelJson: Dict) -> Optional[AttributeMetadata]:
         metadataType = MetadataType.BODY_STYLE_SEATING

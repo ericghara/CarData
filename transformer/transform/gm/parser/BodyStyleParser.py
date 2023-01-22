@@ -24,10 +24,11 @@ class BodyStyleParser(AttributeParser):
     def _getTitle(self, bodyStyleDict: Dict, modelIdentifier: str) -> Optional[str]:
         try:
             title = bodyStyleDict['formattedConfig']
-        except KeyError:
-            self.loggingTools.logTitleFailure(parser=type(self), modelIdentifier=modelIdentifier)
-            return None
+        except KeyError as e:
+            self.loggingTools.logUnexpectedSchema(parser=type(self), modelIdentifier=modelIdentifier, exception=e)
+            title = None
         if not title:
+            self.loggingTools.logTitleFailure(parser=type(self), modelIdentifier=modelIdentifier)
             return None
         return title
 
