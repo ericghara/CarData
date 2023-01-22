@@ -8,7 +8,6 @@ from common.domain.dto.AttributeDto import Accessory
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
-from transformer.transform.gm.GmTransformer import GmTransformer
 from transformer.transform.gm.parser.AccessoryParser import AccessoryParser
 from transformer.transform.gm.parser.LoggingTools import LoggingTools
 
@@ -16,7 +15,7 @@ from transformer.transform.gm.parser.LoggingTools import LoggingTools
 class TestAccessoryParser(TestCase):
 
     def setUp(self) -> None:
-        loggingTools = LoggingTools(logging.getLogger(name=type(GmTransformer).__name__))
+        loggingTools = LoggingTools(logging.getLogger(name=type(self).__name__))
         self.parser = AccessoryParser(loggingTools=loggingTools)
 
     completeAccessory = {'msrp': 170,
@@ -44,18 +43,18 @@ class TestAccessoryParser(TestCase):
         self.assertEqual(expectedPrice, foundPrice)
 
     completeAccessoriesDict = {'config': {'ACCESSORIES':
-        {'Tools':
-             [{'msrp': 170,
-              'primaryName': 'A Tool'}]
-         }
-    }}
+                                              {'Tools':
+                                                   [{'msrp': 170,
+                                                     'primaryName': 'A Tool'}]
+                                               }
+                                          }}
 
     nullAccessoriesDict = {'config': {'ACCESSORIES':
-        {'Tools':
-             [{'msrp': None,
-              'primaryName': None}]
-         }
-    }}
+                                          {'Tools':
+                                               [{'msrp': None,
+                                                 'primaryName': None}]
+                                           }
+                                      }}
 
     @parameterized.expand([
         (completeAccessoriesDict, [Accessory(title='A Tool', metadata=[
