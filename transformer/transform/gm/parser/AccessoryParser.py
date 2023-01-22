@@ -1,14 +1,12 @@
-from typing import Dict, Iterable, Optional, List
+from typing import Dict, Optional, List
 
 from common.domain.dto.AttributeDto import Accessory
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
-from transformer.domain.attribute_set.AttributeSet import AttributeSet
-from transformer.domain.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
+from common.exception.IllegalStateError import IllegalStateError
 from transformer.transform.AttributeParser import AttributeParser
-from transformer.transform.toyota.LoggingTools import LoggingTools
-from transformer.transform.toyota.parser import util
+from transformer.transform.gm.parser.LoggingTools import LoggingTools
 
 
 class AccessoryParser(AttributeParser):
@@ -16,53 +14,61 @@ class AccessoryParser(AttributeParser):
     def __init__(self, loggingTools: LoggingTools):
         self.loggingTools = loggingTools
 
-    def _getTitle(self, accessoryJson: Dict, modelJson: Dict) -> Optional[str]:
+    def _getTitle(self, accessoryDict: Dict, modelIdentifier: str) -> Optional[str]:
         try:
-            accessoryTitle = accessoryJson['title']
+            accessoryTitle = accessoryDict['primaryName']
         except KeyError as e:
-            self.loggingTools.logTitleFailure(parser=self.__class__, exception=e, modelJson=modelJson)
+            self.loggingTools.logTitleFailure(parser=type(self), modelIdentifier=modelIdentifier)
             return None
         if not accessoryTitle:
             return None
-        return util.removeBracketed(accessoryTitle)
+        return accessoryTitle
 
-    def _getCategory(self, accessoryJson: Dict, modelJson: Dict) -> Optional[AttributeMetadata]:
+    def _createCategoryMetadata(self, categoryStr: str) -> Optional[AttributeMetadata]:
         metadataType = MetadataType.ACCESSORY_CATEGORY
-        try:
-            category = accessoryJson['attributes']['group']['value']
-        except KeyError as e:
-            self.loggingTools.logTitleFailure(parser=self.__class__, exception=e, modelJson=modelJson)
-            return None
-        if not category:
-            return None
-        return AttributeMetadata(metadataType=metadataType, value=category)
+        return AttributeMetadata(metadataType=metadataType, value=categoryStr)
 
-    def _getPrice(self, accessoryJson: Dict, modelJson: Dict) -> Optional[AttributeMetadata]:
+    def _getPrice(self, accessoryDict: Dict, modelIdentifier: str) -> Optional[AttributeMetadata]:
         metadataType = MetadataType.COMMON_MSRP
         try:
-            priceStr = accessoryJson['price']
-        except KeyError as e:
-            self.loggingTools.logTitleFailure(parser=self.__class__, exception=e, modelJson=modelJson)
+            # raw msrp *should* be int, but enforcing that
+            rawPrice = accessoryDict['msrp']
+            if type(rawPrice) not in {int, float}:
+                raise IllegalStateError("Unrecognized price value.")
+        except (KeyError, IllegalStateError) as e:
+            self.loggingTools.logtAttributeFailure(parser=type(self), modelIdentifier=modelIdentifier,
+                                                   metadataType=metadataType)
             return None
-        if not priceStr:
-            return None
-        price = util.priceStrToInt(priceStr)
+        price = int(rawPrice)
         return AttributeMetadata(metadataType=metadataType, value=price, unit=MetadataUnit.DOLLARS)
 
-    def _parseModel(self, modelJson: Dict) -> Iterable[Accessory]:
-        for accessoryJson in modelJson.get('accessories', list()):
-            if title := self._getTitle(accessoryJson=accessoryJson, modelJson=modelJson):
-                rawMetadata = [self._getPrice(accessoryJson=accessoryJson, modelJson=modelJson),
-                               self._getCategory(accessoryJson=accessoryJson, modelJson=modelJson)]
-                metadata = [metaAttribute for metaAttribute in rawMetadata if metaAttribute]
-                yield Accessory(title=title, metadata=metadata if metadata else None)
+    def _getAccessoriesJson(self, dataDict: dict, modelIdentifier: str) -> Dict:
+        try:
+            return dataDict['config']['ACCESSORIES']
+        except KeyError:
+            self.loggingTools.logNoAttributes(parser=type(self), modelIdentifier=modelIdentifier)
+            return dict()
 
-    def parse(self, jsonData: Dict) -> List[Accessory]:
-        accessoryDtos = AttributeSet(
-            updater=PriceUpdater(metadataType=MetadataType.COMMON_MSRP, keepLowest=False))  # keeps the highest price
-        for modelJson in jsonData['model']:
-            for accessory in self._parseModel(modelJson):
-                if accessory in accessoryDtos:
-                    self.loggingTools.logDuplicateAttributeDto(parser=self.__class__, attributeDto=accessory)
-                accessoryDtos.add(accessory)
-        return list(accessoryDtos)
+    def _parseAccessory(self, accessoryDict: Dict, categoryStr: str, modelIdentifier: str) -> Optional[Accessory]:
+        title = self._getTitle(accessoryDict=accessoryDict, modelIdentifier=modelIdentifier)
+        if not title:
+            return None
+        metadata = list()
+        metadata.append(self._createCategoryMetadata(categoryStr=categoryStr))
+        if (priceMetadata := self._getPrice(accessoryDict=accessoryDict, modelIdentifier=modelIdentifier)):
+            metadata.append(priceMetadata)
+        return Accessory(title=title, metadata=metadata)
+
+    def parse(self, dataDict: Dict) -> List[Accessory]:
+        modelIdentifier = self.loggingTools.getModelIdentifier(dataDict)
+        accessoryDtos = list()
+        for accessoryCategory, accessoryList in self._getAccessoriesJson(dataDict=dataDict,
+                                                                         modelIdentifier=modelIdentifier).items():
+            for accessoryDict in accessoryList:
+                # decided to make a new AttributeMetadata(MetadataType.ACCESSORY_CATEGORY... for each accessory
+                # clients shouldn't mutate the AttributeMetadata...but that can't be guaranteed in python
+                accessoryDto = self._parseAccessory(accessoryDict=accessoryDict, categoryStr=accessoryCategory,
+                                     modelIdentifier=modelIdentifier)
+                if accessoryDto:
+                    accessoryDtos.append(accessoryDto)
+        return accessoryDtos

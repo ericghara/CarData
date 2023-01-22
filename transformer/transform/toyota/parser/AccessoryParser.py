@@ -7,7 +7,7 @@ from common.domain.enum.MetadataUnit import MetadataUnit
 from transformer.domain.attribute_set.AttributeSet import AttributeSet
 from transformer.domain.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
 from transformer.transform.AttributeParser import AttributeParser
-from transformer.transform.toyota.LoggingTools import LoggingTools
+from transformer.transform.toyota.parser.LoggingTools import LoggingTools
 from transformer.transform.toyota.parser import util
 
 

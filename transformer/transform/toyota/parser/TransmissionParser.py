@@ -2,7 +2,7 @@ from typing import Dict, Optional, List
 
 from common.domain.dto.AttributeDto import Transmission
 from transformer.transform.AttributeParser import AttributeParser
-from transformer.transform.toyota.LoggingTools import LoggingTools
+from transformer.transform.toyota.parser.LoggingTools import LoggingTools
 from transformer.transform.toyota.parser import util
 
 

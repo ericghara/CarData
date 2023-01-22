@@ -4,7 +4,7 @@ from typing import List
 from common.domain.dto.AttributeDto import AttributeDto, Accessory, Package
 from common.domain.dto.RawDataDto import RawDataDto
 from transformer.transform.Transformer import Transformer
-from transformer.transform.toyota.LoggingTools import LoggingTools
+from transformer.transform.toyota.parser.LoggingTools import LoggingTools
 from transformer.transform.toyota.parser.AccessoryParser import AccessoryParser
 from transformer.transform.toyota.parser.BodyStyleParser import BodyStyleParser
 from transformer.transform.toyota.parser.DriveParser import DriveParser
