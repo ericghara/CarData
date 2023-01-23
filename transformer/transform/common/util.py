@@ -2,19 +2,26 @@ import re
 from typing import Optional
 
 
-def priceStrToInt(price: int | str | float) -> int:
+def numStrToInt(numStr: str) -> int:
+    numStr = numStr.strip().replace(",", "")
+    if not re.fullmatch("\d*\.?\d*", numStr) or numStr == '.':
+        # '.' falls through regex pattern
+        # number at the end of a sentence accurately parsed, although a bit of an edge case
+        raise ValueError(f"Invalid input: {numStr}")
+    whole, *dec = numStr.split(".")
+    numStr = int(whole)
+    if dec and float('.' + dec[0]) >= 0.5:
+        numStr += 1
+    return int(numStr)
+
+
+def priceToInt(price: int | str | float) -> int:
     if type(price) is int:
         return price
     if type(price) is float:
         return int(round(price, 0))
-    price = price.replace("$", "").replace(",", "")
-    if not re.fullmatch("\d*\.?\d{0,2}", price) or price == '.':  # '.' falls through regex pattern
-        raise ValueError(f"Invalid input: {price}")
-    whole, *dec = price.split(".")
-    price = int(whole)
-    if dec and float('.' + dec[0]) >= 0.5:
-        price += 1
-    return int(price)
+    price = price.replace("$", "")
+    return numStrToInt(price)
 
 
 def digitsToInt(input: str | int | float) -> Optional[int]:

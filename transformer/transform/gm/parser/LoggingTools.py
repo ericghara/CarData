@@ -46,7 +46,7 @@ class LoggingTools:
             make = paramsByName['makes']
             model = paramsByName['models']
             return f"{year} - {make} {model}"
-        except:
+        except KeyError:
             # use hash as an id
             hashId = hash(json.dumps(dataDict))
             return f"Unknown - {hashId}"

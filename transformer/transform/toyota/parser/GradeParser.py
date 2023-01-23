@@ -60,6 +60,6 @@ class GradeParser(AttributeParser):
             return None
         if not msrpStr:
             return None
-        msrp = util.priceStrToInt(msrpStr)
+        msrp = util.priceToInt(msrpStr)
         return AttributeMetadata(metadataType=metadataType, value=msrp, unit=MetadataUnit.DOLLARS)
 

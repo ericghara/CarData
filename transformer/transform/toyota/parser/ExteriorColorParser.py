@@ -37,7 +37,7 @@ class ExteriorColorParser(AttributeParser):
             return
         if not priceStr:
             return None
-        price = util.priceStrToInt(priceStr)
+        price = util.priceToInt(priceStr)
         return AttributeMetadata(metadataType=metadataType, value=price, unit=MetadataUnit.DOLLARS)
 
     def _parseModel(self, modelJson: Dict) -> Iterable[ExteriorColor]:

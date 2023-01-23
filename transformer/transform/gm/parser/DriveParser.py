@@ -34,13 +34,13 @@ class DriveParser(AttributeParser):
             self.loggingTools.logtAttributeFailure(parser=type(self), modelIdentifier=modelIdentifier, metadataType=metadataType)
             return None
         try:
-            price = util.priceStrToInt(priceStr)
+            price = util.priceToInt(priceStr)
         except (ValueError, AttributeError) as e:
             self.loggingTools.logUnexpectedSchema(parser=type(self), modelIdentifier=modelIdentifier, exception=e)
             return None
         return AttributeMetadata(metadataType=metadataType, value=price, unit=MetadataUnit.DOLLARS)
 
-    def _getDrives(self, dataDict: Dict, modelIdentifier: str) -> List[Dict]:
+    def _getDriveDicts(self, dataDict: Dict, modelIdentifier: str) -> List[Dict]:
         try:
             driveDicts = dataDict['modelMatrix']['driveTypes']
         except KeyError as e:
@@ -60,8 +60,9 @@ class DriveParser(AttributeParser):
 
     def parse(self, dataDict: Dict) -> List[Drive]:
         modelIdentifier = self.loggingTools.getModelIdentifier(dataDict)
+        # Attribute set, probably isn't necessary here.  GM doesn't seem to duplicate data
         drives = AttributeSet(updater=PriceUpdater(metadataType=MetadataType.COMMON_BASE_MSRP, keepLowest=True))
-        for driveDict in self._getDrives(dataDict=dataDict, modelIdentifier=modelIdentifier):
+        for driveDict in self._getDriveDicts(dataDict=dataDict, modelIdentifier=modelIdentifier):
             if (drive := self._parseDrive(driveDict=driveDict, modelIdentifier=modelIdentifier)):
                 drives.add(drive)
         if not drives:

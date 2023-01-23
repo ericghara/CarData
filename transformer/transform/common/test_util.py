@@ -15,7 +15,7 @@ class Test_Util(TestCase):
                            [1_000, 1_000]
                            ])
     def test_priceStrToInt(self, priceStr: str | int | float, expected: int):
-        found = util.priceStrToInt(priceStr)
+        found = util.priceToInt(priceStr)
         self.assertEqual(expected, found)
 
     @parameterized.expand([["ALL-WEATHER FLOOR LINERS[FLOORMAT8]", "ALL-WEATHER FLOOR LINERS"],

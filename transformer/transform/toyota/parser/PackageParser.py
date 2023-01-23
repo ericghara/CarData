@@ -60,5 +60,5 @@ class PackageParser(AttributeParser):
             return None
         if not priceStr:
             return None
-        price = util.priceStrToInt(priceStr)
+        price = util.priceToInt(priceStr)
         return AttributeMetadata(metadataType=MetadataType.COMMON_MSRP, value=price, unit=MetadataUnit.DOLLARS)
