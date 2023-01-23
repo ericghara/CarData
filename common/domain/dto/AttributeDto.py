@@ -43,7 +43,7 @@ class AttributeDto(ABC):
             raise AssertionError(f"Title: {self.title} != {other.title}")
         if self.metadata is None or other.metadata is None:
             if (self.metadata is None and other.metadata) or (self.metadata and other.metadata is None):
-                raise AssertionError(f"Metadata: {str(self.metadata)} != {str(other.metadta)}")
+                raise AssertionError(f"Metadata: {str(self.metadata)} != {str(other.metadata)}")
             return None
         if set(self.metadata) != set(other.metadata):
             raise AssertionError(f"Metadata: {self.metadata} != {other.metadata}")

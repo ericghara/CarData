@@ -85,7 +85,7 @@ class EngineParser(AttributeParser):
     def parse(self, dataDict: Dict) -> List[Drive]:
         modelIdentifier = self.loggingTools.getModelIdentifier(dataDict)
         # Attribute set, probably isn't necessary here.  GM doesn't seem to duplicate data
-        engines = AttributeSet(updater=PriceUpdater(metadataType=MetadataType.COMMON_MSRP, keepLowest=True))
+        engines = AttributeSet(updater=PriceUpdater(metadataType=MetadataType.COMMON_MSRP, keepLowest=False))
         for engineDict in self._getEngineDicts(dataDict=dataDict, modelIdentifier=modelIdentifier):
             if (engine := self._getEngineAttributes(engineDict=engineDict, modelIdentifier=modelIdentifier)):
                 engines.add(engine)

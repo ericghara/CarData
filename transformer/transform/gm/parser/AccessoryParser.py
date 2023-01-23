@@ -5,6 +5,8 @@ from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
 from common.exception.IllegalStateError import IllegalStateError
+from transformer.domain.attribute_set.AttributeSet import AttributeSet
+from transformer.domain.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
 from transformer.transform.AttributeParser import AttributeParser
 from transformer.transform.gm.parser.LoggingTools import LoggingTools
 
@@ -61,7 +63,8 @@ class AccessoryParser(AttributeParser):
 
     def parse(self, dataDict: Dict) -> List[Accessory]:
         modelIdentifier = self.loggingTools.getModelIdentifier(dataDict)
-        accessoryDtos = list()
+        # There should not be duplicates, requiring a set, but using one out of an abundance of caution
+        accessoryDtos = AttributeSet(updater=PriceUpdater(metadataType=MetadataType.COMMON_MSRP, keepLowest=False))
         for accessoryCategory, accessoryList in self._getAccessoriesJson(dataDict=dataDict,
                                                                          modelIdentifier=modelIdentifier).items():
             for accessoryDict in accessoryList:
@@ -70,5 +73,5 @@ class AccessoryParser(AttributeParser):
                 accessoryDto = self._parseAccessory(accessoryDict=accessoryDict, categoryStr=accessoryCategory,
                                      modelIdentifier=modelIdentifier)
                 if accessoryDto:
-                    accessoryDtos.append(accessoryDto)
-        return accessoryDtos
+                    accessoryDtos.add(accessoryDto)
+        return list(accessoryDtos)
