@@ -58,4 +58,6 @@ class PackageParser(AttributeParser):
         for packageDict in self._getPackageDicts(dataDict=dataDict, modelIdentifier=modelIdentifier):
             if (package := self._parsePackage(packageDict=packageDict, modelIdentifier=modelIdentifier)):
                 packages.add(package)
+        if not packages:
+            self.loggingTools.logNoAttributes(parser=type(self),modelIdentifier=modelIdentifier)
         return list(packages)

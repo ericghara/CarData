@@ -126,6 +126,13 @@ class Accessory(AttributeDto):
         super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
 
 
+class Option(AttributeDto):
+
+    def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
+                 metadata: Optional[List[AttributeMetadata]] = None, updatedAt: Optional[datetime] = None):
+        super().__init__(title=title, attributeId=attributeId, modelId=modelId, metadata=metadata, updatedAt=updatedAt)
+
+
 class Other(AttributeDto):
 
     def __init__(self, title: str, attributeId: Optional[UUID] = None, modelId: Optional[UUID] = None,
@@ -144,6 +151,7 @@ attributeDtoToAttributeType = {
     InteriorColor: AttributeType.INTERIOR_COLOR,
     ExteriorColor: AttributeType.EXTERIOR_COLOR,
     Accessory: AttributeType.ACCESSORY,
+    Option: AttributeType.OPTION,
     Other: AttributeType.OTHER
 }
 

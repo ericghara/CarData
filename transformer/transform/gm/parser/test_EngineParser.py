@@ -31,7 +31,7 @@ class TestEngineParser(TestCase):
         ({"extendedCFD": "features 300 hp. More features."},
          AttributeMetadata(metadataType=MetadataType.ENGINE_HORSEPOWER, value=300, unit=MetadataUnit.HORSEPOWER),
          "Hp present in extendedCFD"),
-        ({"longCFD": "features 300.5 hp. More features."},
+        ({"longCFD": "features 300.6 hp. More features."},
          AttributeMetadata(metadataType=MetadataType.ENGINE_HORSEPOWER, value=301, unit=MetadataUnit.HORSEPOWER),
          "Hp present in longCfd"),
         ({"longCFD": "features lots of hp. More features.", "extendedCFD": "features"}, None,
@@ -54,7 +54,6 @@ class TestEngineParser(TestCase):
                            ({"primaryName": None, "description": None}, None,
                             "Keys null"),
                            ({}, None, "No Keys")
-
                            ])
     def test__getFuelType(self, engineDict: Dict, expectedFuelValue: Optional[str], testIdentifier: str):
         expectedFuel = None

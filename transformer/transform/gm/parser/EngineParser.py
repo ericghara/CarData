@@ -55,7 +55,8 @@ class EngineParser(AttributeParser):
     def _getPrice(self, engineDict: Dict, modelIdentifier: str) -> Optional[AttributeMetadata]:
         rawMsrp = engineDict.get('msrp', None)
         try:
-            msrp = util.digitsToInt(rawMsrp)
+            if rawMsrp is None or (msrp := util.digitsToInt(rawMsrp)) is None:
+                raise ValueError(f"MSRP value is un-parsable: {rawMsrp}")
         except (ValueError, AttributeError) as e:
             self.loggingTools.logUnexpectedSchema(parser=type(self), modelIdentifier=modelIdentifier, exception=e)
             return None

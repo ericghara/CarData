@@ -43,14 +43,14 @@ class TestAccessoryParser(TestCase):
         self.assertEqual(expectedPrice, foundPrice)
 
     completeAccessoriesDict = {'config': {'ACCESSORIES':
-                                              {'Tools':
+                                              {'tools':
                                                    [{'msrp': 170,
                                                      'primaryName': 'A Tool'}]
                                                }
                                           }}
 
     nullAccessoriesDict = {'config': {'ACCESSORIES':
-                                          {'Tools':
+                                          {'tools':
                                                [{'msrp': None,
                                                  'primaryName': None}]
                                            }
@@ -60,7 +60,7 @@ class TestAccessoryParser(TestCase):
         (completeAccessoriesDict, [Accessory(title='A Tool', metadata=[
             AttributeMetadata(metadataType=MetadataType.COMMON_MSRP, value=170,
                               unit=MetadataUnit.DOLLARS),
-            AttributeMetadata(metadataType=MetadataType.ACCESSORY_CATEGORY, value="Tools")])]),
+            AttributeMetadata(metadataType=MetadataType.COMMON_CATEGORY, value="Tools")])]),
         (nullAccessoriesDict, list()),
         ({}, list())])
     def test__parse(self, dataDict: Dict, expectedAccessories: List[Accessory]):

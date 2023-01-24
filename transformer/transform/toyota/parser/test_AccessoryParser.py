@@ -23,7 +23,7 @@ class TestAccessoryParser(TestCase):
         foundAccessories = list(self.accessoryParser._parseModel(modelJson))
         expectedAccessories = [Accessory(title="Touring Package", metadata=[
             AttributeMetadata(metadataType=MetadataType.COMMON_MSRP, value=2540, unit=MetadataUnit.DOLLARS),
-            AttributeMetadata(metadataType=MetadataType.ACCESSORY_CATEGORY, value="Exterior")
+            AttributeMetadata(metadataType=MetadataType.COMMON_CATEGORY, value="Exterior")
         ])]
         self.assertEqual(expectedAccessories, foundAccessories)
         expectedAccessories[0]._assertStrictEq(foundAccessories[0])

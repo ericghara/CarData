@@ -27,7 +27,8 @@ class AccessoryParser(AttributeParser):
         return accessoryTitle
 
     def _createCategoryMetadata(self, categoryStr: str) -> Optional[AttributeMetadata]:
-        metadataType = MetadataType.ACCESSORY_CATEGORY
+        categoryStr = categoryStr.title()
+        metadataType = MetadataType.COMMON_CATEGORY
         return AttributeMetadata(metadataType=metadataType, value=categoryStr)
 
     def _getPrice(self, accessoryDict: Dict, modelIdentifier: str) -> Optional[AttributeMetadata]:

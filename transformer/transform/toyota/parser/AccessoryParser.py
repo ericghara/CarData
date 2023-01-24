@@ -27,7 +27,7 @@ class AccessoryParser(AttributeParser):
         return util.removeBracketed(accessoryTitle)
 
     def _getCategory(self, accessoryJson: Dict, modelJson: Dict) -> Optional[AttributeMetadata]:
-        metadataType = MetadataType.ACCESSORY_CATEGORY
+        metadataType = MetadataType.COMMON_CATEGORY
         try:
             category = accessoryJson['attributes']['group']['value']
         except KeyError as e:
