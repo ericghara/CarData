@@ -1,9 +1,7 @@
 import json
 import logging
-import uuid
 from typing import Type, Dict, Optional
 
-from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 
 
