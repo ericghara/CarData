@@ -47,6 +47,13 @@ class TestBodyStyleParser(TestCase):
                 "Title null"
         ),
         (
+                {"modelMatrix": {"bodyTypes": [{"lowestMSRPValue": 30_000}]}},
+                [BodyStyle(title="Standard", metadata=[
+                    AttributeMetadata(metadataType=MetadataType.COMMON_BASE_MSRP, value=30_000,
+                                      unit=MetadataUnit.DOLLARS)])],
+                "No Title, has msrp"
+        ),
+        (
                 {"modelMatrix": {"bodyTypes": [{}]}},
                 [BodyStyle(title="Standard")],
                 "title no Key"
@@ -57,7 +64,7 @@ class TestBodyStyleParser(TestCase):
                 "Empty dataDict"
         )
     ])
-    def test_parse(self, dataDict: Dict, expectedBodyStyles: List[BodyStyle], testIdentifier: str):
+    def test_parseSingleBodyStyle(self, dataDict: Dict, expectedBodyStyles: List[BodyStyle], testIdentifier: str):
         foundBodyStyles = self.parser.parse(dataDict)
         self.assertEqual(expectedBodyStyles, foundBodyStyles, testIdentifier)
         # Only works for len(bodyStyles) <= 1

@@ -24,12 +24,11 @@ class BodyStyleParser(AttributeParser):
     def _getTitle(self, bodyStyleDict: Dict, modelIdentifier: str) -> Optional[str]:
         try:
             title = bodyStyleDict['formattedConfig']
-        except KeyError as e:
-            self.loggingTools.logUnexpectedSchema(parser=type(self), modelIdentifier=modelIdentifier, exception=e)
-            title = None
-        if not title:
+            if not title:
+                raise ValueError("Title was empty or None")
+        except (KeyError, ValueError) as e:
             self.loggingTools.logTitleFailure(parser=type(self), modelIdentifier=modelIdentifier)
-            return None
+            title = None
         return title
 
     def _getBaseMsrp(self, bodyStyleDict: dict, modelIdentifier: str) -> Optional[AttributeMetadata]:
@@ -48,10 +47,14 @@ class BodyStyleParser(AttributeParser):
         return AttributeMetadata(metadataType=metadataType, value=int(msrp), unit=MetadataUnit.DOLLARS)
 
     def _parseBodyStyle(self, bodyStyleDict: Dict, modelIdentifier: str) -> Optional[BodyStyle]:
-        if not (title := self._getTitle(bodyStyleDict=bodyStyleDict, modelIdentifier=modelIdentifier)):
+        title = self._getTitle(bodyStyleDict=bodyStyleDict, modelIdentifier=modelIdentifier)
+        baseMsrp = self._getBaseMsrp(bodyStyleDict=bodyStyleDict, modelIdentifier=modelIdentifier)
+        if not title and not baseMsrp:
             return None
         metadata = None
-        if (baseMsrp := self._getBaseMsrp(bodyStyleDict=bodyStyleDict, modelIdentifier=modelIdentifier)):
+        if not title:
+            title = "Standard"
+        if baseMsrp:
             metadata = [baseMsrp]
         return BodyStyle(title=title, metadata=metadata)
 

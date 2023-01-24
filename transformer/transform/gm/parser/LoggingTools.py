@@ -29,6 +29,10 @@ class LoggingTools:
         self.log.warning(f"Encountered an unexpected RawData Schema: {modelIdentifier} - {parser.__name__}",
                          exc_info=exception)
 
+    def logParserFailure(self, transformer: type, parser: type, exception: Exception) -> None:
+        logging.info(f"{transformer.__name__} - {parser.__name__} ")
+        logging.debug("Parser Failure:\n", exc_info=exception)
+
     def getModelIdentifier(self, dataDict: Dict) -> str:
         """
         Return an identifier that can be used for logging (optimally human-readable,

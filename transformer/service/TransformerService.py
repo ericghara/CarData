@@ -10,6 +10,7 @@ from common.repository.SessionFactory import sessionFactory
 from transformer.adapter.TransformDestination import TransformDestination
 from transformer.adapter.transform_destination.RepositoryDestination import RepositoryDestination
 from transformer.transform.Transformer import Transformer
+from transformer.transform.gm.GmTransformer import GmTransformer
 from transformer.transform.toyota.ToyotaTransformer import ToyotaTransformer
 
 
@@ -69,4 +70,4 @@ class TransformerService:
 
 
 transformerService = TransformerService(destination=RepositoryDestination(overwriteExisting=False),
-                                        transformers=[ToyotaTransformer()])
+                                        transformers=[ToyotaTransformer(), GmTransformer()])
