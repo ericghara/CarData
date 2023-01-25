@@ -29,7 +29,7 @@ class AttributeDto(ABC):
         """
         if not type(self) == type(other):
             return False
-        return self.title == other.title
+        return self.attributeId == other.attributeId and self.title == other.title and self.modelId == other.modelId and self.updatedAt == other.updatedAt
 
     def _assertStrictEq(self, other: Any) -> None:
         """
@@ -39,8 +39,14 @@ class AttributeDto(ABC):
         """
         if not type(self) == type(other):
             raise AssertionError(f"AttributeType: {type(self)} != {type(other)}")
+        if self.attributeId != other.attributeId:
+            raise AssertionError(f"attributeId: {self.attributeId} != {other.attributeId}")
         if self.title != other.title:
             raise AssertionError(f"Title: {self.title} != {other.title}")
+        if self.modelId != other.modelId:
+            raise AssertionError(f"modelId: {self.modelId} != {other.modelId}")
+        if self.updatedAt != other.updatedAt:
+            raise AssertionError(f"modelId: {self.updatedAt} != {other.updatedAt}")
         if self.metadata is None or other.metadata is None:
             if (self.metadata is None and other.metadata) or (self.metadata and other.metadata is None):
                 raise AssertionError(f"Metadata: {str(self.metadata)} != {str(other.metadata)}")
@@ -53,7 +59,7 @@ class AttributeDto(ABC):
         Only ``attribute_type`` and ``title`` are hashed (similar to ``__eq__``)
         :return:
         """
-        return hash((type(self), self.title))
+        return hash((type(self), self.attributeId, self.title, self.modelId, self.updatedAt))
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.title})"
