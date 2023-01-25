@@ -70,6 +70,11 @@ class TestEndToEnd(TestCase):
                 modelAttributeRepository.getAttributesByModelId(modelId=rawDataDto.modelId, session=session))
             attributeDtos = [converter.convert(obj=modelAttribute, outputType=AttributeDto) for modelAttribute in
                              modelAttributes]
+            # Strip out attributes we cannot predict (uuid and timestamp)
+            for attributeDto in attributeDtos:
+                attributeDto.attributeId = None
+                attributeDto.modelId = None
+                attributeDto.updatedAt = None
         # check transformed data #
         # There are 2 default attributes (Grade, BodyStyle) + 1 Accessory attribute
         self.assertEqual(3, len(attributeDtos), "expected number of attributes")

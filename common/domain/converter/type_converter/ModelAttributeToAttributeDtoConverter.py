@@ -20,6 +20,6 @@ class ModelAttributeToAttributeDtoConverter(TypeConverter):
             constructor = attributeTypeToAttributeDto[modelAttribute.attribute_type]
         except KeyError as e:
             raise ValueError(f"attribute_type {modelAttribute.attribute_type} has an unknown AttributeDto mapping.")
-        return constructor(title=modelAttribute.title, modelId=modelAttribute.model_id, metadata=metadata,
+        return constructor(attributeId=modelAttribute.attribute_id, title=modelAttribute.title, modelId=modelAttribute.model_id, metadata=metadata,
                            updatedAt=modelAttribute.updated_at)
 
