@@ -6,6 +6,7 @@ from parameterized import parameterized
 
 from common.domain.dto.AttributeDto import Engine
 from common.domain.dto.AttributeMetadata import AttributeMetadata
+from common.domain.enum.FuelType import FuelType
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
 from transformer.transform.gm.parser.EngineParser import EngineParser
@@ -45,11 +46,11 @@ class TestEngineParser(TestCase):
         foundPower = self.parser._getPower(engineDict=engineDict, modelIdentifier="test")
         self.assertEqual(expectedPower, foundPower, testIdentifer)
 
-    @parameterized.expand([({"primaryName": "Duramax 3.0L"}, "Gas", "gas #.#L"),
-                           ({"primaryName": "Duramax 3L"}, "Gas", "gas #L"),
-                           ({"primaryName": "Duramax 3L DiEsEl"}, "Diesel", "diesel #L"),
+    @parameterized.expand([({"primaryName": "Duramax 3.0L"}, FuelType.GASOLINE.value, "gas #.#L"),
+                           ({"primaryName": "Duramax 3L"}, FuelType.GASOLINE.value, "gas #L"),
+                           ({"primaryName": "Duramax 3L DiEsEl"}, FuelType.DIESEL.value, "diesel #L"),
                            ({"primaryName": "Engine, standard"}, None, "Neither gas, diesel nor electric"),
-                           ({"primaryName": "Engine, standard", "description": "ElEcTrIc Drive."}, "Electric",
+                           ({"primaryName": "Engine, standard", "description": "ElEcTrIc Drive."}, FuelType.ELECTRIC.value,
                             "Neither gas, diesel nor electric"),
                            ({"primaryName": None, "description": None}, None,
                             "Keys null"),
@@ -82,7 +83,7 @@ class TestEngineParser(TestCase):
                  metadata=[AttributeMetadata(metadataType=MetadataType.COMMON_MSRP, value=3_000,
                                              unit=MetadataUnit.DOLLARS),
                            AttributeMetadata(metadataType=MetadataType.ENGINE_FUEL_TYPE,
-                                             value="Gas"),
+                                             value=FuelType.GASOLINE.value),
                            AttributeMetadata(metadataType=MetadataType.ENGINE_HORSEPOWER, value=300,
                                              unit=MetadataUnit.HORSEPOWER)
                            ])], "Title all attributes"),
@@ -95,7 +96,7 @@ class TestEngineParser(TestCase):
     ])
     def test_parseSingleEngine(self, dataDict: Dict, expectedEngines, testIdentifier: str):
         foundEngines = self.parser.parse(dataDict)
-        self.assertEqual(len(expectedEngines), len(foundEngines))
+        self.assertEqual(len(expectedEngines), len(foundEngines), testIdentifier)
         # make test insensitive to order of engines
         enginesByTitle = lambda engines: {engine.title: engine for engine in engines}
         expectedEnginesByTitle = enginesByTitle(expectedEngines)

@@ -33,6 +33,13 @@ class LoggingTools:
         logging.info(f"{transformer.__name__} - {parser.__name__} ")
         logging.debug("Parser Failure:\n", exc_info=exception)
 
+    def logInfo(self, parser: type, msg: str, modelIdentifier: str = None):
+        if modelIdentifier:
+            prefix = f"{parser.__name__} : {modelIdentifier} INFO"
+        else:
+            prefix = f"{parser.__name__} INFO"
+        self.log.info(f"{prefix}: {msg}")
+
     def getModelIdentifier(self, dataDict: Dict) -> str:
         """
         Return an identifier that can be used for logging (optimally human-readable,
