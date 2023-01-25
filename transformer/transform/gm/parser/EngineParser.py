@@ -3,6 +3,7 @@ from typing import List, Dict, Optional
 
 from common.domain.dto.AttributeDto import Drive, Engine
 from common.domain.dto.AttributeMetadata import AttributeMetadata
+from common.domain.enum.FuelType import FuelType
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
 from transformer.domain.attribute_set.AttributeSet import AttributeSet
@@ -10,7 +11,6 @@ from transformer.domain.attribute_set.metadata_updater.implementation.PriceUpdat
 from transformer.transform.AttributeParser import AttributeParser
 from transformer.transform.common import util
 from transformer.transform.gm.parser.LoggingTools import LoggingTools
-from common.domain.enum.FuelType import FuelType
 
 
 class EngineParser(AttributeParser):
@@ -47,6 +47,7 @@ class EngineParser(AttributeParser):
             fuelType = FuelType.ELECTRIC.value
         # no hybrid, GM has none currently (1-2023)
         else:
+            self.loggingTools.logInfo(parser=type(self), msg="Unable to infer fuel type from engine name: {engineName}")
             self.loggingTools.logtAttributeFailure(parser=type(self), modelIdentifier=modelIdentifier,
                                                    metadataType=MetadataType.ENGINE_FUEL_TYPE)
             return None

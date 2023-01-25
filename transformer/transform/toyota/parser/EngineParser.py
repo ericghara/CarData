@@ -2,11 +2,12 @@ from typing import Dict, List, Optional
 
 from common.domain.dto.AttributeDto import Engine
 from common.domain.dto.AttributeMetadata import AttributeMetadata
+from common.domain.enum.FuelType import FuelType
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
 from transformer.transform.AttributeParser import AttributeParser
-from transformer.transform.toyota.parser.LoggingTools import LoggingTools
 from transformer.transform.common import util
+from transformer.transform.toyota.parser.LoggingTools import LoggingTools
 
 
 class EngineParser(AttributeParser):
@@ -62,12 +63,23 @@ class EngineParser(AttributeParser):
         metadataType = MetadataType.ENGINE_FUEL_TYPE
         try:
             fuelType = modelJson['attributes']['fueltype']['value']
-        except KeyError as e:
+            match fuelType:
+                case "Gas":
+                    fuelType = FuelType.GASOLINE
+                case "Battery Electric":
+                    fuelType = FuelType.ELECTRIC
+                case "Fuel Cell":
+                    fuelType = FuelType.FUEL_CELL
+                case "Plug-in Hybrid":
+                    fuelType = FuelType.PLUG_IN_HYBRID
+                case "Hybrid":
+                    fuelType = FuelType.HYBRID
+                case _:
+                    raise ValueError(f"Unrecognized Fuel Type: {fuelType}")
+        except (KeyError, ValueError) as e:
             self.loggingTools.logMetadataFailure(metadataType=metadataType, exception=e, modelJson=modelJson)
             return None
-        if fuelType is None:
-            return None
-        return AttributeMetadata(metadataType=metadataType, value=fuelType)
+        return AttributeMetadata(metadataType=metadataType, value=fuelType.value)
 
     def _getHorsepower(self, modelJson: Dict) -> Optional[AttributeMetadata]:
         metadataType = MetadataType.ENGINE_HORSEPOWER
