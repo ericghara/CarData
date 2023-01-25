@@ -76,7 +76,7 @@ class TestEndToEnd(TestCase):
         foundAccessoryByType = {type(attributeDto): attributeDto for attributeDto in attributeDtos}
         expectedAccessory = Accessory(title="Touring Package", metadata=[
             AttributeMetadata(metadataType=MetadataType.COMMON_MSRP, value=2540, unit=MetadataUnit.DOLLARS),
-            AttributeMetadata(metadataType=MetadataType.ACCESSORY_CATEGORY, value="Exterior")
+            AttributeMetadata(metadataType=MetadataType.COMMON_CATEGORY, value="Exterior")
         ])
         expectedAccessory._assertStrictEq(foundAccessoryByType.get(Accessory))
         Grade("Standard")._assertStrictEq(foundAccessoryByType.get(Grade))

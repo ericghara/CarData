@@ -44,6 +44,7 @@ CREATE TYPE public.attribute_type AS ENUM (
     'INTERIOR_COLOR',
     'EXTERIOR_COLOR',
     'ACCESSORY',
+    'OPTION',
     'OTHER'
 );
 

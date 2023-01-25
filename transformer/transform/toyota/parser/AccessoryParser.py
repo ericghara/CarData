@@ -7,8 +7,8 @@ from common.domain.enum.MetadataUnit import MetadataUnit
 from transformer.domain.attribute_set.AttributeSet import AttributeSet
 from transformer.domain.attribute_set.metadata_updater.implementation.PriceUpdater import PriceUpdater
 from transformer.transform.AttributeParser import AttributeParser
-from transformer.transform.toyota.LoggingTools import LoggingTools
-from transformer.transform.toyota.parser import util
+from transformer.transform.toyota.parser.LoggingTools import LoggingTools
+from transformer.transform.common import util
 
 
 class AccessoryParser(AttributeParser):
@@ -27,7 +27,7 @@ class AccessoryParser(AttributeParser):
         return util.removeBracketed(accessoryTitle)
 
     def _getCategory(self, accessoryJson: Dict, modelJson: Dict) -> Optional[AttributeMetadata]:
-        metadataType = MetadataType.ACCESSORY_CATEGORY
+        metadataType = MetadataType.COMMON_CATEGORY
         try:
             category = accessoryJson['attributes']['group']['value']
         except KeyError as e:
@@ -46,7 +46,7 @@ class AccessoryParser(AttributeParser):
             return None
         if not priceStr:
             return None
-        price = util.priceStrToInt(priceStr)
+        price = util.priceToInt(priceStr)
         return AttributeMetadata(metadataType=metadataType, value=price, unit=MetadataUnit.DOLLARS)
 
     def _parseModel(self, modelJson: Dict) -> Iterable[Accessory]:

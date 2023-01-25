@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-from transformer.transform.toyota.parser import util
+from transformer.transform.common import util
 
 
 class Test_Util(TestCase):
@@ -11,11 +11,12 @@ class Test_Util(TestCase):
                            ["$0.00", 0],
                            ["$7,940", 7_940],
                            ["$1,000.99", 1_001],
+                           ["-$1,000.99", -1_001],
                            [1_000.51, 1_001],
                            [1_000, 1_000]
                            ])
     def test_priceStrToInt(self, priceStr: str | int | float, expected: int):
-        found = util.priceStrToInt(priceStr)
+        found = util.priceToInt(priceStr)
         self.assertEqual(expected, found)
 
     @parameterized.expand([["ALL-WEATHER FLOOR LINERS[FLOORMAT8]", "ALL-WEATHER FLOOR LINERS"],
@@ -31,6 +32,7 @@ class Test_Util(TestCase):
     @parameterized.expand([
         ["$123.55", 123],
         ["153 Angry Cats", 153],
+        ["Blind Mice: -3", -3],
         [100, 100],
         [2.99, 3]
     ])

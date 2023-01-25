@@ -11,4 +11,5 @@ class AttributeType(enum.Enum):
     INTERIOR_COLOR = 'Interior Color'
     EXTERIOR_COLOR = 'Exterior Color'
     ACCESSORY = 'Accessory'
+    OPTION = 'Option'
     OTHER = 'Other'

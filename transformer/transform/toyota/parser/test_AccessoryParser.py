@@ -5,7 +5,7 @@ from common.domain.dto.AttributeDto import Accessory
 from common.domain.dto.AttributeMetadata import AttributeMetadata
 from common.domain.enum.MetadataType import MetadataType
 from common.domain.enum.MetadataUnit import MetadataUnit
-from transformer.transform.toyota.LoggingTools import LoggingTools
+from transformer.transform.toyota.parser.LoggingTools import LoggingTools
 from transformer.transform.toyota.parser.AccessoryParser import AccessoryParser
 
 
@@ -23,7 +23,7 @@ class TestAccessoryParser(TestCase):
         foundAccessories = list(self.accessoryParser._parseModel(modelJson))
         expectedAccessories = [Accessory(title="Touring Package", metadata=[
             AttributeMetadata(metadataType=MetadataType.COMMON_MSRP, value=2540, unit=MetadataUnit.DOLLARS),
-            AttributeMetadata(metadataType=MetadataType.ACCESSORY_CATEGORY, value="Exterior")
+            AttributeMetadata(metadataType=MetadataType.COMMON_CATEGORY, value="Exterior")
         ])]
         self.assertEqual(expectedAccessories, foundAccessories)
         expectedAccessories[0]._assertStrictEq(foundAccessories[0])
